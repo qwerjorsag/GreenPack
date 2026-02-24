@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import InfoTooltip from './InfoTooltip';
 
 interface EnergySource {
   id: string;
@@ -133,28 +134,29 @@ export default function EnergyEmissionsInput({ themeColor = 'yellow' }: Props) {
       </div>
 
       <div className="overflow-x-auto pb-4">
-        <div className="border border-amber-200 rounded-2xl overflow-hidden bg-white">
+        <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white">
           <table className="w-full text-sm text-left border-separate border-spacing-0">
-            <thead className="text-xs text-stone-900 font-bold bg-amber-50">
+            <thead className="text-xs text-stone-600 font-bold bg-stone-50">
               <tr>
-                <th className="px-4 py-2 border-b border-amber-200 text-center">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
-                <th className="px-3 py-2 border-b border-amber-200 text-center w-24">kWh</th>
-                <th className="px-4 py-2 border-b border-amber-200 text-center">EF (kg CO₂e/kWh)</th>
-                <th className="px-4 py-2 border-b border-amber-200 text-center">Emissions (t CO₂e)</th>
-                <th className="px-4 py-2 border-b border-amber-200 bg-amber-100 text-center">{isCs ? 'Vysvětlení' : 'Explanation'}</th>
+                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
+                <th className="px-3 py-2 border-b border-stone-200 text-center w-24">kWh</th>
+                <th className="px-4 py-2 border-b border-stone-200 text-center">EF (kg CO₂e/kWh)</th>
+                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)'}</th>
+                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Vysvětlení' : 'Explanation'}</th>
               </tr>
             </thead>
             <tbody>
               {ENERGY_SOURCES.map((source) => {
                 const val = values[source.id];
                 const emissions = calculateEmissions(val, source.ef);
+                const explanation = isCs ? source.explanationCs : source.explanationEn;
                 
                 return (
-                  <tr key={source.id} className="border-b border-amber-200 hover:bg-amber-50/60 transition-colors">
-                    <td className="px-4 py-2 border-b border-amber-200 font-medium text-stone-800 bg-amber-50/60">
+                  <tr key={source.id} className="border-b border-stone-200 hover:bg-stone-50/60 transition-colors">
+                    <td className="px-4 py-2 border-b border-stone-200 font-medium text-stone-800 bg-stone-50/60">
                       {isCs ? source.nameCs : source.nameEn}
                     </td>
-                    <td className="px-2 py-1 border-b border-amber-200 bg-white w-24">
+                    <td className="px-2 py-1 border-b border-stone-200 bg-white w-24">
                       <input
                         type="number"
                         min="0"
@@ -165,28 +167,34 @@ export default function EnergyEmissionsInput({ themeColor = 'yellow' }: Props) {
                         placeholder="0"
                       />
                     </td>
-                    <td className="px-4 py-2 border-b border-amber-200 font-bold text-center bg-amber-50">
+                    <td className="px-4 py-2 border-b border-stone-200 font-bold text-center bg-stone-50">
                       {source.ef.toString().replace('.', ',')}
                     </td>
-                    <td className="px-4 py-2 border-b border-amber-200 font-mono text-right bg-amber-100/60">
+                    <td className="px-4 py-2 border-b border-stone-200 font-mono text-right bg-stone-100/60">
                       {emissions.toFixed(2).replace('.', ',')}
                     </td>
-                    <td className="px-4 py-2 border-b border-amber-200 text-xs text-stone-700 bg-amber-100">
-                      {isCs ? source.explanationCs : source.explanationEn}
+                    <td className="px-4 py-2 border-b border-stone-200 text-xs text-stone-700 bg-stone-50/60">
+                      <div className="flex justify-center">
+                        <InfoTooltip
+                          label={isCs ? 'Vysvětlení' : 'Explanation'}
+                          content={explanation}
+                          buttonText={isCs ? 'Vysvětlení' : 'Explanation'}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
               })}
-              <tr className="font-bold bg-amber-200/70 text-stone-900 border-t border-amber-300">
-                <td className="px-4 py-3 border-t border-amber-300 uppercase">TOTAL</td>
-                <td className="px-4 py-3 border-t border-amber-300 font-mono text-right">
+              <tr className="font-bold bg-stone-100 text-stone-900 border-t border-stone-200">
+                <td className="px-4 py-3 border-t border-stone-200 uppercase">TOTAL</td>
+                <td className="px-4 py-3 border-t border-stone-200 font-mono text-right">
                   {totalKwh.toLocaleString('cs-CZ', { maximumFractionDigits: 0 })}
                 </td>
-                <td className="px-4 py-3 border-t border-amber-300 bg-amber-50"></td>
-                <td className="px-4 py-3 border-t border-amber-300 font-mono text-right">
+                <td className="px-4 py-3 border-t border-stone-200 bg-stone-50"></td>
+                <td className="px-4 py-3 border-t border-stone-200 font-mono text-right">
                   {totalEmissions.toFixed(2).replace('.', ',')}
                 </td>
-                <td className="px-4 py-3 border-t border-amber-300 bg-white"></td>
+                <td className="px-4 py-3 border-t border-stone-200 bg-white"></td>
               </tr>
             </tbody>
           </table>

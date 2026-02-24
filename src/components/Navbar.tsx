@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Globe, Home, Zap, Droplets, Trash2 } from 'lucide-react';
-import komoraLogo from '../assets/komora.png';
 
 export default function Navbar() {
   const { i18n } = useTranslation();
@@ -27,6 +26,10 @@ export default function Navbar() {
   };
 
   const theme = getTheme();
+  const isElectricity = location.pathname === '/electricity';
+  const logoSrc = i18n.language === 'cs'
+    ? (isElectricity ? '/src/assets/hk_cr_-logo_cz-logo_zakladni_black.png' : '/src/assets/hk_cr_logo_cz-logo_bile.png')
+    : (isElectricity ? '/src/assets/hk_cr_logo_aj_black.png' : '/src/assets/hk_cr_logo_aj-logo_white.png');
 
   const navLinks = [
     { path: '/', icon: <Home className="w-4 h-4" />, label: isCs ? 'Domů' : 'Home' },
@@ -60,35 +63,31 @@ export default function Navbar() {
     <nav className={`${theme.bg} ${theme.text} transition-all duration-300 border-b ${theme.border} sticky top-0 z-50 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link to="https://www.komora.cz/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className={`w-8 h-8 ${theme.border.replace('border-', 'bg-')} rounded flex items-center justify-center overflow-hidden`}>
-              <img 
-                src={komoraLogo}
-                alt="Hospodářská komora" 
-                className="w-full h-full object-cover opacity-80"
-                referrerPolicy="no-referrer"
+          <Link to="https://www.komora.cz/" className="flex items-center hover:opacity-80 transition-opacity">
+            <div className="h-10 w-40 flex items-center">
+              <img
+                src={logoSrc}
+                alt="Hospodářská komora"
+                className="h-full w-full object-contain"
               />
             </div>
-            <span className="font-bold tracking-tight text-sm hidden sm:block">
-              Hospodářská komora
-            </span>
           </Link>
           
           <div className={`h-6 w-px ${theme.border.replace('border-', 'bg-')} hidden md:block`}></div>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-2 py-2 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors ${
                   location.pathname === link.path 
                     ? theme.active
                     : `${theme.inactive} ${theme.hover}`
                 }`}
               >
                 {link.icon}
-                {link.label}
+                <span className="hidden md:inline">{link.label}</span>
               </Link>
             ))}
           </div>

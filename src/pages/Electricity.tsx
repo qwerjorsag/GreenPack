@@ -18,18 +18,50 @@ export default function Electricity() {
     { id: '3', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' }
   ]);
 
+  const isLeapYear = (year: number) => {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  };
+
+  const hasInvalidOperatingDays = periods.some((p) => {
+    if (p.operatingDays !== 366) return false;
+    const year = parseInt(p.period || '', 10);
+    if (!year) return true;
+    return !isLeapYear(year);
+  });
+
+  const hasEmptyFields = periods.some((p) => {
+    return (
+      !p.period ||
+      p.occupancyRate === '' ||
+      p.operatingDays === '' ||
+      p.rooms === '' ||
+      p.floorArea === ''
+    );
+  });
+
   const handleSubmit = () => {
+    if (hasInvalidOperatingDays || hasEmptyFields) return;
     setIsSubmitting(true);
     const payload = { profile, periods };
-    if (typeof window !== 'undefined') {
-      const draft = JSON.parse(window.localStorage.getItem('greenpack_draft') || '{}');
-      draft.electricity = payload;
-      window.localStorage.setItem('greenpack_draft', JSON.stringify(draft));
-    }
-    setTimeout(() => {
-      setIsSubmitting(false);
-      window.alert(isCs ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
-    }, 300);
+    fetch('/api/electricity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Request failed');
+        }
+        return res.json();
+      })
+      .then(() => {
+        window.alert(isCs ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
+      })
+      .catch(() => {
+        window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -56,6 +88,17 @@ export default function Electricity() {
           </div>
         </div>
 
+        <div className="flex justify-center mb-12">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields}
+            className="px-6 py-3 rounded-2xl bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm shadow-md shadow-yellow-900/10 hover:bg-yellow-400 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {isSubmitting ? (isCs ? 'Odesílám...' : 'Submitting...') : (isCs ? 'Odeslat' : 'Submit')}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
             <Lightbulb className="w-10 h-10 text-yellow-500 mb-6" />
@@ -77,16 +120,6 @@ export default function Electricity() {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="px-6 py-3 rounded-2xl bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm shadow-md shadow-yellow-900/10 hover:bg-yellow-400 transition-all disabled:opacity-60"
-          >
-            {isSubmitting ? (isCs ? 'Odesílám...' : 'Submitting...') : (isCs ? 'Odeslat' : 'Submit')}
-          </button>
-        </div>
       </main>
       
     </div>

@@ -1,3 +1,4 @@
+﻿import "dotenv/config";
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import mongoose from "mongoose";
@@ -12,14 +13,15 @@ import fs from "fs";
 import { SubmissionSchema } from "./src/shared/schemas";
 import { computeSustainabilityKPIs, METHODOLOGY_VERSION } from "./src/shared/ruleset";
 import { SubmissionModel } from "./server/models/Submission";
+import { ElectricityModel } from "./server/models/Electricity";
 
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 const generatePDF = async (data: any) => {
   const filename = `report_${data.submissionId}.pdf`;
-  const reportsDir = path.join(process.cwd(), 'reports');
+  const reportsDir = path.join(process.cwd(), "reports");
   const filePath = path.join(reportsDir, filename);
-  
+
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
   }
@@ -30,36 +32,36 @@ const generatePDF = async (data: any) => {
   const { width, height } = page.getSize();
   const fontSize = 12;
 
-  const lang = data.language === 'cs' ? 'cs' : 'en';
+  const lang = data.language === "cs" ? "cs" : "en";
   const labels = {
     en: {
-      title: 'GreenPack Sustainability Report',
-      id: 'Submission ID',
-      date: 'Date',
-      version: 'Methodology Version',
-      acc: 'Accommodation',
-      type: 'Type',
-      kpis: 'Computed KPIs',
-      rating: 'Overall Rating',
-      energy: 'Energy per Guest',
-      water: 'Water per Guest',
-      waste: 'Waste Recycling Rate',
-      recs: 'Recommendations'
+      title: "GreenPack Sustainability Report",
+      id: "Submission ID",
+      date: "Date",
+      version: "Methodology Version",
+      acc: "Accommodation",
+      type: "Type",
+      kpis: "Computed KPIs",
+      rating: "Overall Rating",
+      energy: "Energy per Guest",
+      water: "Water per Guest",
+      waste: "Waste Recycling Rate",
+      recs: "Recommendations",
     },
     cs: {
-      title: 'GreenPack Zpráva o udržitelnosti',
-      id: 'ID podání',
-      date: 'Datum',
-      version: 'Verze metodiky',
-      acc: 'Ubytování',
-      type: 'Typ',
-      kpis: 'Vypočtené KPI',
-      rating: 'Celkové hodnocení',
-      energy: 'Energie na hosta',
-      water: 'Voda na hosta',
-      waste: 'Míra recyklace odpadu',
-      recs: 'Doporučení'
-    }
+      title: "GreenPack Zpráva o udržitelnosti",
+      id: "ID podání",
+      date: "Datum",
+      version: "Verze metodiky",
+      acc: "Ubytování",
+      type: "Typ",
+      kpis: "Vypočtené KPI",
+      rating: "Celkové hodnocení",
+      energy: "Energie na hosta",
+      water: "Voda na hosta",
+      waste: "Míra recyklace odpadu",
+      recs: "Doporučení",
+    },
   }[lang];
 
   page.drawText(labels.title, {
@@ -72,19 +74,19 @@ const generatePDF = async (data: any) => {
 
   const lines = [
     `${labels.id}: ${data.submissionId}`,
-    `${labels.date}: ${new Date().toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US')}`,
+    `${labels.date}: ${new Date().toLocaleString(lang === "cs" ? "cs-CZ" : "en-US")}`,
     `${labels.version}: ${METHODOLOGY_VERSION}`,
     `${labels.acc}: ${data.details.name}`,
     `${labels.type}: ${data.type}`,
-    '',
+    "",
     `${labels.kpis}:`,
     `- ${labels.rating}: ${data.computed.overallRating}`,
     `- ${labels.energy}: ${data.computed.energyPerGuest} kWh`,
     `- ${labels.water}: ${data.computed.waterPerGuest} m3`,
     `- ${labels.waste}: ${data.computed.wasteRecyclingRate}%`,
-    '',
+    "",
     `${labels.recs}:`,
-    ...data.computed.recommendations.map((rec: string) => `- ${rec}`)
+    ...data.computed.recommendations.map((rec: string) => `- ${rec}`),
   ];
 
   let yOffset = height - 100;
@@ -130,7 +132,7 @@ async function startServer() {
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
     standardHeaders: true,
     legacyHeaders: false,
-    message: "Too many submissions from this IP, please try again later."
+    message: "Too many submissions from this IP, please try again later.",
   });
 
   // API Routes
@@ -143,7 +145,7 @@ async function startServer() {
   app.post("/api/submit", limiter, async (req, res) => {
     try {
       const validatedData = SubmissionSchema.parse(req.body);
-      
+
       // Validate Source Token
       if (!ALLOWED_TOKENS.includes(validatedData.sourceToken)) {
         return res.status(403).json({ error: "Invalid source token" });
@@ -152,7 +154,7 @@ async function startServer() {
       // Compute KPIs
       const computed = computeSustainabilityKPIs(validatedData);
       const submissionId = uuidv4();
-      const ipHash = crypto.createHash('sha256').update(req.ip || '').digest('hex');
+      const ipHash = crypto.createHash("sha256").update(req.ip || "").digest("hex");
 
       // Generate PDF
       const pdfPath = await generatePDF({ ...validatedData, computed, submissionId });
@@ -166,9 +168,9 @@ async function startServer() {
         computed,
         methodologyVersion: METHODOLOGY_VERSION,
         ipHash,
-        userAgent: req.headers['user-agent'],
+        userAgent: req.headers["user-agent"],
         pdfPath,
-        status: 'completed'
+        status: "completed",
       });
 
       await submission.save();
@@ -176,11 +178,28 @@ async function startServer() {
       res.json({
         submissionId,
         computed,
-        pdfUrl: `/api/report/${submissionId}`
+        pdfUrl: `/api/report/${submissionId}`,
       });
     } catch (err: any) {
       console.error("Submission error:", err);
       res.status(400).json({ error: err.message || "Invalid submission data" });
+    }
+  });
+
+  app.post("/api/electricity", limiter, async (req, res) => {
+    try {
+      const { profile, periods } = req.body || {};
+      if (!profile || !Array.isArray(periods)) {
+        return res.status(400).json({ error: "Invalid payload" });
+      }
+
+      const doc = new ElectricityModel({ profile, periods });
+      await doc.save();
+
+      res.json({ status: "ok", id: doc._id });
+    } catch (err) {
+      console.error("Electricity submission error:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -192,8 +211,8 @@ async function startServer() {
       }
 
       if (fs.existsSync(submission.pdfPath)) {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=GreenPack_Report_${submission.submissionId}.pdf`);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=GreenPack_Report_${submission.submissionId}.pdf`);
         fs.createReadStream(submission.pdfPath).pipe(res);
       } else {
         res.status(404).json({ error: "PDF file missing on server" });
@@ -211,9 +230,9 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(process.cwd(), 'dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    app.use(express.static(path.join(process.cwd(), "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(process.cwd(), "dist", "index.html"));
     });
   }
 

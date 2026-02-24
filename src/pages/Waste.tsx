@@ -16,7 +16,29 @@ export default function Waste() {
     { id: '3', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' }
   ]);
 
+  const isLeapYear = (year: number) => {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  };
+
+  const hasInvalidOperatingDays = periods.some((p) => {
+    if (p.operatingDays !== 366) return false;
+    const year = parseInt(p.period || '', 10);
+    if (!year) return true;
+    return !isLeapYear(year);
+  });
+
+  const hasEmptyFields = periods.some((p) => {
+    return (
+      !p.period ||
+      p.occupancyRate === '' ||
+      p.operatingDays === '' ||
+      p.rooms === '' ||
+      p.floorArea === ''
+    );
+  });
+
   const handleSubmit = () => {
+    if (hasInvalidOperatingDays || hasEmptyFields) return;
     setIsSubmitting(true);
     const payload = { profile, periods };
     if (typeof window !== 'undefined') {
@@ -33,7 +55,7 @@ export default function Waste() {
     <div className="min-h-screen bg-stone-50/60 font-sans text-stone-900">
       <PageHeader 
         title={i18n.language === 'cs' ? 'Odpad' : 'Waste'}
-        description={i18n.language === 'cs' ? 'EfektivnĂ­ naklĂˇdĂˇnĂ­ s odpady sniĹľuje nĂˇklady na odvoz a zlepĹˇuje image vaĹˇeho ubytovĂˇnĂ­ u hostĹŻ.' : 'Effective waste management reduces disposal costs and improves the image of your accommodation with guests.'}
+        description={i18n.language === 'cs' ? 'Efektivní nakládání s odpady snižuje náklady na odvoz a zlepšuje image vašeho ubytování u hostů.' : 'Effective waste management reduces disposal costs and improves the image of your accommodation with guests.'}
         icon={<Trash2 className="w-6 h-6 text-white" />}
         themeColor="stone"
       />
@@ -48,15 +70,26 @@ export default function Waste() {
           </div>
         </div>
 
+        <div className="flex justify-center mb-12">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields}
+            className="px-6 py-3 rounded-2xl bg-stone-700 text-white font-bold uppercase tracking-widest text-sm shadow-md shadow-stone-900/10 hover:bg-stone-600 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {isSubmitting ? (i18n.language === 'cs' ? 'Odesílám...' : 'Submitting...') : (i18n.language === 'cs' ? 'Odeslat' : 'Submit')}
+          </button>
+        </div>
+
         <div className="bg-white rounded-[3rem] p-12 shadow-sm border border-stone-200 mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Co mÄ›Ĺ™Ă­me?' : 'What we measure?'}</h3>
+              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Co měříme?' : 'What we measure?'}</h3>
               <ul className="space-y-4">
                 {[
                   { label: t('fields.wasteTotal'), value: 'kg' },
                   { label: t('fields.wasteRecycled'), value: 'kg' },
-                  { label: i18n.language === 'cs' ? 'MĂ­ra recyklace' : 'Recycling rate', value: '%' }
+                  { label: i18n.language === 'cs' ? 'Míra recyklace' : 'Recycling rate', value: '%' }
                 ].map((item, i) => (
                   <li key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-2xl">
                     <span className="text-stone-600 font-medium">{item.label}</span>
@@ -66,29 +99,19 @@ export default function Waste() {
               </ul>
             </div>
             <div>
-              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'ProÄŤ je to dĹŻleĹľitĂ©?' : 'Why it matters?'}</h3>
+              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Proč je to důležité?' : 'Why it matters?'}</h3>
               <p className="text-stone-500 leading-relaxed mb-6">
                 {i18n.language === 'cs'
-                  ? 'PrĹŻmÄ›rnĂ˝ hotel vyprodukuje 1 kg odpadu na hosta a noc. SprĂˇvnĂ˝m tĹ™Ă­dÄ›nĂ­m lze recyklovat aĹľ 80 % tohoto objemu.'
+                  ? 'Průměrný hotel vyprodukuje 1 kg odpadu na hosta a noc. Správným tříděním lze recyklovat až 80 % tohoto objemu.'
                   : 'The average hotel produces 1 kg of waste per guest per night. With proper sorting, up to 80% of this volume can be recycled.'}
               </p>
               <div className="p-6 bg-stone-100 rounded-3xl border border-stone-200">
                 <p className="text-stone-700 text-sm font-medium italic">
-                  "There is no such thing as 'away'. When we throw anything away, it must go somewhere." â€” Annie Leonard
+                  "There is no such thing as 'away'. When we throw anything away, it must go somewhere." — Annie Leonard
                 </p>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="px-6 py-3 rounded-2xl bg-stone-700 text-white font-bold uppercase tracking-widest text-sm shadow-md shadow-stone-900/10 hover:bg-stone-600 transition-all disabled:opacity-60"
-          >
-            {isSubmitting ? (i18n.language === 'cs' ? 'Odesílám...' : 'Submitting...') : (i18n.language === 'cs' ? 'Odeslat' : 'Submit')}
-          </button>
         </div>
       </main>
       

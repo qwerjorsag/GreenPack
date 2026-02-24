@@ -96,23 +96,27 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
     return (occ / 100) * days * rooms;
   };
 
+  const formatWithSpaces = (value: number) => {
+    return value.toLocaleString('cs-CZ').replace(/\u00A0/g, ' ');
+  };
+
   const currentYear = new Date().getFullYear().toString();
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold">{isCs ? 'ProvoznĂ­ Ăşdaje' : 'Operational Data'}</h3>
+        <h3 className="text-lg font-bold">{isCs ? 'Provozní údaje' : 'Operational Data'}</h3>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
-              <th className="px-4 py-3 rounded-tl-xl">{isCs ? 'ObdobĂ­' : 'Period'}</th>
+              <th className="px-4 py-3 rounded-tl-xl">{isCs ? 'Období' : 'Period'}</th>
               <th className="px-4 py-3">{isCs ? 'Obsazenost (%)' : 'Occupancy rate (%)'}</th>
-              <th className="px-4 py-3">{isCs ? 'ProvoznĂ­ dny' : 'Operating days'}</th>
-              <th className="px-4 py-3">{isCs ? 'PoÄŤet pokojĹŻ' : 'Number of rooms'}</th>
-              <th className="px-4 py-3">{isCs ? 'PodlahovĂˇ plocha (mÂ˛)' : 'Floor area (mÂ˛)'}</th>
+              <th className="px-4 py-3">{isCs ? 'Provozní dny' : 'Operating days'}</th>
+              <th className="px-4 py-3">{isCs ? 'Počet pokojů' : 'Number of rooms'}</th>
+              <th className="px-4 py-3">{isCs ? 'Podlahová plocha (m²)' : 'Floor area (m2)'}</th>
               <th className="px-4 py-3 rounded-tr-xl">{isCs ? 'Pokojonoci' : 'Room night'}</th>
             </tr>
           </thead>
@@ -160,7 +164,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                   </div>
                   {row.operatingDays === 366 && row.period && !isLeapYear(parseInt(row.period, 10)) && (
                     <div className="text-red-500 text-xs mt-1 font-medium">
-                      {isCs ? 'Rok mĂˇ max 365 dnĹŻ' : 'Year has max 365 days'}
+                      {isCs ? 'Rok má max 365 dnů' : 'Year has max 365 days'}
                     </div>
                   )}
                 </td>
@@ -178,12 +182,17 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                 <td className="px-4 py-3 align-top">
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       min="0"
-                      value={row.floorArea}
-                      onChange={(e) => updatePeriod(row.id, 'floorArea', e.target.value)}
-                      className="w-full p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      value={typeof row.floorArea === 'number' ? formatWithSpaces(row.floorArea) : ''}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\s/g, '');
+                        updatePeriod(row.id, 'floorArea', raw);
+                      }}
+                      className="w-32 p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
+                    <span className="absolute right-3 top-[19px] -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none">m²</span>
                   </div>
                 </td>
                 <td className="px-4 py-3 align-top font-mono bg-stone-50/50 rounded-r-lg">

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
@@ -87,7 +87,7 @@ export default function Home() {
             <p className="text-emerald-100 text-lg mb-8 opacity-80">
               {i18n.language === 'cs'
                 ? 'Pomozte nám zmapovat ekologickou stopu evropských hotelů.'
-                : 'Help us map the ecological footprint of European hotels.'}
+                : 'Map your sustainability and discover room for improvement.'}
             </p>
           </motion.div>
         </div>
