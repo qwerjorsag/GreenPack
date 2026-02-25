@@ -1,11 +1,11 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
+import logoCz from '../assets/logos/komora-logo-CZ.svg';
+import logoEn from '../assets/logos/hk_cr_logo_aj_colour.png';
 
 export default function Footer() {
   const { i18n } = useTranslation();
-  const logoSrc = i18n.language === 'cs'
-    ? '/src/assets/komora-logo-CZ.svg'
-    : '/src/assets/hk_cr_logo_aj_colour.png';
+  const logoSrc = i18n.language === 'cs' ? logoCz : logoEn;
 
   return (
     <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-stone-200">
@@ -31,3 +31,4 @@ export default function Footer() {
     </footer>
   );
 }
+

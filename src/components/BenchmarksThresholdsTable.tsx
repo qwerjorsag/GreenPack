@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ratingMatrixEn from '../data/ratingMatrix.en.json';
 import ratingMatrixCs from '../data/ratingMatrix.cs.json';
@@ -18,7 +18,7 @@ export type IndicatorKey =
   | 'emissionsIntensityRoomNight'
   | 'renewableShare';
 
-type IndicatorRow = {
+export type IndicatorRow = {
   key: IndicatorKey;
   labelEn: string;
   labelCs: string;
@@ -35,7 +35,7 @@ interface Props {
   valuesByYear: InputsState;
 }
 
-const INDICATORS: IndicatorRow[] = [
+export const BENCHMARK_INDICATORS: IndicatorRow[] = [
   {
     key: 'energyIntensityM2',
     labelEn: 'Energy intensity (kWh/m²)',
@@ -47,9 +47,9 @@ const INDICATORS: IndicatorRow[] = [
   },
   {
     key: 'energyIntensityRoomNight',
-    labelEn: 'Energy intensity (kWh/room-night)',
+    labelEn: 'Energy intensity (kWh/RN)',
     labelCs: 'Intenzita energie (kWh/pokojonoc)',
-    unit: 'kWh/room-night',
+    unit: 'kWh/RN',
     thresholds: { goodMax: 35, acceptableMax: 45, upperRef: 60 },
     weight: 0.0,
     direction: 'lowerIsBetter',
@@ -65,9 +65,9 @@ const INDICATORS: IndicatorRow[] = [
   },
   {
     key: 'emissionsIntensityRoomNight',
-    labelEn: 'Emissions intensity (kg CO₂e/room-night)',
+    labelEn: 'Emissions intensity (kg CO₂e/RN)',
     labelCs: 'Intenzita emisí (kg CO₂e/pokojonoc)',
-    unit: 'kg CO₂e/room-night',
+    unit: 'kg CO₂e/RN',
     thresholds: { goodMax: 5, acceptableMax: 12, upperRef: 20 },
     weight: 0.0,
     direction: 'lowerIsBetter',
@@ -159,7 +159,7 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props
     const perYear = years.map((_, idx) => {
       let sumWeighted = 0;
       let hasAny = false;
-      for (const row of INDICATORS) {
+      for (const row of BENCHMARK_INDICATORS) {
         const s = scoreForYear(valuesByYear[row.key]?.[idx] ?? null, row);
         const w = weightedScore(s, row.weight);
         if (w !== null) {
@@ -192,7 +192,7 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props
             </tr>
           </thead>
           <tbody>
-            {INDICATORS.map((row) => {
+            {BENCHMARK_INDICATORS.map((row) => {
               const scoreX = scoreForYear(valuesByYear[row.key]?.[0] ?? null, row);
               const wScoreX = weightedScore(scoreX, row.weight);
               return (

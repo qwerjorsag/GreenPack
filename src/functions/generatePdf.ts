@@ -55,9 +55,9 @@ export async function generatePdf({ targetId, filename, onMissingTarget }: Gener
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid rgb(231, 229, 228); padding: 10px; font-size: 13px; }
         thead th { background-color: rgb(245, 245, 244) !important; text-transform: uppercase; font-size: 11px; color: rgb(120, 113, 108) !important; }
-        [data-pdf-card] { border: 1px solid rgb(231,229,228); border-radius: 24px; padding: 24px; margin-bottom: 20px; }
+        [data-pdf-card] { border: 1px solid rgb(231,229,228); border-radius: 24px; padding: 28px; margin: 28px 0; }
         [data-pdf-title] { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
-        [data-pdf-space] { height: 12px; }
+        [data-pdf-space] { height: 20px; }
       `;
       doc.head.appendChild(style);
     },

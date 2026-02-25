@@ -2,14 +2,14 @@
 import { useTranslation } from 'react-i18next';
 import { Building, Coffee, Home, Utensils, Waves } from 'lucide-react';
 
-interface Profile {
+export interface Profile {
   id: string;
   titleEn: string;
   titleCs: string;
   icon: React.ReactNode;
 }
 
-const profiles: Profile[] = [
+export const ACCOMMODATION_PROFILES: Profile[] = [
   {
     id: '1',
     titleEn: '1. Guesthouse / Pension - only accommodation, no gastronomy',
@@ -51,7 +51,7 @@ interface Props {
 export default function AccommodationProfileInput({ value, onChange, themeColor = 'emerald' }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
-  const selected = profiles.find((p) => p.id === value);
+  const selected = ACCOMMODATION_PROFILES.find((p) => p.id === value);
 
   const colorClasses = {
     emerald: 'border-emerald-500 bg-emerald-50/50 text-emerald-700',
@@ -74,7 +74,7 @@ export default function AccommodationProfileInput({ value, onChange, themeColor 
         <div data-pdf-space />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-pdf-hide>
-        {profiles.map(p => (
+        {ACCOMMODATION_PROFILES.map(p => (
           <button
             key={p.id}
             type="button"

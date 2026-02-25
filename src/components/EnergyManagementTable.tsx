@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { energyBenchmarks, MetricKey } from '../data/energyBenchmarks';
 
@@ -195,3 +195,5 @@ export default function EnergyManagementTable({
     </div>
   );
 }
+
+

@@ -1,16 +1,19 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Lightbulb, Wind, Zap } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
-import AccommodationProfileInput from '../components/AccommodationProfileInput';
+import AccommodationProfileInput, { ACCOMMODATION_PROFILES } from '../components/AccommodationProfileInput';
 import PeriodDataInput, { PeriodData } from '../components/PeriodDataInput';
 import EnergyEmissionsInput, { ENERGY_SOURCES } from '../components/EnergyEmissionsInput';
 import EnergyManagementTable from '../components/EnergyManagementTable';
 import EnergyByPeriodInput from '../components/EnergyByPeriodInput';
 import EnergyConsumptionTable from '../components/EnergyConsumptionTable';
 import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
-import BenchmarksThresholdsTable, { IndicatorKey } from '../components/BenchmarksThresholdsTable';
-import { generatePdf } from '../functions/generatePdf';
+import BenchmarksThresholdsTable, { IndicatorKey, BENCHMARK_INDICATORS } from '../components/BenchmarksThresholdsTable';
+import { energyBenchmarks, MetricKey } from '../data/energyBenchmarks';
+import { generateVectorPdf } from '../functions/generateVectorPdf';
+import logoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
+import logoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -145,6 +148,62 @@ export default function Electricity() {
     return base;
   }, [yearsForConsumption, perPeriodTotals]);
 
+  const evaluateStatus = (value: number | null, range: { min: number; max: number | null }, key: MetricKey) => {
+    if (value === null || Number.isNaN(value)) return 'unknown';
+    const upperTypical = range.max ?? range.min;
+    const limit = upperTypical * 1.25;
+    if (key === 'emissionsPerRoomNight') {
+      if (value <= upperTypical) return 'lowEmissions';
+      if (value <= limit) return 'aboveAverage';
+      return 'high';
+    }
+    if (value <= upperTypical) return 'within';
+    if (value <= limit) return 'slightly';
+    return 'high';
+  };
+
+  const getStatusText = (status: string, key: MetricKey) => {
+    if (status === 'within') return isCs ? 'V typickém rozmezí' : 'Within typical range';
+    if (status === 'slightly') return isCs ? 'Mírně nadprůměrné' : 'Slightly above average';
+    if (status === 'lowEmissions') return isCs ? 'Nízké emise' : 'Low emissions';
+    if (status === 'aboveAverage') return isCs ? 'Nadprůměrné' : 'Above average';
+    if (status === 'high') {
+      if (key === 'energyPerM2') return isCs ? 'Vysoká spotřeba energie' : 'High energy consumption';
+      if (key === 'energyPerRoomNight') return isCs ? 'Vysoká spotřeba na pokojonoc' : 'High energy use per room-night';
+      if (key === 'emissionsPerM2') return isCs ? 'Vysoké emise' : 'High emissions';
+      if (key === 'emissionsPerRoomNight') return isCs ? 'Vysoké emise na pokojonoc' : 'High emissions per room-night';
+      return isCs ? 'Vysoká spotřeba' : 'High consumption';
+    }
+    return '-';
+  };
+
+  const getRecommendation = (key: MetricKey, range: { min: number; max: number | null }, value: number | null) => {
+    if (value === null || Number.isNaN(value)) return '-';
+    const upperTypical = range.max ?? range.min;
+    const limit = upperTypical * 1.25;
+    if (key === 'energyPerM2') {
+      if (value <= upperTypical) return isCs ? 'Udržujte současnou úroveň efektivity.' : 'Maintain the current efficiency level.';
+      if (value <= limit) return isCs ? 'Zvažte menší provozní úsporná opatření.' : 'Consider small operational energy-saving measures.';
+      return isCs ? 'Proveďte energetický audit a zaveďte úsporná opatření.' : 'Conduct an energy audit and implement efficiency improvements.';
+    }
+    if (key === 'energyPerRoomNight') {
+      if (value <= upperTypical) return isCs ? 'Spotřeba je optimální.' : 'Energy use is optimal.';
+      if (value <= limit) return isCs ? 'Optimalizujte vytápění, osvětlení a provoz zařízení.' : 'Optimize heating, lighting, and equipment operation.';
+      return isCs ? 'Projděte spotřebu na úrovni pokojů a zlepšete regulaci.' : 'Review room-level energy consumption and improve controls.';
+    }
+    if (key === 'emissionsPerM2') {
+      if (value <= upperTypical) return isCs ? 'Emise jsou v očekávaných limitech.' : 'Emissions are within expected limits.';
+      if (value <= limit) return isCs ? 'Zvažte částečný přechod na obnovitelné zdroje.' : 'Consider partial transition to renewable sources.';
+      return isCs ? 'Snižte využití fosilních paliv a přejděte na nízkouhlíkové technologie.' : 'Reduce fossil fuel use and upgrade to low-carbon technologies.';
+    }
+    if (key === 'emissionsPerRoomNight') {
+      if (value <= upperTypical) return isCs ? 'Emise jsou dobře kontrolované.' : 'Emissions are well controlled.';
+      if (value <= limit) return isCs ? 'Zvažte obnovitelnou elektřinu nebo kompenzace.' : 'Consider renewable electricity or carbon offsetting.';
+      return isCs ? 'Vytvořte plán snižování emisí a zlepšete energetickou efektivitu.' : 'Develop a carbon-reduction plan and improve energy efficiency.';
+    }
+    return energyBenchmarks.recommendations[key];
+  };
+
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields) return;
     setIsSubmitting(true);
@@ -198,11 +257,203 @@ export default function Electricity() {
   };
 
   const handleGeneratePdf = async () => {
-    await generatePdf({
-      targetId: 'pdf-tables',
-      filename: isCs ? 'greenpack-report.pdf' : 'greenpack-report.pdf',
-      onMissingTarget: () => {
-        window.alert(isCs ? 'PDF sekce nebyla nalezena.' : 'PDF section not found.');
+    const years = yearsForConsumption.map((y) => y.toString());
+    const operationalData = periods.slice(0, 3).map((p) => ({
+      period: p.period,
+      occupancyRate: typeof p.occupancyRate === 'number' ? p.occupancyRate : null,
+      operatingDays: typeof p.operatingDays === 'number' ? p.operatingDays : null,
+      rooms: typeof p.rooms === 'number' ? p.rooms : null,
+      floorArea: typeof p.floorArea === 'number' ? p.floorArea : null,
+    }));
+
+    const energyKwh = energyByPeriod.map((p) =>
+      ENERGY_SOURCES.reduce<Record<string, number>>((acc, s) => {
+        const v = p?.[s.id];
+        acc[s.id] = typeof v === 'number' ? v : 0;
+        return acc;
+      }, {})
+    );
+    const energySourceOrder = ENERGY_SOURCES.map((s) => s.id);
+    const energySourceLabels = ENERGY_SOURCES.reduce<Record<string, string>>((acc, s) => {
+      acc[s.id] = isCs ? s.nameCs : s.nameEn;
+      return acc;
+    }, {});
+
+    const energyEmissionsTons = energyByPeriod.map((p) =>
+      ENERGY_SOURCES.reduce<Record<string, number>>((acc, s) => {
+        const kwh = typeof p?.[s.id] === 'number' ? (p?.[s.id] as number) : 0;
+        acc[s.id] = (kwh * s.ef) / 1000;
+        return acc;
+      }, {})
+    );
+
+    const energyGj = energyByPeriod.map((p) =>
+      ENERGY_SOURCES.reduce<Record<string, number>>((acc, s) => {
+        const kwh = typeof p?.[s.id] === 'number' ? (p?.[s.id] as number) : 0;
+        acc[s.id] = kwh * 0.0036;
+        return acc;
+      }, {})
+    );
+
+    const renewablesSummary = yearsForConsumption.map((year, idx) => {
+      const periodValues = energyByPeriod[idx] || {};
+      const total = Object.values(periodValues).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+      const renewable = typeof periodValues.electricity_renewable === 'number' ? periodValues.electricity_renewable : 0;
+      const nonRenewable = Math.max(0, total - renewable);
+      const renewablePct = total > 0 ? (renewable / total) * 100 : 0;
+      const nonRenewablePct = total > 0 ? (nonRenewable / total) * 100 : 0;
+      return {
+        year: year.toString(),
+        renewableKwh: renewable,
+        renewablePct,
+        nonRenewableKwh: nonRenewable,
+        nonRenewablePct,
+      };
+    });
+
+    const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
+    const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : '';
+
+    const indicatorLabelMap = BENCHMARK_INDICATORS.reduce<Record<string, string>>((acc, row) => {
+      acc[row.key] = isCs ? row.labelCs : row.labelEn;
+      return acc;
+    }, {});
+    const benchmarksRows = (benchmarkValues as Record<string, Array<number | null>>);
+    const benchmarkHeaders = [
+      isCs ? 'Ukazatel' : 'Indicator',
+      ...years,
+      isCs ? 'Skóre pro rok X' : 'Score for year X',
+      isCs ? 'Váha' : 'Weight',
+      isCs ? 'Vážené skóre' : 'Weighted score',
+    ];
+
+    const benchmarksDataRows = Object.keys(benchmarksRows).map((key) => {
+      const rowValues = benchmarksRows[key] || [];
+      const first = rowValues[0] ?? null;
+      return [
+        indicatorLabelMap[key] ?? key,
+        ...rowValues.map((v) => (v === null ? '—' : v.toFixed(2).replace('.', ','))),
+        first === null ? '—' : first.toFixed(2).replace('.', ','),
+        key === 'renewableShare' ? '0.15' : key.includes('M2') ? '0.25' : '0.00',
+        first === null ? '—' : (first * (key === 'renewableShare' ? 0.15 : key.includes('M2') ? 0.25 : 0)).toFixed(2).replace('.', ','),
+      ];
+    });
+
+    const totalWeightedPerYear = years.map((_, idx) => {
+      let sum = 0;
+      let hasAny = false;
+      Object.keys(benchmarksRows).forEach((key) => {
+        const v = benchmarksRows[key]?.[idx] ?? null;
+        if (v !== null) {
+          const w = key === 'renewableShare' ? 0.15 : key.includes('M2') ? 0.25 : 0;
+          sum += v * w;
+          hasAny = true;
+        }
+      });
+      return hasAny ? sum.toFixed(2).replace('.', ',') : '—';
+    });
+
+    const ratingMatrix = isCs
+      ? (await import('../data/ratingMatrix.cs.json')).default.ratingMatrix
+      : (await import('../data/ratingMatrix.en.json')).default.ratingMatrix;
+
+    const getBand = (score: string) => {
+      const num = parseFloat(score.replace(',', '.'));
+      if (Number.isNaN(num)) return null;
+      return Object.values(ratingMatrix.bands).find((b: any) => num >= b.min && num <= b.max) || null;
+    };
+
+    const bands = totalWeightedPerYear.map((score) => {
+      const band = getBand(score);
+      return band ? band.label.replace(/\s*\(.*\)\s*/g, '') : '—';
+    });
+
+    const yearSummaries = years.map((year, idx) => {
+      const band = getBand(totalWeightedPerYear[idx]);
+      return {
+        year,
+        rating: band ? band.label.replace(/\s*\(.*\)\s*/g, '') : '—',
+        meaning: band ? band.meaning : '—',
+        typical: band ? band.typicalProfile : '—',
+        next: band ? band.recommendedNextSteps : '—',
+      };
+    });
+
+    const categoryIndex = Math.max(
+      0,
+      Math.min(energyBenchmarks.categoriesEn.length - 1, Number.parseInt(profile, 10) - 1 || 0)
+    );
+
+    const formatValue = (value: number | null) => {
+      if (value === null || Number.isNaN(value)) return '—';
+      return value.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\u00A0/g, ' ');
+    };
+
+    const energyManagementTables = periods.slice(0, 3).map((period, idx) => {
+      const totalEnergy = perPeriodTotals[idx]?.totalEnergy ?? null;
+      const totalEmissions = perPeriodTotals[idx]?.totalEmissions ?? null;
+      const floorArea = perPeriodIndicators[idx]?.floorAreaM2 ?? null;
+      const roomNights = perPeriodIndicators[idx]?.roomNights ?? null;
+      const energyPerM2 = totalEnergy !== null && floorArea ? totalEnergy / floorArea : null;
+      const energyPerRoomNight = totalEnergy !== null && roomNights ? totalEnergy / roomNights : null;
+      const emissionsPerM2 = totalEmissions !== null && floorArea ? totalEmissions / floorArea : null;
+      const emissionsPerRoomNight = totalEmissions !== null && roomNights ? totalEmissions / roomNights : null;
+
+      const valuesByKey: Record<MetricKey, number | null> = {
+        energyPerM2,
+        energyPerRoomNight,
+        emissionsPerM2,
+        emissionsPerRoomNight,
+      };
+
+      const rows = energyBenchmarks.metrics.map((metric) => {
+        const range = metric.ranges[categoryIndex];
+        const value = valuesByKey[metric.key];
+        const status = evaluateStatus(value, range, metric.key);
+        const statusText = getStatusText(status, metric.key);
+        const recommendation = getRecommendation(metric.key, range, value);
+        const metricLabel = isCs ? metric.labelCs : metric.labelEn;
+        const expectedLabel = range ? range.label : '—';
+        const resultLabel = `${formatValue(value)} — ${statusText}`;
+        return {
+          label: metricLabel,
+          expected: expectedLabel,
+          value: resultLabel,
+          evaluation: statusText,
+          recommendation,
+          status,
+        };
+      });
+
+      return {
+        title: isCs ? `Období – ${period.period || '-'}` : `Period – ${period.period || '-'}`,
+        rows,
+      };
+    });
+
+    await generateVectorPdf({
+      language: isCs ? 'cs' : 'en',
+      coverTitle: isCs ? 'Elektřina' : 'Electricity',
+      coverColor: [250, 204, 21],
+      accommodationProfileLabel,
+      years,
+      operationalData,
+      energySourceOrder,
+      energySourceLabels,
+      energyKwh,
+      energyEmissionsTons,
+      energyGj,
+      totalsByPeriod: perPeriodTotals,
+      perPeriodIndicators,
+      energyManagementTables,
+      renewablesSummary,
+      benchmarks: {
+        title: isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS',
+        headers: benchmarkHeaders,
+        rows: benchmarksDataRows,
+        totals: [isCs ? 'Celkové vážené skóre' : 'Total weighted score', ...totalWeightedPerYear],
+        bands: [ratingMatrix.headers.rating, ...bands],
+        yearSummaries,
       },
     });
   };
@@ -210,7 +461,7 @@ export default function Electricity() {
   return (
     <div className="min-h-screen bg-yellow-50/30 font-sans text-stone-900">
       <PageHeader 
-        title={isCs ? 'Elektřina' : 'Electricity'}
+        title={isCs ? 'ElektĹ™ina' : 'Electricity'}
         description={isCs
           ? 'Energie je jedním z největších nákladů i dopadů na životní prostředí v ubytovacím sektoru. Zjistěte si Vaši hospodárnost.'
           : 'Energy is one of the largest costs and environmental impacts in the accommodation sector.'}
@@ -219,6 +470,13 @@ export default function Electricity() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
+        <div className="flex justify-center mb-12">
+          <img
+            src={isCs ? logoCz : logoEn}
+            alt={isCs ? 'Hospodářská komora' : 'Chamber of Commerce'}
+            className="h-16 w-auto object-contain"
+          />
+        </div>
         <div id="pdf-tables">
           <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <div className="mb-12">
@@ -344,3 +602,6 @@ export default function Electricity() {
     </div>
   );
 }
+
+
+

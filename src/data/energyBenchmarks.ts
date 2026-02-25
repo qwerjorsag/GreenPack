@@ -1,4 +1,4 @@
-export type MetricKey =
+﻿export type MetricKey =
   | 'energyPerM2'
   | 'energyPerRoomNight'
   | 'emissionsPerM2'
@@ -76,3 +76,7 @@ export const energyBenchmarks = {
     emissionsPerRoomNight: 'Develop a carbon-reduction plan and improve energy efficiency.',
   },
 } as const;
+
+
+
+
