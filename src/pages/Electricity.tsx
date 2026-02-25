@@ -503,6 +503,12 @@ export default function Electricity() {
       benchmarks: {
         title: isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS',
         headers: benchmarkHeaders,
+        ratingHeaders: {
+          rating: ratingMatrix.headers.rating,
+          meaning: ratingMatrix.headers.meaning,
+          typicalProfile: ratingMatrix.headers.typicalProfile,
+          recommendedNextSteps: ratingMatrix.headers.recommendedNextSteps,
+        },
         rows: benchmarksDataRows,
         totals: [isCs ? 'Celkové vážené skóre' : 'Total weighted score', ...totalWeightedPerYear],
         bands: [ratingMatrix.headers.rating, ...bands],

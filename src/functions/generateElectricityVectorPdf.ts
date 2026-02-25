@@ -36,6 +36,7 @@ interface PdfData {
   benchmarks: {
     title: string;
     headers: string[];
+    ratingHeaders: { rating: string; meaning: string; typicalProfile: string; recommendedNextSteps: string };
     rows: Array<Array<string>>;
     totals: Array<string>;
     bands: Array<string>;
@@ -245,9 +246,9 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   data.benchmarks.yearSummaries.forEach((y) => {
     const label = lang === 'cs' ? 'Rok' : 'Year';
     addTitle(`${label} ${y.year} (${y.rating})`, 14, 10);
-    const meaningHeader = data.benchmarks.headers[1];
-    const typicalHeader = data.benchmarks.headers[2];
-    const nextHeader = data.benchmarks.headers[3];
+    const meaningHeader = data.benchmarks.ratingHeaders.meaning;
+    const typicalHeader = data.benchmarks.ratingHeaders.typicalProfile;
+    const nextHeader = data.benchmarks.ratingHeaders.recommendedNextSteps;
     addTable({
       head: [[meaningHeader, typicalHeader, nextHeader]],
       body: [[y.meaning, y.typical, y.next]],
