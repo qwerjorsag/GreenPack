@@ -112,20 +112,16 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
         <table className="w-full table-auto text-[11px] md:text-sm text-left">
           <thead className="text-[10px] md:text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
-              <th className="px-2 md:px-4 py-2 md:py-3 rounded-tl-xl whitespace-normal break-words">{isCs ? 'Období' : 'Period'}</th>
-              <th className="px-2 md:px-4 py-2 md:py-3 whitespace-normal break-words">{isCs ? 'Obsazenost (%)' : 'Occupancy rate (%)'}</th>
-              <th className="px-0.5 md:px-2 py-2 md:py-3 whitespace-normal break-words">{isCs ? 'Provozní dny' : 'Operating days'}</th>
-              <th className="px-1 md:px-3 py-2 md:py-3 whitespace-normal break-words">{isCs ? 'Počet pokojů' : 'Number of rooms'}</th>
-              <th className="px-2 md:px-4 py-2 md:py-3 whitespace-normal break-words">{isCs ? 'Podlahová plocha (m²)' : 'Floor area (m²)'}</th>
-              <th className="px-2 md:px-4 py-2 md:py-3 rounded-tr-xl hidden md:table-cell whitespace-normal break-words">{isCs ? 'Pokojonoci' : 'Room night'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.slice(0, 3).map((row, index) => (
-              <tr key={row.id} className="border-b border-stone-100 last:border-0">
-                <td className="px-2 md:px-4 py-2 md:py-3 align-top">
-                  {index === 0 ? (
-                    <input
+                <th className="px-2 md:px-4 py-2 md:py-3 rounded-tl-xl whitespace-normal break-words">
+                  {isCs ? 'Období' : 'Period'}
+                </th>
+                {data.slice(0, 3).map((row, index) => (
+                  <th
+                    key={row.id}
+                    className={`px-2 md:px-4 py-2 md:py-3 whitespace-normal break-words ${index === 2 ? 'rounded-tr-xl' : ''}`}
+                  >
+                    {index === 0 ? (
+                      <input
                       type="text"
                       inputMode="numeric"
                       maxLength={4}
@@ -135,15 +131,24 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         updatePeriod(row.id, 'period', onlyDigits);
                       }}
                       placeholder={currentYear}
-                      className="w-10 md:w-12 p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
-                    />
-                  ) : (
-                    <div className="w-full p-1.5 md:p-2 bg-stone-100 border border-stone-200 rounded-lg text-stone-500 font-medium h-[34px] md:h-[38px] flex items-center">
-                      {row.period || '-'}
-                    </div>
-                  )}
-                </td>
-                <td className="px-0.5 md:px-2 py-2 md:py-3 align-top">
+                        className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      />
+                    ) : (
+                      <div className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg text-stone-500 font-medium h-[34px] md:h-[38px] flex items-center">
+                        {row.period || '-'}
+                      </div>
+                    )}
+                  </th>
+                ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-stone-100">
+              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+                {isCs ? 'Obsazenost (%)' : 'Occupancy rate (%)'}
+              </td>
+              {data.slice(0, 3).map((row) => (
+                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
                   <div className="relative">
                     <input
                       type="number"
@@ -156,7 +161,14 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none">%</span>
                   </div>
                 </td>
-                <td className="px-1 md:px-3 py-2 md:py-3 align-top">
+              ))}
+            </tr>
+            <tr className="border-b border-stone-100">
+              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+                {isCs ? 'Provozní dny' : 'Operating days'}
+              </td>
+              {data.slice(0, 3).map((row) => (
+                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
                   <div className="relative">
                     <input
                       type="number"
@@ -164,7 +176,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       max="366"
                       value={row.operatingDays}
                       onChange={(e) => updatePeriod(row.id, 'operatingDays', e.target.value)}
-                      className="w-10 md:w-12 p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                   </div>
                   {row.operatingDays === 366 && row.period && !isLeapYear(parseInt(row.period, 10)) && (
@@ -173,18 +185,32 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                     </div>
                   )}
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 align-top">
+              ))}
+            </tr>
+            <tr className="border-b border-stone-100">
+              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+                {isCs ? 'Počet pokojů' : 'Number of rooms'}
+              </td>
+              {data.slice(0, 3).map((row) => (
+                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
                   <div className="relative">
                     <input
                       type="number"
                       min="0"
                       value={row.rooms}
                       onChange={(e) => updatePeriod(row.id, 'rooms', e.target.value)}
-                      className="w-14 md:w-20 p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                   </div>
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 align-top">
+              ))}
+            </tr>
+            <tr className="border-b border-stone-100">
+              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+                {isCs ? 'Podlahová plocha (m²)' : 'Floor area (m²)'}
+              </td>
+              {data.slice(0, 3).map((row) => (
+                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
                   <div className="relative">
                     <input
                       type="text"
@@ -195,18 +221,25 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         const raw = e.target.value.replace(/\s/g, '');
                         updatePeriod(row.id, 'floorArea', raw);
                       }}
-                      className="w-20 md:w-24 p-1.5 md:p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      className="w-full p-1.5 md:p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                     <span className="absolute right-3 top-[19px] -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none">m²</span>
                   </div>
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 align-top bg-stone-50/50 rounded-r-lg hidden md:table-cell">
+              ))}
+            </tr>
+            <tr className="border-b border-stone-100 hidden md:table-row">
+              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+                {isCs ? 'Pokojonoci' : 'Room night'}
+              </td>
+              {data.slice(0, 3).map((row) => (
+                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top bg-stone-50/50">
                   <div className="h-[34px] md:h-[38px] flex items-center">
                     {Math.floor(calculateRoomNight(row)).toLocaleString('cs-CZ')}
                   </div>
                 </td>
-              </tr>
-            ))}
+              ))}
+            </tr>
           </tbody>
         </table>
       </div>
