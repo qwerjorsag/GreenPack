@@ -14,6 +14,7 @@ import { SubmissionSchema } from "./src/shared/schemas";
 import { computeSustainabilityKPIs, METHODOLOGY_VERSION } from "./src/shared/ruleset";
 import { SubmissionModel } from "./server/models/Submission";
 import { ElectricityModel } from "./server/models/Electricity";
+import { ElectricitySelfAuditModel } from "./server/models/ElectricitySelfAudit";
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
@@ -227,6 +228,22 @@ async function startServer() {
       res.json({ status: "ok", id: doc._id });
     } catch (err) {
       console.error("Electricity submission error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/electricityselfaudit", limiter, async (req, res) => {
+    try {
+      const { profile, answers, language } = req.body || {};
+      const doc = new ElectricitySelfAuditModel({
+        profile: profile ?? "unknown",
+        language: language === "en" ? "en" : "cs",
+        answers: answers && typeof answers === "object" ? answers : {},
+      });
+      await doc.save();
+      res.json({ status: "ok", id: doc._id });
+    } catch (err) {
+      console.error("Electricity self-audit submission error:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
