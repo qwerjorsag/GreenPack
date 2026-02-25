@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Lightbulb, Wind, Zap } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import AccommodationProfileInput, { ACCOMMODATION_PROFILES } from '../components/AccommodationProfileInput';
@@ -625,6 +626,12 @@ export default function Electricity() {
                 {isCs ? 'Generovat PDF' : 'Generate PDF'}
               </button>
             )}
+            <Link
+              to="/electricityaudit"
+              className="px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-stone-100 transition-all"
+            >
+              {isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit'}
+            </Link>
           </div>
         </div>
 
