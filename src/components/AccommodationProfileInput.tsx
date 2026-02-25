@@ -51,6 +51,7 @@ interface Props {
 export default function AccommodationProfileInput({ value, onChange, themeColor = 'emerald' }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
+  const selected = profiles.find((p) => p.id === value);
 
   const colorClasses = {
     emerald: 'border-emerald-500 bg-emerald-50/50 text-emerald-700',
@@ -65,8 +66,14 @@ export default function AccommodationProfileInput({ value, onChange, themeColor 
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold">{isCs ? 'Profil ubytování' : 'Accommodation Profile'}</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <h3 className="text-lg font-bold" data-pdf-title>{isCs ? 'Profil ubytování' : 'Accommodation Profile'}</h3>
+      <div data-pdf-show style={{ display: 'none' }}>
+        <div className="text-sm font-medium">
+          {selected ? (isCs ? selected.titleCs : selected.titleEn) : '-'}
+        </div>
+        <div data-pdf-space />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-pdf-hide>
         {profiles.map(p => (
           <button
             key={p.id}

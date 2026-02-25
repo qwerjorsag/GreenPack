@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { useTranslation } from 'react-i18next';
 import { Lightbulb, Wind, Zap } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
@@ -9,6 +11,7 @@ import EnergyManagementTable from '../components/EnergyManagementTable';
 import EnergyByPeriodInput from '../components/EnergyByPeriodInput';
 import EnergyConsumptionTable from '../components/EnergyConsumptionTable';
 import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
+import BenchmarksThresholdsTable, { IndicatorKey } from '../components/BenchmarksThresholdsTable';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -16,6 +19,8 @@ export default function Electricity() {
 
   const [profile, setProfile] = useState('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPdfButton, setShowPdfButton] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [energyValues, setEnergyValues] = useState<Record<string, number | ''>>({});
   const [energyByPeriod, setEnergyByPeriod] = useState<Record<string, number | ''>[]>([
     {},
@@ -76,6 +81,40 @@ export default function Electricity() {
     return { roomNights, floorAreaM2 };
   });
 
+  const benchmarkValues = useMemo(() => {
+    const valuesByYear: Record<IndicatorKey, Array<number | null>> = {
+      energyIntensityM2: [],
+      energyIntensityRoomNight: [],
+      emissionsIntensityM2: [],
+      emissionsIntensityRoomNight: [],
+      renewableShare: [],
+    };
+
+    periods.slice(0, 3).forEach((_, idx) => {
+      const totalEnergy = perPeriodTotals[idx]?.totalEnergy ?? 0;
+      const totalEmissions = perPeriodTotals[idx]?.totalEmissions ?? 0;
+      const floorArea = perPeriodIndicators[idx]?.floorAreaM2 ?? null;
+      const roomNights = perPeriodIndicators[idx]?.roomNights ?? null;
+      const energyIntensityM2 = floorArea && floorArea > 0 ? totalEnergy / floorArea : null;
+      const energyIntensityRoomNight = roomNights && roomNights > 0 ? totalEnergy / roomNights : null;
+      const emissionsIntensityM2 = floorArea && floorArea > 0 ? totalEmissions / floorArea : null;
+      const emissionsIntensityRoomNight = roomNights && roomNights > 0 ? totalEmissions / roomNights : null;
+
+      const periodValues = energyByPeriod[idx] || {};
+      const totalKwh = Object.values(periodValues).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+      const renewableKwh = typeof periodValues.electricity_renewable === 'number' ? periodValues.electricity_renewable : 0;
+      const renewableShare = totalKwh > 0 ? (renewableKwh / totalKwh) * 100 : null;
+
+      valuesByYear.energyIntensityM2.push(energyIntensityM2);
+      valuesByYear.energyIntensityRoomNight.push(energyIntensityRoomNight);
+      valuesByYear.emissionsIntensityM2.push(emissionsIntensityM2);
+      valuesByYear.emissionsIntensityRoomNight.push(emissionsIntensityRoomNight);
+      valuesByYear.renewableShare.push(renewableShare);
+    });
+
+    return valuesByYear;
+  }, [periods, perPeriodTotals, perPeriodIndicators, energyByPeriod]);
+
   const yearsForConsumption = periods.slice(0, 3).map((p, idx) => {
     const parsed = parseInt(p.period || '', 10);
     if (!Number.isNaN(parsed)) return parsed;
@@ -122,7 +161,21 @@ export default function Electricity() {
         return acc;
       }, {})
     );
-    const payload = { profile, periods, energyValues: energyValuesNormalized, energyByPeriod: energyByPeriodNormalized };
+    const periodsByKey = {
+      year1: periods[0],
+      year2: periods[1],
+      year3: periods[2],
+    };
+    const energyByPeriodByKey = {
+      year1: energyByPeriodNormalized[0],
+      year2: energyByPeriodNormalized[1],
+      year3: energyByPeriodNormalized[2],
+    };
+    const payload = {
+      profile,
+      operationalData: periodsByKey,
+      energyByPeriod: energyByPeriodByKey,
+    };
     fetch('/api/electricity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -137,11 +190,94 @@ export default function Electricity() {
       })
       .then(() => {
         window.alert(isCs ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
+        setShowPdfButton(true);
       })
       .catch(() => {
         window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
       })
       .finally(() => setIsSubmitting(false));
+  };
+
+  const handleGeneratePdf = async () => {
+    console.log('[PDF] Start');
+    const target = document.getElementById('pdf-tables');
+    if (!target) {
+      console.error('[PDF] Target not found');
+      window.alert(isCs ? 'PDF sekce nebyla nalezena.' : 'PDF section not found.');
+      return;
+    }
+
+    console.log('[PDF] Capturing html2canvas');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      ignoreElements: (el) => el.tagName === 'SVG',
+      onclone: (doc) => {
+        doc.querySelectorAll('[data-pdf-hide]').forEach((el) => {
+          (el as HTMLElement).style.display = 'none';
+        });
+        doc.querySelectorAll('[data-pdf-show]').forEach((el) => {
+          (el as HTMLElement).style.display = 'block';
+        });
+        doc.querySelectorAll('svg').forEach((el) => {
+          (el as HTMLElement).style.display = 'none';
+        });
+        doc.querySelectorAll('img').forEach((el) => {
+          (el as HTMLElement).style.display = 'none';
+        });
+        doc.querySelectorAll('*').forEach((el) => {
+          (el as HTMLElement).removeAttribute('style');
+        });
+        doc.querySelectorAll('style, link[rel="stylesheet"]').forEach((el) => {
+          el.parentNode?.removeChild(el);
+        });
+        const style = doc.createElement('style');
+        style.textContent = `
+          html, body { width: 1280px !important; margin: 0; padding: 0; }
+          body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; color: rgb(28, 25, 23); }
+          * {
+            color: rgb(17, 24, 39) !important;
+            background-color: rgb(255, 255, 255) !important;
+            border-color: rgb(231, 229, 228) !important;
+            box-shadow: none !important;
+          }
+          h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid rgb(231, 229, 228); padding: 10px; font-size: 13px; }
+          thead th { background-color: rgb(245, 245, 244) !important; text-transform: uppercase; font-size: 11px; color: rgb(120, 113, 108) !important; }
+          [data-pdf-card] { border: 1px solid rgb(231,229,228); border-radius: 24px; padding: 24px; margin-bottom: 20px; }
+          [data-pdf-title] { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+          [data-pdf-space] { height: 12px; }
+        `;
+        doc.head.appendChild(style);
+      },
+    });
+    console.log('[PDF] Canvas ready');
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let position = 0;
+    let heightLeft = imgHeight;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    console.log('[PDF] Saving');
+    pdf.save(isCs ? 'greenpack-report.pdf' : 'greenpack-report.pdf');
+    console.log('[PDF] Done');
   };
 
   return (
@@ -156,69 +292,103 @@ export default function Electricity() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
-          <div className="mb-12">
-            <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
+        <div id="pdf-tables">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+            <div className="mb-12">
+              <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
+            </div>
+            <div className="mb-12">
+              <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
+            </div>
+            <div className="mb-12">
+              <EnergyByPeriodInput
+                periods={periods}
+                values={energyByPeriod}
+                onChange={setEnergyByPeriod}
+              />
+            </div>
+            <div className="mb-12" data-pdf-hide>
+              <EnergyEmissionsInput
+                themeColor="yellow"
+                values={energyValues}
+                onValuesChange={setEnergyValues}
+              />
+            </div>
           </div>
-          <div className="mb-12">
-            <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
-          </div>
-          <div className="mb-12">
-            <EnergyByPeriodInput
-              periods={periods}
-              values={energyByPeriod}
-              onChange={setEnergyByPeriod}
-            />
-          </div>
-          <div>
-            <EnergyEmissionsInput
-              themeColor="yellow"
-              values={energyValues}
-              onValuesChange={setEnergyValues}
-            />
-          </div>
-        </div>
 
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
-          <EnergyConsumptionTable
-            years={yearsForConsumption}
-            denominators={denominatorsForConsumption}
-            values={valuesForConsumption}
-          />
-          <div className="mt-12">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+            <EnergyConsumptionTable
+              years={yearsForConsumption}
+              denominators={denominatorsForConsumption}
+              values={valuesForConsumption}
+            />
+          </div>
+
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <EnergyRenewablesSummary
               years={yearsForConsumption}
               values={energyByPeriod}
             />
           </div>
-        </div>
 
-        {periods.slice(0, 3).map((period, idx) => (
-          <div key={period.id} className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
-            <EnergyManagementTable
-              totalEnergyKwh={perPeriodTotals[idx]?.totalEnergy || 0}
-              totalEmissionsKg={perPeriodTotals[idx]?.totalEmissions || 0}
-              floorAreaM2={perPeriodIndicators[idx]?.floorAreaM2 ?? null}
-              roomNights={perPeriodIndicators[idx]?.roomNights ?? null}
-              profileId={profile}
-              periodTitle={
-                isCs
-                  ? `Období – ${period.period || '-'}`
-                  : `Period – ${period.period || '-'}`
-              }
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+            <BenchmarksThresholdsTable
+              years={yearsForConsumption}
+              valuesByYear={benchmarkValues}
             />
           </div>
-        ))}
+
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+            {periods.slice(0, 3).map((period, idx) => (
+              <div key={period.id} className={idx === 0 ? '' : 'mt-12'}>
+                <EnergyManagementTable
+                  totalEnergyKwh={perPeriodTotals[idx]?.totalEnergy || 0}
+                  totalEmissionsKg={perPeriodTotals[idx]?.totalEmissions || 0}
+                  floorAreaM2={perPeriodIndicators[idx]?.floorAreaM2 ?? null}
+                  roomNights={perPeriodIndicators[idx]?.roomNights ?? null}
+                  profileId={profile}
+                  periodTitle={
+                    isCs
+                      ? `Období – ${period.period || '-'}`
+                      : `Period – ${period.period || '-'}`
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="flex justify-center mb-12">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields}
-            className="px-6 py-3 rounded-2xl bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm shadow-md shadow-yellow-900/10 hover:bg-yellow-400 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {isSubmitting ? (isCs ? 'Odesílám...' : 'Submitting...') : (isCs ? 'Odeslat' : 'Submit')}
-          </button>
+          <div className="flex flex-col items-center gap-4">
+            <label className="flex items-center gap-3 text-sm text-stone-700">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="h-4 w-4 rounded border-stone-300 accent-yellow-500 focus:ring-yellow-400"
+              />
+              {isCs
+                ? 'Odesláním souhlasím se zpracováním vložených údajů.'
+                : 'By submitting, I agree to the processing of the provided data.'}
+            </label>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields || !consent}
+              className="px-6 py-3 rounded-2xl bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm shadow-md shadow-yellow-900/10 hover:bg-yellow-400 transition-all disabled:bg-stone-300 disabled:text-black disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isSubmitting ? (isCs ? 'Odesílám...' : 'Submitting...') : (isCs ? 'Odeslat' : 'Submit')}
+            </button>
+            {showPdfButton && (
+              <button
+                type="button"
+                onClick={handleGeneratePdf}
+                className="px-6 py-3 rounded-2xl bg-stone-900 text-white font-bold uppercase tracking-widest text-sm shadow-md hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              >
+                {isCs ? 'Generovat PDF' : 'Generate PDF'}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">

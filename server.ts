@@ -188,12 +188,40 @@ async function startServer() {
 
   app.post("/api/electricity", limiter, async (req, res) => {
     try {
-      const { profile, periods } = req.body || {};
-      if (!profile || !Array.isArray(periods)) {
-        return res.status(400).json({ error: "Invalid payload" });
+      const { profile, operationalData, energyByPeriod } = req.body || {};
+      const profileSafe = profile ?? "unknown";
+
+      const normalizePeriod = (p: any, index: number) => ({
+        id: p?.id || `p${index + 1}`,
+        period: p?.period ?? "",
+        occupancyRate: p?.occupancyRate ?? null,
+        operatingDays: p?.operatingDays ?? null,
+        rooms: p?.rooms ?? null,
+        floorArea: p?.floorArea ?? null,
+      });
+
+      let normalizedPeriods: any = null;
+      if (Array.isArray(operationalData)) {
+        normalizedPeriods = {
+          year1: normalizePeriod(operationalData[0], 0),
+          year2: normalizePeriod(operationalData[1], 1),
+          year3: normalizePeriod(operationalData[2], 2),
+        };
+      } else if (operationalData && typeof operationalData === "object") {
+        normalizedPeriods = {
+          year1: normalizePeriod(operationalData.year1, 0),
+          year2: normalizePeriod(operationalData.year2, 1),
+          year3: normalizePeriod(operationalData.year3, 2),
+        };
+      } else {
+        normalizedPeriods = {
+          year1: normalizePeriod(null, 0),
+          year2: normalizePeriod(null, 1),
+          year3: normalizePeriod(null, 2),
+        };
       }
 
-      const doc = new ElectricityModel({ profile, periods });
+      const doc = new ElectricityModel({ profile: profileSafe, operationalData: normalizedPeriods, energyByPeriod });
       await doc.save();
 
       res.json({ status: "ok", id: doc._id });

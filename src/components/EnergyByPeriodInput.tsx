@@ -150,7 +150,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         </table>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-stone-700">
+      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
           type="button"
           onClick={() => setShowUnitsKwh((v) => !v)}
@@ -230,7 +230,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         </table>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-stone-700">
+      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
           type="button"
           onClick={() => setShowUnitsEm((v) => !v)}
@@ -310,7 +310,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         </table>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-stone-700">
+      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
           type="button"
           onClick={() => setShowUnitsGj((v) => !v)}
