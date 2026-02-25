@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import InfoTooltip from './InfoTooltip';
+import InfoTooltip from '../InfoTooltip';
 
 interface EnergySource {
   id: string;
@@ -217,3 +217,4 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
     </div>
   );
 }
+

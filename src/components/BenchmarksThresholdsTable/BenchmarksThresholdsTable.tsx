@@ -1,7 +1,7 @@
 ﻿import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import ratingMatrixEn from '../data/ratingMatrix.en.json';
-import ratingMatrixCs from '../data/ratingMatrix.cs.json';
+import ratingMatrixEn from '../../data/ratingMatrix.en.json';
+import ratingMatrixCs from '../../data/ratingMatrix.cs.json';
 
 type Thresholds = {
   goodMax: number;

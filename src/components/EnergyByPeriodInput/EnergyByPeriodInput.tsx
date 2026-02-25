@@ -1,7 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ENERGY_SOURCES } from './EnergyEmissionsInput';
-import InfoTooltip from './InfoTooltip';
+import { ENERGY_SOURCES } from '../EnergyEmissionsInput';
+import InfoTooltip from '../InfoTooltip';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
@@ -82,7 +82,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                   key={`period-${idx}`}
                   className={`px-3 py-3 text-center whitespace-normal break-words ${idx === 2 ? 'rounded-tr-xl' : ''}`}
                 >
-                  {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
+                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
                 </th>
               ))}
             </tr>
@@ -98,7 +98,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                 <td className="px-0.5 py-3 w-6 text-xs text-stone-700 hidden md:table-cell">
                   <div className="flex justify-center">
                     <InfoTooltip
-                      label={isCs ? 'Vysvětlení' : 'Explanation'}
+                      label={isCs ? 'VysvÄ›tlenĂ­' : 'Explanation'}
                       content={isCs ? source.explanationCs : source.explanationEn}
                     />
                   </div>
@@ -166,7 +166,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
 
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)'}
+          {isCs ? 'EMISE (t COâ‚‚e)' : 'EMISSIONS (t COâ‚‚e)'}
         </h3>
       </div>
 
@@ -182,7 +182,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                   key={`emission-period-${idx}`}
                   className={`px-3 py-3 text-center whitespace-normal break-words w-1/3 ${idx === 2 ? 'rounded-tr-xl' : ''}`}
                 >
-                  {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
+                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
                 </th>
               ))}
             </tr>
@@ -203,7 +203,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                     <td key={`${source.id}-em-${idx}`} className="px-3 py-3 text-center w-1/3">
                       <span className="whitespace-nowrap">
                         {formatEmissions(emissions)}
-                        {showUnitsEm && <span className="text-xs text-stone-500"> t CO₂e</span>}
+                        {showUnitsEm && <span className="text-xs text-stone-500"> t COâ‚‚e</span>}
                       </span>
                     </td>
                   );
@@ -221,7 +221,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                 >
                   <span className="whitespace-nowrap">
                     {formatEmissions(total)}
-                    {showUnitsEm && <span className="text-xs text-stone-500"> t CO₂e</span>}
+                    {showUnitsEm && <span className="text-xs text-stone-500"> t COâ‚‚e</span>}
                   </span>
                 </td>
               ))}
@@ -262,7 +262,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
                   key={`gj-period-${idx}`}
                   className={`px-3 py-3 text-center whitespace-normal break-words w-1/3 ${idx === 2 ? 'rounded-tr-xl' : ''}`}
                 >
-                  {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
+                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
                 </th>
               ))}
             </tr>
@@ -326,3 +326,4 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
     </div>
   );
 }
+

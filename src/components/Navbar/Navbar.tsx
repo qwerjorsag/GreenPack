@@ -2,10 +2,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Globe, Home, Zap, Droplets, Trash2 } from 'lucide-react';
-import logoCzBlack from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
-import logoCzWhite from '../assets/logos/hk_cr_logo_cz-logo_bile.png';
-import logoEnBlack from '../assets/logos/hk_cr_logo_aj_black.png';
-import logoEnWhite from '../assets/logos/hk_cr_logo_aj-logo_white.png';
+import logoCzBlack from '../../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
+import logoCzWhite from '../../assets/logos/hk_cr_logo_cz-logo_bile.png';
+import logoEnBlack from '../../assets/logos/hk_cr_logo_aj_black.png';
+import logoEnWhite from '../../assets/logos/hk_cr_logo_aj-logo_white.png';
 
 export default function Navbar() {
   const { i18n } = useTranslation();

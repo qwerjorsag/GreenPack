@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import logoCz from '../assets/logos/komora-logo-CZ.svg';
-import logoEn from '../assets/logos/hk_cr_logo_aj_colour.png';
+import logoCz from '../../assets/logos/komora-logo-CZ.svg';
+import logoEn from '../../assets/logos/hk_cr_logo_aj_colour.png';
 
 export default function Footer() {
   const { i18n } = useTranslation();

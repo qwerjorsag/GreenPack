@@ -635,27 +635,6 @@ export default function Electricity() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
-            <Lightbulb className="w-10 h-10 text-yellow-500 mb-6" />
-            <h3 className="text-xl font-bold mb-4">{isCs ? 'Efektivní osvětlení' : 'Efficient Lighting'}</h3>
-            <p className="text-stone-500 text-sm leading-relaxed">
-              {isCs 
-                ? 'Přechod na LED osvětlení a instalace pohybových senzorů může snížit spotřebu energie na svícení až o 70%.' 
-                : 'Switching to LED lighting and installing motion sensors can reduce lighting energy consumption by up to 70%.'}
-            </p>
-          </div>
-          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
-            <Wind className="w-10 h-10 text-yellow-500 mb-6" />
-            <h3 className="text-xl font-bold mb-4">{isCs ? 'Obnovitelné zdroje' : 'Renewable Sources'}</h3>
-            <p className="text-stone-500 text-sm leading-relaxed">
-              {isCs 
-                ? 'Instalace solárních panelů nebo nákup energie z certifikovaných obnovitelných zdrojů výrazně snižuje vaši uhlíkovou stopu.' 
-                : 'Installing solar panels or purchasing energy from certified renewable sources significantly reduces your carbon footprint.'}
-            </p>
-          </div>
-        </div>
-
       </main>
       
     </div>

@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { energyBenchmarks, MetricKey } from '../data/energyBenchmarks';
+import { energyBenchmarks, MetricKey } from '../../data/energyBenchmarks';
 
 interface EnergyManagementTableProps {
   totalEnergyKwh: number | null;
