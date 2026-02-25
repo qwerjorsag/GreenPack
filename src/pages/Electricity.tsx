@@ -12,8 +12,6 @@ import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
 import BenchmarksThresholdsTable, { IndicatorKey, BENCHMARK_INDICATORS } from '../components/BenchmarksThresholdsTable';
 import { energyBenchmarks, MetricKey } from '../data/energyBenchmarks';
 import { generateVectorPdf } from '../functions/generateVectorPdf';
-import logoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
-import logoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -461,7 +459,7 @@ export default function Electricity() {
   return (
     <div className="min-h-screen bg-yellow-50/30 font-sans text-stone-900">
       <PageHeader 
-        title={isCs ? 'ElektĹ™ina' : 'Electricity'}
+        title={isCs ? 'Elektřina' : 'Electricity'}
         description={isCs
           ? 'Energie je jedním z největších nákladů i dopadů na životní prostředí v ubytovacím sektoru. Zjistěte si Vaši hospodárnost.'
           : 'Energy is one of the largest costs and environmental impacts in the accommodation sector.'}
@@ -470,13 +468,6 @@ export default function Electricity() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
-        <div className="flex justify-center mb-12">
-          <img
-            src={isCs ? logoCz : logoEn}
-            alt={isCs ? 'Hospodářská komora' : 'Chamber of Commerce'}
-            className="h-16 w-auto object-contain"
-          />
-        </div>
         <div id="pdf-tables">
           <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <div className="mb-12">
@@ -602,6 +593,7 @@ export default function Electricity() {
     </div>
   );
 }
+
 
 
 
