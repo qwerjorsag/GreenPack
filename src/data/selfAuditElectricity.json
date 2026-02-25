@@ -1,0 +1,48 @@
+{
+  "cards": [
+    {
+      "id": "lighting",
+      "title": {
+        "cs": "Efektivní osvětlení",
+        "en": "Efficient Lighting"
+      },
+      "description": {
+        "cs": "Přechod na LED osvětlení a instalace pohybových senzorů může snížit spotřebu energie na svícení až o 70%.",
+        "en": "Switching to LED lighting and installing motion sensors can reduce lighting energy consumption by up to 70%."
+      }
+    },
+    {
+      "id": "controls",
+      "title": {
+        "cs": "Řízení spotřeby",
+        "en": "Consumption Controls"
+      },
+      "description": {
+        "cs": "Zavedení chytrého řízení vytápění a chlazení umožní lépe reagovat na obsazenost a udržet komfort.",
+        "en": "Smart heating and cooling controls help respond to occupancy and maintain comfort efficiently."
+      }
+    },
+    {
+      "id": "equipment",
+      "title": {
+        "cs": "Úsporné vybavení",
+        "en": "Efficient Equipment"
+      },
+      "description": {
+        "cs": "Moderní spotřebiče s nižší spotřebou snižují dlouhodobé náklady i uhlíkovou stopu.",
+        "en": "Modern low-consumption equipment reduces long-term costs and carbon footprint."
+      }
+    },
+    {
+      "id": "renewables",
+      "title": {
+        "cs": "Obnovitelné zdroje",
+        "en": "Renewable Sources"
+      },
+      "description": {
+        "cs": "Nákup zelené elektřiny nebo instalace panelů zvyšuje podíl obnovitelných zdrojů.",
+        "en": "Green electricity procurement or on-site panels increase renewable share."
+      }
+    }
+  ]
+}

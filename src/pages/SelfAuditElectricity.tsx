@@ -3,58 +3,28 @@ import { useTranslation } from 'react-i18next';
 import { Zap, Lightbulb, Sliders, Fan, Sun } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SelfAuditCard from '../components/SelfAuditCard';
+import selfAuditData from '../data/selfAuditElectricity.json';
 
 type AuditCard = {
   id: string;
-  titleCs: string;
-  titleEn: string;
-  descriptionCs: string;
-  descriptionEn: string;
+  title: { cs: string; en: string };
+  description: { cs: string; en: string };
   icon: React.ReactNode;
 };
 
-const CARDS: AuditCard[] = [
-  {
-    id: 'lighting',
-    titleCs: 'Efektivní osvětlení',
-    titleEn: 'Efficient Lighting',
-    descriptionCs:
-      'Přechod na LED osvětlení a instalace pohybových senzorů může snížit spotřebu energie na svícení až o 70%.',
-    descriptionEn:
-      'Switching to LED lighting and installing motion sensors can reduce lighting energy consumption by up to 70%.',
-    icon: <Lightbulb className="w-10 h-10" />,
-  },
-  {
-    id: 'controls',
-    titleCs: 'Řízení spotřeby',
-    titleEn: 'Consumption Controls',
-    descriptionCs:
-      'Zavedení chytrého řízení vytápění a chlazení umožní lépe reagovat na obsazenost a udržet komfort.',
-    descriptionEn:
-      'Smart heating and cooling controls help respond to occupancy and maintain comfort efficiently.',
-    icon: <Sliders className="w-10 h-10" />,
-  },
-  {
-    id: 'equipment',
-    titleCs: 'Úsporné vybavení',
-    titleEn: 'Efficient Equipment',
-    descriptionCs:
-      'Moderní spotřebiče s nižší spotřebou snižují dlouhodobé náklady i uhlíkovou stopu.',
-    descriptionEn:
-      'Modern low-consumption equipment reduces long-term costs and carbon footprint.',
-    icon: <Fan className="w-10 h-10" />,
-  },
-  {
-    id: 'renewables',
-    titleCs: 'Obnovitelné zdroje',
-    titleEn: 'Renewable Sources',
-    descriptionCs:
-      'Nákup zelené elektřiny nebo instalace panelů zvyšuje podíl obnovitelných zdrojů.',
-    descriptionEn:
-      'Green electricity procurement or on-site panels increase renewable share.',
-    icon: <Sun className="w-10 h-10" />,
-  },
-];
+const ICONS: Record<string, React.ReactNode> = {
+  lighting: <Lightbulb className="w-10 h-10" />,
+  controls: <Sliders className="w-10 h-10" />,
+  equipment: <Fan className="w-10 h-10" />,
+  renewables: <Sun className="w-10 h-10" />,
+};
+
+const CARDS: AuditCard[] = selfAuditData.cards.map((card) => ({
+  id: card.id,
+  title: card.title,
+  description: card.description,
+  icon: ICONS[card.id] ?? <Zap className="w-10 h-10" />,
+}));
 
 export default function SelfAuditElectricity() {
   const { i18n } = useTranslation();
@@ -98,8 +68,8 @@ export default function SelfAuditElectricity() {
           {CARDS.map((card) => (
             <SelfAuditCard
               key={card.id}
-              title={isCs ? card.titleCs : card.titleEn}
-              description={isCs ? card.descriptionCs : card.descriptionEn}
+              title={isCs ? card.title.cs : card.title.en}
+              description={isCs ? card.description.cs : card.description.en}
               value={inputs[card.id] ?? ''}
               onChange={(value) => handleChange(card.id, value)}
               score={scores[card.id] ?? 0}
