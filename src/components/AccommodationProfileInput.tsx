@@ -12,32 +12,32 @@ export interface Profile {
 export const ACCOMMODATION_PROFILES: Profile[] = [
   {
     id: '1',
-    titleEn: '1. Guesthouse / Pension - only accommodation, no gastronomy',
-    titleCs: '1. Penzion - pouze ubytování, bez gastronomie',
+    titleEn: 'Guesthouse / Pension - only accommodation, no gastronomy',
+    titleCs: 'Penzion - pouze ubytování, bez gastronomie',
     icon: <Building className="w-6 h-6" />
   },
   {
     id: '2',
-    titleEn: '2. Hotel / Pension - only continental breakfast, reception, basic services',
-    titleCs: '2. Hotel / Penzion - pouze kontinentální snídaně, recepce, základní služby',
+    titleEn: 'Hotel / Pension - only continental breakfast, reception, basic services',
+    titleCs: 'Hotel / Penzion - pouze kontinentální snídaně, recepce, základní služby',
     icon: <Coffee className="w-6 h-6" />
   },
   {
     id: '3',
-    titleEn: '3. Self-catering accommodation, small accommodation',
-    titleCs: '3. Ubytování s vlastním stravováním, malé ubytování',
+    titleEn: 'Self-catering accommodation, small accommodation',
+    titleCs: 'Ubytování s vlastním stravováním, malé ubytování',
     icon: <Home className="w-6 h-6" />
   },
   {
     id: '4',
-    titleEn: '4. Hotel with restaurant - full gastronomy',
-    titleCs: '4. Hotel s restaurací - plná gastronomie',
+    titleEn: 'Hotel with restaurant - full gastronomy',
+    titleCs: 'Hotel s restaurací - plná gastronomie',
     icon: <Utensils className="w-6 h-6" />
   },
   {
     id: '5',
-    titleEn: '5. Hotel with wellness / pool / conferences - high consumption',
-    titleCs: '5. Hotel s wellness / bazénem / konferencemi - vysoká spotřeba',
+    titleEn: 'Hotel with wellness / pool / conferences - high consumption',
+    titleCs: 'Hotel s wellness / bazénem / konferencemi - vysoká spotřeba',
     icon: <Waves className="w-6 h-6" />
   }
 ];

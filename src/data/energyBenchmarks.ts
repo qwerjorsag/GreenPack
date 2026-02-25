@@ -6,18 +6,18 @@
 
 export const energyBenchmarks = {
   categoriesEn: [
-    '1. Guesthouse / Pension - only accommodation, no gastronomy',
-    '2. Hotel / Pension - only continental breakfast, reception, basic services',
-    '3. Self-catering accommodation, small accommodation',
-    '4. Hotel with restaurant - full gastronomy',
-    '5. Hotel with wellness / pool / conferences - high consumption',
+    'Guesthouse / Pension - only accommodation, no gastronomy',
+    'Hotel / Pension - only continental breakfast, reception, basic services',
+    'Self-catering accommodation, small accommodation',
+    'Hotel with restaurant – full gastronomy',
+    'Hotel with wellness / pool / conferences – high consumption',
   ],
   categoriesCs: [
-    '1. Penzion / ubytování bez gastronomie',
-    '2. Hotel / penzion s kontinentální snídaní, recepce, základní služby',
-    '3. Samoobslužné ubytování, malé ubytování',
-    '4. Hotel s restaurací – plná gastronomie',
-    '5. Hotel s wellness / bazénem / konferencemi – vysoká spotřeba',
+    'Penzion / ubytování bez gastronomie',
+    'Hotel / penzion s kontinentální snídaní, recepce, základní služby',
+    'Samoobslužné ubytování, malé ubytování',
+    'Hotel s restaurací – plná gastronomie',
+    'Hotel s wellness / bazénem / konferencemi – vysoká spotřeba',
   ],
   metrics: [
     {

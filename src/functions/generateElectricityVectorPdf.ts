@@ -115,6 +115,7 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     doc.rect(0, 0, 210, 297, 'F');
     doc.setTextColor(28, 25, 23);
     let logoBottomY = 80;
+    let logoTopY = 120;
     if (data.coverLogoUrl && data.coverLogoType) {
       const logoBase64 = await toBase64(data.coverLogoUrl);
       const imageProps = (doc as any).getImageProperties(`data:image/${data.coverLogoType.toLowerCase()};base64,${logoBase64}`);
@@ -123,22 +124,37 @@ export async function generateElectricityVectorPdf(data: PdfData) {
       const width = Math.min(maxWidth, imageProps.width);
       const height = width / ratio;
       const x = (210 - width) / 2;
-      const y = 120 - height / 2;
+      const y = 148.5 - height / 2;
       doc.addImage(logoBase64, data.coverLogoType, x, y, width, height);
+      logoTopY = y;
       logoBottomY = y + height;
     }
-    doc.setFontSize(12);
+    doc.setFontSize(48);
+    doc.setFont('NotoSans', 'bold');
+    const brand = 'GREENPACK';
     const subtitle = lang === 'cs'
-      ? 'GreenPack – Analýza udržitelnosti ubytovacího zařízení'
-      : 'GreenPack - Accommodation Sustainability Analysis';
+      ? 'ANALÝZA UDRŽITELNOSTI UBYTOVACÍHO ZAŘÍZENÍ'
+      : 'ACCOMMODATION SUSTAINABILITY ANALYSIS';
+    const brandWidth = doc.getTextWidth(brand);
+    const brandY = 74;
+    doc.text(brand, (210 - brandWidth) / 2, brandY);
+    doc.setFont('NotoSans', 'normal');
+
+    doc.setFontSize(12);
     const subtitleWidth = doc.getTextWidth(subtitle);
-    doc.text(subtitle, (210 - subtitleWidth) / 2, logoBottomY + 10);
+    doc.text(subtitle, (210 - subtitleWidth) / 2, brandY + 10);
 
     doc.setFontSize(22);
     doc.setFont('NotoSans', 'bold');
     const titleWidth = doc.getTextWidth(data.coverTitle);
-    doc.text(data.coverTitle, (210 - titleWidth) / 2, logoBottomY + 22);
+    const titleY = 223;
+    doc.text(data.coverTitle, (210 - titleWidth) / 2, titleY);
     doc.setFont('NotoSans', 'normal');
+    if (data.accommodationProfileLabel) {
+      doc.setFontSize(12);
+      const profileWidth = doc.getTextWidth(data.accommodationProfileLabel);
+      doc.text(data.accommodationProfileLabel, (210 - profileWidth) / 2, titleY + 8);
+    }
     doc.addPage();
     doc.setTextColor(0, 0, 0);
   }
