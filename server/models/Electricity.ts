@@ -12,6 +12,7 @@ const PeriodSchema = new mongoose.Schema({
 const ElectricitySchema = new mongoose.Schema({
   profile: { type: String, required: true },
   periods: { type: [PeriodSchema], required: true },
+  energyValues: { type: Map, of: Number, default: {} },
   createdAt: { type: Date, default: Date.now, index: true },
 }, { collection: 'electricity' });
 

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoTooltip from './InfoTooltip';
 
@@ -11,7 +11,7 @@ interface EnergySource {
   explanationCs: string;
 }
 
-const ENERGY_SOURCES: EnergySource[] = [
+export const ENERGY_SOURCES: EnergySource[] = [
   {
     id: 'electricity_grid',
     nameEn: 'Electricity – grid',
@@ -79,29 +79,33 @@ const ENERGY_SOURCES: EnergySource[] = [
 ];
 
 interface Props {
+  values: Record<string, number | ''>;
+  onValuesChange: (values: Record<string, number | ''>) => void;
   themeColor?: 'emerald' | 'blue' | 'orange' | 'amber' | 'yellow' | 'stone';
 }
 
-export default function EnergyEmissionsInput({ themeColor = 'yellow' }: Props) {
+export default function EnergyEmissionsInput({ values, onValuesChange, themeColor = 'yellow' }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
 
-  const [values, setValues] = useState<Record<string, number | ''>>({});
-
   const handleValueChange = (id: string, val: string) => {
     if (val === '') {
-      setValues(prev => ({ ...prev, [id]: '' }));
+      onValuesChange({ ...values, [id]: '' });
       return;
     }
     const num = Math.round(parseFloat(val));
     if (!isNaN(num)) {
-      setValues(prev => ({ ...prev, [id]: num < 0 ? 0 : num }));
+      onValuesChange({ ...values, [id]: num < 0 ? 0 : num });
     }
   };
 
   const calculateEmissions = (kwh: number | '', ef: number) => {
     if (kwh === '' || isNaN(kwh)) return 0;
     return (kwh * ef) / 1000;
+  };
+
+  const formatWithSpaces = (value: number) => {
+    return value.toLocaleString('cs-CZ').replace(/\u00A0/g, ' ');
   };
 
   const totalKwh = ENERGY_SOURCES.reduce((sum, source) => {
@@ -133,72 +137,73 @@ export default function EnergyEmissionsInput({ themeColor = 'yellow' }: Props) {
         </h3>
       </div>
 
-      <div className="overflow-x-auto pb-4">
-        <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white">
-          <table className="w-full text-sm text-left border-separate border-spacing-0">
-            <thead className="text-xs text-stone-600 font-bold bg-stone-50">
-              <tr>
-                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
-                <th className="px-3 py-2 border-b border-stone-200 text-center w-24">kWh</th>
-                <th className="px-4 py-2 border-b border-stone-200 text-center">EF (kg CO₂e/kWh)</th>
-                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)'}</th>
-                <th className="px-4 py-2 border-b border-stone-200 text-center">{isCs ? 'Vysvětlení' : 'Explanation'}</th>
-              </tr>
-            </thead>
-            <tbody>
+      <div className="overflow-x-auto overflow-y-visible pb-4">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
+            <tr>
+                <th className="px-4 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
+                <th className="px-3 py-3 w-24 text-center whitespace-normal break-words">kWh</th>
+                <th className="px-4 py-3 text-center hidden md:table-cell whitespace-normal break-words">EF (kg CO₂e/kWh)</th>
+                <th className="px-4 py-3 text-center whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)'}</th>
+                <th className="px-4 py-3 rounded-tr-xl text-center"></th>
+            </tr>
+          </thead>
+          <tbody>
               {ENERGY_SOURCES.map((source) => {
                 const val = values[source.id];
                 const emissions = calculateEmissions(val, source.ef);
                 const explanation = isCs ? source.explanationCs : source.explanationEn;
                 
                 return (
-                  <tr key={source.id} className="border-b border-stone-200 hover:bg-stone-50/60 transition-colors">
-                    <td className="px-4 py-2 border-b border-stone-200 font-medium text-stone-800 bg-stone-50/60">
+                  <tr key={source.id} className="border-b border-stone-100 last:border-0">
+                    <td className="px-4 py-3 font-medium text-stone-800">
                       {isCs ? source.nameCs : source.nameEn}
                     </td>
-                    <td className="px-2 py-1 border-b border-stone-200 bg-white w-24">
+                    <td className="px-2 py-3 w-24">
                       <input
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
                         min="0"
                         step="1"
-                        value={val === undefined ? '' : val}
-                        onChange={(e) => handleValueChange(source.id, e.target.value)}
+                        value={typeof val === 'number' ? formatWithSpaces(val) : ''}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/\s/g, '');
+                          handleValueChange(source.id, raw);
+                        }}
                         className={`w-full p-1.5 text-right border rounded focus:outline-none focus:ring-2 transition-all ${inputClass}`}
                         placeholder="0"
                       />
                     </td>
-                    <td className="px-4 py-2 border-b border-stone-200 font-bold text-center bg-stone-50">
+                    <td className="px-4 py-3 text-center hidden md:table-cell">
                       {source.ef.toString().replace('.', ',')}
                     </td>
-                    <td className="px-4 py-2 border-b border-stone-200 font-mono text-right bg-stone-100/60">
+                    <td className="px-4 py-3 text-right font-bold">
                       {emissions.toFixed(2).replace('.', ',')}
                     </td>
-                    <td className="px-4 py-2 border-b border-stone-200 text-xs text-stone-700 bg-stone-50/60">
+                    <td className="px-4 py-3 text-xs text-stone-700">
                       <div className="flex justify-center">
                         <InfoTooltip
                           label={isCs ? 'Vysvětlení' : 'Explanation'}
                           content={explanation}
-                          buttonText={isCs ? 'Vysvětlení' : 'Explanation'}
                         />
                       </div>
                     </td>
                   </tr>
                 );
               })}
-              <tr className="font-bold bg-stone-100 text-stone-900 border-t border-stone-200">
-                <td className="px-4 py-3 border-t border-stone-200 uppercase">TOTAL</td>
-                <td className="px-4 py-3 border-t border-stone-200 font-mono text-right">
-                  {totalKwh.toLocaleString('cs-CZ', { maximumFractionDigits: 0 })}
+              <tr className="font-bold bg-stone-100 text-stone-900">
+                <td className="px-4 py-3 uppercase">{isCs ? 'Celkem' : 'Total'}</td>
+                <td className="px-4 py-3 text-right">
+                  {formatWithSpaces(totalKwh)}
                 </td>
-                <td className="px-4 py-3 border-t border-stone-200 bg-stone-50"></td>
-                <td className="px-4 py-3 border-t border-stone-200 font-mono text-right">
+                <td className="px-4 py-3 hidden md:table-cell"></td>
+                <td className="px-4 py-3 text-right">
                   {totalEmissions.toFixed(2).replace('.', ',')}
                 </td>
-                <td className="px-4 py-3 border-t border-stone-200 bg-white"></td>
+                <td className="px-4 py-3"></td>
               </tr>
             </tbody>
-          </table>
-        </div>
+        </table>
       </div>
     </div>
   );

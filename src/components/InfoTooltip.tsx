@@ -8,10 +8,16 @@ interface InfoTooltipProps {
 
 export default function InfoTooltip({ label, content, buttonText }: InfoTooltipProps) {
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<'top' | 'bottom'>('top');
   const ref = useRef<HTMLDivElement | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    const rect = btnRef.current?.getBoundingClientRect();
+    if (rect) {
+      setPlacement(rect.top < 140 ? 'bottom' : 'top');
+    }
     const onDown = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -26,6 +32,7 @@ export default function InfoTooltip({ label, content, buttonText }: InfoTooltipP
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        ref={btnRef}
         className="inline-flex items-center gap-2 text-xs font-semibold text-stone-600 hover:text-stone-800 transition-colors"
         aria-expanded={open}
         aria-label={label}
@@ -37,9 +44,8 @@ export default function InfoTooltip({ label, content, buttonText }: InfoTooltipP
       </button>
 
       {open && (
-        <div className="absolute right-0 top-8 z-50 w-72 rounded-xl border border-stone-200 bg-white p-3 text-sm text-stone-700 shadow-xl">
-          <div className="flex items-start justify-between gap-2">
-            <div className="font-semibold text-stone-900">{label}</div>
+        <div className={`absolute right-0 z-50 w-72 rounded-xl border border-stone-200 bg-white p-3 text-sm text-stone-700 shadow-xl ${placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
+          <div className="flex items-start justify-end">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -49,7 +55,7 @@ export default function InfoTooltip({ label, content, buttonText }: InfoTooltipP
               ×
             </button>
           </div>
-          <div className="mt-2 leading-relaxed">{content}</div>
+          <div className="mt-1 leading-relaxed">{content}</div>
         </div>
       )}
     </div>

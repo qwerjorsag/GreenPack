@@ -4,7 +4,8 @@ import { Lightbulb, Wind, Zap } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import AccommodationProfileInput from '../components/AccommodationProfileInput';
 import PeriodDataInput, { PeriodData } from '../components/PeriodDataInput';
-import EnergyEmissionsInput from '../components/EnergyEmissionsInput';
+import EnergyEmissionsInput, { ENERGY_SOURCES } from '../components/EnergyEmissionsInput';
+import EnergyManagementTable from '../components/EnergyManagementTable';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -12,6 +13,7 @@ export default function Electricity() {
 
   const [profile, setProfile] = useState('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [energyValues, setEnergyValues] = useState<Record<string, number | ''>>({});
   const [periods, setPeriods] = useState<PeriodData[]>([
     { id: '1', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
     { id: '2', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
@@ -39,10 +41,35 @@ export default function Electricity() {
     );
   });
 
+  const totalEnergyKwh = ENERGY_SOURCES.reduce((sum, source) => {
+    const val = energyValues[source.id];
+    return sum + (typeof val === 'number' ? val : 0);
+  }, 0);
+
+  const totalEmissionsKg = ENERGY_SOURCES.reduce((sum, source) => {
+    const val = energyValues[source.id];
+    const kwh = typeof val === 'number' ? val : 0;
+    return sum + (kwh * source.ef);
+  }, 0);
+
+  const firstPeriod = periods[0] || null;
+  const roomNights = firstPeriod && typeof firstPeriod.occupancyRate === 'number' && typeof firstPeriod.operatingDays === 'number' && typeof firstPeriod.rooms === 'number'
+    ? (firstPeriod.occupancyRate / 100) * firstPeriod.operatingDays * firstPeriod.rooms
+    : null;
+
+  const floorAreaM2 = firstPeriod && typeof firstPeriod.floorArea === 'number'
+    ? firstPeriod.floorArea
+    : null;
+
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields) return;
     setIsSubmitting(true);
-    const payload = { profile, periods };
+    const energyValuesNormalized = ENERGY_SOURCES.reduce<Record<string, number>>((acc, source) => {
+      const val = energyValues[source.id];
+      acc[source.id] = typeof val === 'number' ? val : 0;
+      return acc;
+    }, {});
+    const payload = { profile, periods, energyValues: energyValuesNormalized };
     fetch('/api/electricity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -84,8 +111,27 @@ export default function Electricity() {
             <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
           </div>
           <div>
-            <EnergyEmissionsInput themeColor="yellow" />
+            <EnergyEmissionsInput
+              themeColor="yellow"
+              values={energyValues}
+              onValuesChange={setEnergyValues}
+            />
           </div>
+        </div>
+
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
+          <EnergyManagementTable
+            totalEnergyKwh={totalEnergyKwh || null}
+            totalEmissionsKg={totalEmissionsKg || null}
+            floorAreaM2={floorAreaM2}
+            roomNights={roomNights}
+            profileId={profile}
+            periodTitle={
+              isCs
+                ? `Období – ${firstPeriod?.period || '-'}`
+                : `Period – ${firstPeriod?.period || '-'}`
+            }
+          />
         </div>
 
         <div className="flex justify-center mb-12">
