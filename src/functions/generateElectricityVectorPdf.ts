@@ -17,6 +17,8 @@ interface PdfData {
   coverTitle?: string;
   coverColor?: [number, number, number];
   accommodationProfileLabel?: string;
+  coverLogoUrl?: string;
+  coverLogoType?: 'PNG' | 'JPG' | 'JPEG';
   years: string[];
   operationalData: PeriodData[];
   energySourceOrder: string[];
@@ -61,7 +63,18 @@ const loadNotoSansBase64 = async () => {
   return fontBase64Promise;
 };
 
-export async function generateVectorPdf(data: PdfData) {
+const toBase64 = async (url: string) => {
+  const res = await fetch(url);
+  const buf = await res.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+export async function generateElectricityVectorPdf(data: PdfData) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const lang = data.language;
   const marginX = 14;
@@ -70,13 +83,20 @@ export async function generateVectorPdf(data: PdfData) {
   const fontBase64 = await loadNotoSansBase64();
   doc.addFileToVFS('NotoSans.ttf', fontBase64);
   doc.addFont('NotoSans.ttf', 'NotoSans', 'normal');
+  doc.addFont('NotoSans.ttf', 'NotoSans', 'bold');
   doc.setFont('NotoSans', 'normal');
 
-  const addTitle = (text: string) => {
+  const addTitle = (text: string, size = 12, barHeight = 8) => {
+    const barWidth = 210 - marginX * 2;
+    const color = data.coverColor ?? [245, 245, 244];
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.rect(marginX, cursorY - 6, barWidth, barHeight, 'F');
     doc.setFont('NotoSans', 'normal');
-    doc.setFontSize(14);
-    doc.text(text, marginX, cursorY);
-    cursorY += 6;
+    doc.setFontSize(size);
+    doc.setTextColor(28, 25, 23);
+    const textWidth = doc.getTextWidth(text);
+    doc.text(text, (210 - textWidth) / 2, cursorY);
+    cursorY += barHeight;
   };
 
   const addTable = (options: UserOptions) => {
@@ -87,21 +107,38 @@ export async function generateVectorPdf(data: PdfData) {
       ...options,
       startY: cursorY,
     });
-    cursorY = (doc as any).lastAutoTable.finalY + 8;
+    cursorY = (doc as any).lastAutoTable.finalY + 12;
   };
 
   if (data.coverColor && data.coverTitle) {
     doc.setFillColor(data.coverColor[0], data.coverColor[1], data.coverColor[2]);
     doc.rect(0, 0, 210, 297, 'F');
     doc.setTextColor(28, 25, 23);
-    doc.setFont('NotoSans', 'normal');
-    doc.setFontSize(20);
-    doc.text(data.coverTitle, marginX, 40);
-    if (data.accommodationProfileLabel) {
-      doc.setFontSize(12);
-      const label = lang === 'cs' ? 'Profil ubytování' : 'Accommodation profile';
-      doc.text(`${label}: ${data.accommodationProfileLabel}`, marginX, 52);
+    let logoBottomY = 80;
+    if (data.coverLogoUrl && data.coverLogoType) {
+      const logoBase64 = await toBase64(data.coverLogoUrl);
+      const imageProps = (doc as any).getImageProperties(`data:image/${data.coverLogoType.toLowerCase()};base64,${logoBase64}`);
+      const maxWidth = 120;
+      const ratio = imageProps.width / imageProps.height;
+      const width = Math.min(maxWidth, imageProps.width);
+      const height = width / ratio;
+      const x = (210 - width) / 2;
+      const y = 120 - height / 2;
+      doc.addImage(logoBase64, data.coverLogoType, x, y, width, height);
+      logoBottomY = y + height;
     }
+    doc.setFontSize(12);
+    const subtitle = lang === 'cs'
+      ? 'GreenPack – Analýza udržitelnosti ubytovacího zařízení'
+      : 'GreenPack - Accommodation Sustainability Analysis';
+    const subtitleWidth = doc.getTextWidth(subtitle);
+    doc.text(subtitle, (210 - subtitleWidth) / 2, logoBottomY + 10);
+
+    doc.setFontSize(22);
+    doc.setFont('NotoSans', 'bold');
+    const titleWidth = doc.getTextWidth(data.coverTitle);
+    doc.text(data.coverTitle, (210 - titleWidth) / 2, logoBottomY + 22);
+    doc.setFont('NotoSans', 'normal');
     doc.addPage();
     doc.setTextColor(0, 0, 0);
   }
@@ -133,18 +170,6 @@ export async function generateVectorPdf(data: PdfData) {
     ],
   });
 
-  // Emissions
-  addTitle(lang === 'cs' ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)');
-  addTable({
-    head: [[lang === 'cs' ? 'Zdroj energie' : 'Energy source', ...data.years]],
-    body: [
-      ...energySources.map((key) => [
-        data.energySourceLabels[key] ?? key,
-        ...data.energyEmissionsTons.map((p) => fmt2(p[key] ?? 0)),
-      ]),
-    ],
-  });
-
   // Energy GJ
   addTitle(lang === 'cs' ? 'ENERGIE (GJ)' : 'ENERGY (GJ)');
   addTable({
@@ -153,6 +178,21 @@ export async function generateVectorPdf(data: PdfData) {
       ...energySources.map((key) => [
         data.energySourceLabels[key] ?? key,
         ...data.energyGj.map((p) => fmt2(p[key] ?? 0)),
+      ]),
+    ],
+  });
+
+  doc.addPage();
+  cursorY = 14;
+
+  // Emissions
+  addTitle(lang === 'cs' ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)');
+  addTable({
+    head: [[lang === 'cs' ? 'Zdroj energie' : 'Energy source', ...data.years]],
+    body: [
+      ...energySources.map((key) => [
+        data.energySourceLabels[key] ?? key,
+        ...data.energyEmissionsTons.map((p) => fmt2(p[key] ?? 0)),
       ]),
     ],
   });
@@ -167,6 +207,9 @@ export async function generateVectorPdf(data: PdfData) {
       `${fmtInt(r.nonRenewableKwh)} (${r.nonRenewablePct.toFixed(1).replace('.', ',')}%)`,
     ]),
   });
+
+  doc.addPage();
+  cursorY = 14;
 
   // Benchmarks
   addTitle(data.benchmarks.title);
@@ -184,10 +227,14 @@ export async function generateVectorPdf(data: PdfData) {
   });
 
   data.benchmarks.yearSummaries.forEach((y) => {
-    addTitle(`${lang === 'cs' ? 'Rok' : 'Year'} ${y.year}`);
+    const label = lang === 'cs' ? 'Rok' : 'Year';
+    addTitle(`${label} ${y.year} (${y.rating})`, 14, 10);
+    const meaningHeader = data.benchmarks.headers[1];
+    const typicalHeader = data.benchmarks.headers[2];
+    const nextHeader = data.benchmarks.headers[3];
     addTable({
-      head: [[data.benchmarks.headers[0], data.benchmarks.headers[1], data.benchmarks.headers[2], data.benchmarks.headers[3]]],
-      body: [[y.rating, y.meaning, y.typical, y.next]],
+      head: [[meaningHeader, typicalHeader, nextHeader]],
+      body: [[y.meaning, y.typical, y.next]],
     });
   });
 
@@ -201,10 +248,14 @@ export async function generateVectorPdf(data: PdfData) {
       unknown: { fill: undefined, text: [31, 41, 55] },
     };
 
-    data.energyManagementTables.forEach((table) => {
-      doc.addPage();
-      cursorY = 14;
-      addTitle(table.title);
+    doc.addPage();
+    cursorY = 14;
+    data.energyManagementTables.forEach((table, idx) => {
+      if (idx === 0) {
+        addTitle(table.title, 14, 10);
+      } else {
+        addTitle(table.title, 14, 10);
+      }
 
       const headers = [
         lang === 'cs' ? 'Metrika' : 'Metric',
@@ -233,4 +284,5 @@ export async function generateVectorPdf(data: PdfData) {
 
   doc.save('greenpack-report.pdf');
 }
+
 

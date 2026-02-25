@@ -11,7 +11,9 @@ import EnergyConsumptionTable from '../components/EnergyConsumptionTable';
 import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
 import BenchmarksThresholdsTable, { IndicatorKey, BENCHMARK_INDICATORS } from '../components/BenchmarksThresholdsTable';
 import { energyBenchmarks, MetricKey } from '../data/energyBenchmarks';
-import { generateVectorPdf } from '../functions/generateVectorPdf';
+import { generateElectricityVectorPdf } from '../functions/generateElectricityVectorPdf';
+import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
+import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -202,6 +204,52 @@ export default function Electricity() {
     return energyBenchmarks.recommendations[key];
   };
 
+  const scoreLowerIsBetter = (value: number | null | undefined, t: { goodMax: number; acceptableMax: number; upperRef: number }) => {
+    if (value === null || value === undefined || Number.isNaN(value)) return null;
+    const L = t.goodMax;
+    const M = t.acceptableMax;
+    const N = t.upperRef;
+    const LM = M - L;
+    const MN = N - M;
+    if (value <= L) return 100;
+    if (value <= M) {
+      if (LM === 0) return 80;
+      return 100 - (value - L) * (20 / LM);
+    }
+    if (value <= N) {
+      if (MN === 0) return 40;
+      return 80 - (value - M) * (40 / MN);
+    }
+    return 20;
+  };
+
+  const scoreHigherIsBetter = (value: number | null | undefined, t: { goodMax: number; acceptableMax: number; upperRef: number }) => {
+    if (value === null || value === undefined || Number.isNaN(value)) return null;
+    const L = t.goodMax;
+    const M = t.acceptableMax;
+    const N = t.upperRef;
+    const ML = L - M;
+    const NM = M - N;
+    if (value >= L) return 100;
+    if (value >= M) {
+      if (ML === 0) return 100;
+      return 80 + (value - M) * (20 / ML);
+    }
+    if (value >= N) {
+      if (NM === 0) return 80;
+      return 40 + (value - N) * (40 / NM);
+    }
+    return 20;
+  };
+
+  const scoreForIndicator = (value: number | null, key: IndicatorKey) => {
+    const def = BENCHMARK_INDICATORS.find((row) => row.key === key);
+    if (!def) return null;
+    return def.direction === 'higherIsBetter'
+      ? scoreHigherIsBetter(value, def.thresholds)
+      : scoreLowerIsBetter(value, def.thresholds);
+  };
+
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields) return;
     setIsSubmitting(true);
@@ -326,25 +374,30 @@ export default function Electricity() {
     ];
 
     const benchmarksDataRows = Object.keys(benchmarksRows).map((key) => {
-      const rowValues = benchmarksRows[key] || [];
+      const rowKey = key as IndicatorKey;
+      const rowValues = benchmarksRows[rowKey] || [];
       const first = rowValues[0] ?? null;
+      const scoreX = scoreForIndicator(first, rowKey);
+      const def = BENCHMARK_INDICATORS.find((row) => row.key === rowKey);
+      const weight = def?.weight ?? 0;
+      const weighted = scoreX === null ? null : scoreX * weight;
       return [
-        indicatorLabelMap[key] ?? key,
+        indicatorLabelMap[rowKey] ?? rowKey,
         ...rowValues.map((v) => (v === null ? '—' : v.toFixed(2).replace('.', ','))),
-        first === null ? '—' : first.toFixed(2).replace('.', ','),
-        key === 'renewableShare' ? '0.15' : key.includes('M2') ? '0.25' : '0.00',
-        first === null ? '—' : (first * (key === 'renewableShare' ? 0.15 : key.includes('M2') ? 0.25 : 0)).toFixed(2).replace('.', ','),
+        scoreX === null ? '—' : scoreX.toFixed(2).replace('.', ','),
+        weight.toFixed(2),
+        weighted === null ? '—' : weighted.toFixed(2).replace('.', ','),
       ];
     });
 
     const totalWeightedPerYear = years.map((_, idx) => {
       let sum = 0;
       let hasAny = false;
-      Object.keys(benchmarksRows).forEach((key) => {
-        const v = benchmarksRows[key]?.[idx] ?? null;
-        if (v !== null) {
-          const w = key === 'renewableShare' ? 0.15 : key.includes('M2') ? 0.25 : 0;
-          sum += v * w;
+      BENCHMARK_INDICATORS.forEach((row) => {
+        const v = benchmarksRows[row.key]?.[idx] ?? null;
+        const score = scoreForIndicator(v, row.key);
+        if (score !== null) {
+          sum += score * row.weight;
           hasAny = true;
         }
       });
@@ -429,11 +482,13 @@ export default function Electricity() {
       };
     });
 
-    await generateVectorPdf({
+    await generateElectricityVectorPdf({
       language: isCs ? 'cs' : 'en',
       coverTitle: isCs ? 'Elektřina' : 'Electricity',
       coverColor: [250, 204, 21],
       accommodationProfileLabel,
+      coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
+      coverLogoType: 'PNG',
       years,
       operationalData,
       energySourceOrder,
