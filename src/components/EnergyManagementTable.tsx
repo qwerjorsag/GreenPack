@@ -145,7 +145,7 @@ export default function EnergyManagementTable({
           <thead className="text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
               <th className="px-4 py-3 rounded-tl-2xl">{isCs ? 'Metrika' : 'Metric'}</th>
-              <th className="px-4 py-3">{isCs ? 'Hodnota kategorie' : 'Category Value'}</th>
+              <th className="px-4 py-3 hidden md:table-cell">{isCs ? 'Očekávaná hodnota' : 'Expected value'}</th>
               <th className="px-4 py-3">{isCs ? 'Výsledek' : 'Results'}</th>
               <th className="px-4 py-3 rounded-tr-2xl">{isCs ? 'Doporučení' : 'Recommendation'}</th>
             </tr>
@@ -180,7 +180,7 @@ export default function EnergyManagementTable({
                       {isCs ? metric.labelCs : metric.labelEn}
                     </div>
                   </td>
-                  <td className={`px-4 py-3 ${rowTextClass}`}>{range ? range.label : '-'}</td>
+                  <td className={`px-4 py-3 ${rowTextClass} hidden md:table-cell`}>{range ? range.label : '-'}</td>
                   <td className="px-4 py-3">
                     <div className={`font-semibold ${rowTextClass}`}>{formatValue(value)}</div>
                     <div className={`text-xs font-semibold ${statusClass}`}>{statusText}</div>

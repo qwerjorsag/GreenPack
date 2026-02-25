@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Lightbulb, Wind, Zap } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
@@ -6,6 +6,9 @@ import AccommodationProfileInput from '../components/AccommodationProfileInput';
 import PeriodDataInput, { PeriodData } from '../components/PeriodDataInput';
 import EnergyEmissionsInput, { ENERGY_SOURCES } from '../components/EnergyEmissionsInput';
 import EnergyManagementTable from '../components/EnergyManagementTable';
+import EnergyByPeriodInput from '../components/EnergyByPeriodInput';
+import EnergyConsumptionTable from '../components/EnergyConsumptionTable';
+import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -14,6 +17,11 @@ export default function Electricity() {
   const [profile, setProfile] = useState('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [energyValues, setEnergyValues] = useState<Record<string, number | ''>>({});
+  const [energyByPeriod, setEnergyByPeriod] = useState<Record<string, number | ''>[]>([
+    {},
+    {},
+    {}
+  ]);
   const [periods, setPeriods] = useState<PeriodData[]>([
     { id: '1', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
     { id: '2', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
@@ -41,25 +49,63 @@ export default function Electricity() {
     );
   });
 
-  const totalEnergyKwh = ENERGY_SOURCES.reduce((sum, source) => {
-    const val = energyValues[source.id];
-    return sum + (typeof val === 'number' ? val : 0);
-  }, 0);
+  const perPeriodTotals = useMemo(() => {
+    return periods.slice(0, 3).map((_, idx) => {
+      const valuesForPeriod = energyByPeriod[idx] || {};
+      const totalEnergy = ENERGY_SOURCES.reduce((sum, source) => {
+        const val = valuesForPeriod[source.id];
+        return sum + (typeof val === 'number' ? val : 0);
+      }, 0);
+      const totalEmissions = ENERGY_SOURCES.reduce((sum, source) => {
+        const val = valuesForPeriod[source.id];
+        const kwh = typeof val === 'number' ? val : 0;
+        return sum + kwh * source.ef;
+      }, 0);
+      return { totalEnergy, totalEmissions };
+    });
+  }, [energyByPeriod, periods]);
 
-  const totalEmissionsKg = ENERGY_SOURCES.reduce((sum, source) => {
-    const val = energyValues[source.id];
-    const kwh = typeof val === 'number' ? val : 0;
-    return sum + (kwh * source.ef);
-  }, 0);
+  const perPeriodIndicators = periods.slice(0, 3).map((period) => {
+    const roomNights =
+      typeof period.occupancyRate === 'number' &&
+      typeof period.operatingDays === 'number' &&
+      typeof period.rooms === 'number'
+        ? (period.occupancyRate / 100) * period.operatingDays * period.rooms
+        : null;
+    const floorAreaM2 = typeof period.floorArea === 'number' ? period.floorArea : null;
+    return { roomNights, floorAreaM2 };
+  });
 
-  const firstPeriod = periods[0] || null;
-  const roomNights = firstPeriod && typeof firstPeriod.occupancyRate === 'number' && typeof firstPeriod.operatingDays === 'number' && typeof firstPeriod.rooms === 'number'
-    ? (firstPeriod.occupancyRate / 100) * firstPeriod.operatingDays * firstPeriod.rooms
-    : null;
+  const yearsForConsumption = periods.slice(0, 3).map((p, idx) => {
+    const parsed = parseInt(p.period || '', 10);
+    if (!Number.isNaN(parsed)) return parsed;
+    const base = new Date().getFullYear();
+    return base + idx;
+  });
 
-  const floorAreaM2 = firstPeriod && typeof firstPeriod.floorArea === 'number'
-    ? firstPeriod.floorArea
-    : null;
+  const denominatorsForConsumption = yearsForConsumption.reduce<Record<number, { roomNights: number | null; floorAreaM2: number | null }>>(
+    (acc, year, idx) => {
+      acc[year] = {
+        roomNights: perPeriodIndicators[idx]?.roomNights ?? null,
+        floorAreaM2: perPeriodIndicators[idx]?.floorAreaM2 ?? null,
+      };
+      return acc;
+    },
+    {}
+  );
+
+  const valuesForConsumption = useMemo(() => {
+    const base: Record<string, Record<number, number | null>> = {
+      'total-energy': {},
+      'total-energy-alt': {},
+    };
+    yearsForConsumption.forEach((year, idx) => {
+      const total = perPeriodTotals[idx]?.totalEnergy ?? null;
+      base['total-energy'][year] = total;
+      base['total-energy-alt'][year] = total;
+    });
+    return base;
+  }, [yearsForConsumption, perPeriodTotals]);
 
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields) return;
@@ -69,7 +115,14 @@ export default function Electricity() {
       acc[source.id] = typeof val === 'number' ? val : 0;
       return acc;
     }, {});
-    const payload = { profile, periods, energyValues: energyValuesNormalized };
+    const energyByPeriodNormalized = energyByPeriod.map((periodValues) =>
+      ENERGY_SOURCES.reduce<Record<string, number>>((acc, source) => {
+        const val = periodValues?.[source.id];
+        acc[source.id] = typeof val === 'number' ? val : 0;
+        return acc;
+      }, {})
+    );
+    const payload = { profile, periods, energyValues: energyValuesNormalized, energyByPeriod: energyByPeriodNormalized };
     fetch('/api/electricity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -110,6 +163,13 @@ export default function Electricity() {
           <div className="mb-12">
             <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
           </div>
+          <div className="mb-12">
+            <EnergyByPeriodInput
+              periods={periods}
+              values={energyByPeriod}
+              onChange={setEnergyByPeriod}
+            />
+          </div>
           <div>
             <EnergyEmissionsInput
               themeColor="yellow"
@@ -120,19 +180,35 @@ export default function Electricity() {
         </div>
 
         <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
-          <EnergyManagementTable
-            totalEnergyKwh={totalEnergyKwh || null}
-            totalEmissionsKg={totalEmissionsKg || null}
-            floorAreaM2={floorAreaM2}
-            roomNights={roomNights}
-            profileId={profile}
-            periodTitle={
-              isCs
-                ? `Období – ${firstPeriod?.period || '-'}`
-                : `Period – ${firstPeriod?.period || '-'}`
-            }
+          <EnergyConsumptionTable
+            years={yearsForConsumption}
+            denominators={denominatorsForConsumption}
+            values={valuesForConsumption}
           />
+          <div className="mt-12">
+            <EnergyRenewablesSummary
+              years={yearsForConsumption}
+              values={energyByPeriod}
+            />
+          </div>
         </div>
+
+        {periods.slice(0, 3).map((period, idx) => (
+          <div key={period.id} className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
+            <EnergyManagementTable
+              totalEnergyKwh={perPeriodTotals[idx]?.totalEnergy || 0}
+              totalEmissionsKg={perPeriodTotals[idx]?.totalEmissions || 0}
+              floorAreaM2={perPeriodIndicators[idx]?.floorAreaM2 ?? null}
+              roomNights={perPeriodIndicators[idx]?.roomNights ?? null}
+              profileId={profile}
+              periodTitle={
+                isCs
+                  ? `Období – ${period.period || '-'}`
+                  : `Period – ${period.period || '-'}`
+              }
+            />
+          </div>
+        ))}
 
         <div className="flex justify-center mb-12">
           <button

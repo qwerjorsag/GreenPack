@@ -118,30 +118,27 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
     return sum + calculateEmissions(val, source.ef);
   }, 0);
 
-  const themeClasses = {
-    emerald: 'bg-emerald-50 border-emerald-200 focus:ring-emerald-500/20',
-    blue: 'bg-blue-50 border-blue-200 focus:ring-blue-500/20',
-    orange: 'bg-orange-50 border-orange-200 focus:ring-orange-500/20',
-    amber: 'bg-amber-50 border-amber-200 focus:ring-amber-500/20',
-    stone: 'bg-stone-50 border-stone-200 focus:ring-stone-500/20',
-    yellow: 'bg-yellow-50 border-yellow-200 focus:ring-yellow-500/20',
-  };
-
-  const inputClass = themeClasses[themeColor];
+  const inputClass = 'bg-stone-50 border-stone-200 rounded-lg focus:ring-stone-200';
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'ENERGIE A EMISE – EU faktory' : 'ENERGY & EMISSIONS – EU factors'}
-        </h3>
+        <div>
+          <h3 className="text-lg font-bold text-stone-900">
+            {isCs ? 'ENERGIE A EMISE' : 'ENERGY & EMISSIONS'}
+          </h3>
+          <div className="text-xs text-stone-500">
+            {isCs ? 'Původní verze k odstranění' : 'Original version to be removed'}
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto overflow-y-visible pb-4">
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
-                <th className="px-4 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
+                <th className="pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
+                <th className="px-0.5 py-3 w-6 text-center"></th>
                 <th className="px-3 py-3 w-24 text-center whitespace-normal break-words">kWh</th>
                 <th className="px-4 py-3 text-center hidden md:table-cell whitespace-normal break-words">EF (kg CO₂e/kWh)</th>
                 <th className="px-4 py-3 text-center whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)'}</th>
@@ -156,8 +153,18 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
                 
                 return (
                   <tr key={source.id} className="border-b border-stone-100 last:border-0">
-                    <td className="px-4 py-3 font-medium text-stone-800">
-                      {isCs ? source.nameCs : source.nameEn}
+                    <td className="pl-4 pr-1 py-3">
+                      <span className="text-sm font-medium text-stone-800">
+                        {isCs ? source.nameCs : source.nameEn}
+                      </span>
+                    </td>
+                    <td className="px-0.5 py-3 text-xs text-stone-700 w-6">
+                      <div className="flex justify-center">
+                        <InfoTooltip
+                          label={isCs ? 'Vysvětlení' : 'Explanation'}
+                          content={explanation}
+                        />
+                      </div>
                     </td>
                     <td className="px-2 py-3 w-24">
                       <input
@@ -170,7 +177,7 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
                           const raw = e.target.value.replace(/\s/g, '');
                           handleValueChange(source.id, raw);
                         }}
-                        className={`w-full p-1.5 text-right border rounded focus:outline-none focus:ring-2 transition-all ${inputClass}`}
+                        className={`w-full p-1.5 text-right border rounded-lg focus:outline-none focus:ring-2 transition-all ${inputClass}`}
                         placeholder="0"
                       />
                     </td>
@@ -180,19 +187,21 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
                     <td className="px-4 py-3 text-right font-bold">
                       {emissions.toFixed(2).replace('.', ',')}
                     </td>
-                    <td className="px-4 py-3 text-xs text-stone-700">
-                      <div className="flex justify-center">
-                        <InfoTooltip
-                          label={isCs ? 'Vysvětlení' : 'Explanation'}
-                          content={explanation}
-                        />
-                      </div>
-                    </td>
                   </tr>
                 );
               })}
               <tr className="font-bold bg-stone-100 text-stone-900">
-                <td className="px-4 py-3 uppercase">{isCs ? 'Celkem' : 'Total'}</td>
+                <td className="px-4 py-3 uppercase rounded-bl-xl">
+                  {isCs ? 'Celkem' : 'Total'}
+                </td>
+                <td className="px-1 py-3 w-6">
+                  <div className="flex justify-center">
+                    <InfoTooltip
+                      label={isCs ? 'Celkem' : 'Total'}
+                      content={isCs ? 'Celková spotřeba energie.' : 'Total energy consumption.'}
+                    />
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-right">
                   {formatWithSpaces(totalKwh)}
                 </td>
@@ -200,7 +209,7 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
                 <td className="px-4 py-3 text-right">
                   {totalEmissions.toFixed(2).replace('.', ',')}
                 </td>
-                <td className="px-4 py-3"></td>
+                <td className="px-4 py-3 rounded-br-xl"></td>
               </tr>
             </tbody>
         </table>

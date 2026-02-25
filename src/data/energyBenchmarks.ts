@@ -53,7 +53,7 @@ export const energyBenchmarks = {
         { min: 15, max: 25, label: '15-25' },
         { min: 20, max: 30, label: '20-30' },
         { min: 35, max: 50, label: '35-50' },
-        { min: 45, max: null, label: '45-70' },
+        { min: 45, max: 70, label: '45-70' },
       ],
     },
     {
@@ -65,7 +65,7 @@ export const energyBenchmarks = {
         { min: 6, max: 9, label: '6-9' },
         { min: 6, max: 10, label: '6-10' },
         { min: 11, max: 14, label: '11-14' },
-        { min: 15, max: null, label: '15-28' },
+        { min: 15, max: 28, label: '15-28' },
       ],
     },
   ],

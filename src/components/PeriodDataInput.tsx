@@ -1,4 +1,5 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 export interface PeriodData {
@@ -14,6 +15,71 @@ interface Props {
   data: PeriodData[];
   onChange: (data: PeriodData[]) => void;
   themeColor?: 'emerald' | 'blue' | 'orange' | 'amber' | 'yellow' | 'stone';
+}
+
+function HoverTooltip({ content, children }: { content: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const updatePosition = () => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const width = 220;
+    const margin = 12;
+    const left = Math.min(
+      Math.max(rect.left + rect.width / 2 - width / 2, margin),
+      window.innerWidth - width - margin
+    );
+    const top = rect.top - 8;
+    setPos({ top, left });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => {
+        updatePosition();
+        setOpen(true);
+      }}
+      onMouseLeave={() => setOpen(false)}
+      onClick={() => {
+        updatePosition();
+        setOpen((v) => !v);
+      }}
+      className="relative"
+    >
+      {children}
+      {open &&
+        createPortal(
+          <div
+            className="fixed z-[9999] rounded-md border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg"
+            style={{ top: pos.top, left: pos.left, transform: 'translateY(-100%)', width: 240 }}
+          >
+            {content}
+          </div>,
+          document.body
+        )}
+    </div>
+  );
 }
 
 export default function PeriodDataInput({ data, onChange, themeColor = 'emerald' }: Props) {
@@ -101,6 +167,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
   };
 
   const currentYear = new Date().getFullYear().toString();
+  const autoText = isCs ? 'Tato hodnota se počítá automaticky' : 'This value is calculated automatically';
 
   return (
     <div className="space-y-4">
@@ -133,11 +200,13 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       placeholder={currentYear}
                         className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                       />
-                    ) : (
-                      <div className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg text-stone-500 font-medium h-[34px] md:h-[38px] flex items-center">
+                  ) : (
+                    <HoverTooltip content={autoText}>
+                      <div className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg text-stone-500 font-medium h-[34px] md:h-[38px] flex items-center cursor-not-allowed">
                         {row.period || '-'}
                       </div>
-                    )}
+                    </HoverTooltip>
+                  )}
                   </th>
                 ))}
             </tr>
@@ -228,15 +297,17 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                 </td>
               ))}
             </tr>
-            <tr className="border-b border-stone-100 hidden md:table-row">
+            <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
                 {isCs ? 'Pokojonoci' : 'Room night'}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top bg-stone-50/50">
-                  <div className="h-[34px] md:h-[38px] flex items-center">
-                    {Math.floor(calculateRoomNight(row)).toLocaleString('cs-CZ')}
-                  </div>
+                  <HoverTooltip content={autoText}>
+                    <div className="h-[34px] md:h-[38px] flex items-center justify-center cursor-not-allowed">
+                      {Math.floor(calculateRoomNight(row)).toLocaleString('cs-CZ')}
+                    </div>
+                  </HoverTooltip>
                 </td>
               ))}
             </tr>
