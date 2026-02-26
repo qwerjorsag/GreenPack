@@ -11,6 +11,7 @@ interface SelfAuditCardProps {
   showRatingValueColor?: boolean;
   showRating?: boolean;
   icon: React.ReactNode;
+  themeColor?: 'yellow' | 'blue' | 'stone';
 }
 
 export default function SelfAuditCard({
@@ -24,10 +25,17 @@ export default function SelfAuditCard({
   showRating = false,
   showRatingValueColor = false,
   icon,
+  themeColor = 'yellow',
 }: SelfAuditCardProps) {
+  const theme = {
+    yellow: { icon: 'text-yellow-600', accent: 'accent-yellow-500', value: 'text-yellow-800' },
+    blue: { icon: 'text-blue-600', accent: 'accent-blue-500', value: 'text-blue-800' },
+    stone: { icon: 'text-stone-700', accent: 'accent-stone-500', value: 'text-stone-700' },
+  }[themeColor];
+
   return (
     <div className="bg-white p-8 rounded-3xl border border-stone-300 shadow-sm">
-      <div className="mb-4 text-yellow-600">{icon}</div>
+      <div className={`mb-4 ${theme.icon}`}>{icon}</div>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       {question ? (
         <p className="text-sm text-stone-700 mb-3">{question}</p>
@@ -41,11 +49,11 @@ export default function SelfAuditCard({
           step={1}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-yellow-500"
+          className={`w-full ${theme.accent}`}
         />
         <div
           className={`min-w-[84px] text-right text-sm font-semibold ${
-            showRatingValueColor ? ratingColorClass ?? 'text-yellow-800' : 'text-yellow-800'
+            showRatingValueColor ? ratingColorClass ?? theme.value : theme.value
           }`}
         >
           {value} / 100

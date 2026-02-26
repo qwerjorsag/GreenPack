@@ -1,80 +1,26 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { Zap, Droplets, Trash2, ChevronRight } from 'lucide-react';
+import { Zap, Droplets, Trash2 } from 'lucide-react';
+import HomeTile from '../components/HomeTile';
+import tilesData from '../data/homeTiles.json';
 
 export default function Home() {
   const { t, i18n } = useTranslation();
 
-  const tiles = [
-    {
-      id: 'electricity',
-      title: i18n.language === 'cs' ? 'Elektřina' : 'Electricity',
-      description: i18n.language === 'cs' ? 'Sledování spotřeby energie a obnovitelných zdrojů.' : 'Track energy consumption and renewable sources.',
-      icon: <Zap className="w-8 h-8 text-amber-600 group-hover:text-amber-700 transition-colors" />,
-      path: '/electricity',
-      color: 'bg-amber-50',
-      hoverBorder: 'hover:border-amber-500',
-      hoverShadow: 'hover:shadow-amber-900/10',
-      ctaText: 'text-amber-700'
-    },
-    {
-      id: 'water',
-      title: i18n.language === 'cs' ? 'Voda' : 'Water',
-      description: i18n.language === 'cs' ? 'Analýza spotřeby vody a recyklace.' : 'Analyze water usage and recycling.',
-      icon: <Droplets className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />,
-      path: '/water',
-      color: 'bg-blue-50',
-      hoverBorder: 'hover:border-blue-500',
-      hoverShadow: 'hover:shadow-blue-900/10',
-      ctaText: 'text-blue-600'
-    },
-    {
-      id: 'waste',
-      title: i18n.language === 'cs' ? 'Odpad' : 'Waste',
-      description: i18n.language === 'cs' ? 'Správa odpadu a efektivita recyklace.' : 'Waste management and recycling efficiency.',
-      icon: <Trash2 className="w-8 h-8 text-stone-700 group-hover:text-stone-800 transition-colors" />,
-      path: '/waste',
-      color: 'bg-stone-100',
-      hoverBorder: 'hover:border-stone-500',
-      hoverShadow: 'hover:shadow-stone-900/10',
-      ctaText: 'text-stone-700'
-    },
-    {
-      id: 'self-audit-electricity',
-      title: i18n.language === 'cs' ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
-      description: i18n.language === 'cs' ? 'Rychlé zhodnocení úspor a opatření pro váš provoz.' : 'Quick assessment of savings and measures for your operation.',
-      icon: <Zap className="w-8 h-8 text-amber-600 group-hover:text-amber-700 transition-colors" />,
-      path: '/electricityaudit',
-      color: 'bg-amber-50',
-      hoverBorder: 'hover:border-amber-500',
-      hoverShadow: 'hover:shadow-amber-900/10',
-      ctaText: 'text-amber-700'
-    },
-    {
-      id: 'self-audit-water',
-      title: i18n.language === 'cs' ? 'Self-Audit vody' : 'Water Self-Audit',
-      description: i18n.language === 'cs' ? 'Rychlé zhodnocení spotřeby vody a úsporných opatření.' : 'Quick assessment of water use and saving measures.',
-      icon: <Droplets className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />,
-      path: '/wateraudit',
-      color: 'bg-blue-50',
-      hoverBorder: 'hover:border-blue-500',
-      hoverShadow: 'hover:shadow-blue-900/10',
-      ctaText: 'text-blue-600'
-    },
-    {
-      id: 'self-audit-waste',
-      title: i18n.language === 'cs' ? 'Self-Audit odpadu' : 'Waste Self-Audit',
-      description: i18n.language === 'cs' ? 'Rychlé zhodnocení třídění a prevence odpadu.' : 'Quick assessment of waste sorting and prevention.',
-      icon: <Trash2 className="w-8 h-8 text-stone-700 group-hover:text-stone-800 transition-colors" />,
-      path: '/wasteaudit',
-      color: 'bg-stone-100',
-      hoverBorder: 'hover:border-stone-500',
-      hoverShadow: 'hover:shadow-stone-900/10',
-      ctaText: 'text-stone-700'
-    }
-  ];
+  const iconMap: Record<string, React.ReactNode> = {
+    electricity: <Zap className="w-8 h-8 text-amber-600 group-hover:text-amber-700 transition-colors" />,
+    water: <Droplets className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />,
+    waste: <Trash2 className="w-8 h-8 text-stone-700 group-hover:text-stone-800 transition-colors" />,
+  };
+
+  const tiles = tilesData.tiles.map((tile) => ({
+    ...tile,
+    title: i18n.language === 'cs' ? tile.title.cs : tile.title.en,
+    description: i18n.language === 'cs' ? tile.description.cs : tile.description.en,
+    icon: iconMap[tile.icon],
+    ctaLabel: i18n.language === 'cs' ? tilesData.cta.cs : tilesData.cta.en,
+  }));
 
   return (
     <div className="min-h-screen bg-emerald-50/50 font-sans text-stone-900">
@@ -136,22 +82,17 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
             >
-              <Link 
-                to={tile.path}
-                className={`group block h-full bg-white rounded-[2.5rem] p-10 shadow-sm border border-stone-200 hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 ${tile.hoverBorder} ${tile.hoverShadow}`}
-              >
-                <div className={`w-16 h-16 ${tile.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                  {tile.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-3">{tile.title}</h3>
-                <p className="text-stone-500 text-sm leading-relaxed mb-6">
-                  {tile.description}
-                </p>
-                <div className={`flex items-center gap-2 font-bold text-sm uppercase tracking-widest ${tile.ctaText}`}>
-                  {i18n.language === 'cs' ? 'Více informací' : 'Learn More'}
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
+              <HomeTile
+                title={tile.title}
+                description={tile.description}
+                icon={tile.icon}
+                path={tile.path}
+                color={tile.color}
+                hoverBorder={tile.hoverBorder}
+                hoverShadow={tile.hoverShadow}
+                ctaText={tile.ctaText}
+                ctaLabel={tile.ctaLabel}
+              />
             </motion.div>
           ))}
         </div>

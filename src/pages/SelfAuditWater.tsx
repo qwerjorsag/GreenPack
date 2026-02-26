@@ -151,6 +151,7 @@ export default function SelfAuditWater() {
               showRatingValueColor={showEvaluation}
               showRating={showEvaluation}
               icon={card.icon}
+              themeColor="blue"
             />
           ))}
         </div>
@@ -167,8 +168,8 @@ export default function SelfAuditWater() {
                 : 'By submitting, I agree to the processing of the provided data.'}
               themeColor="blue"
             />
-            <PrimaryButton onClick={handleSubmit} disabled={!consent || isSubmitting}>
-              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit' : 'Evaluate')}
+            <PrimaryButton onClick={handleSubmit} disabled={!consent || isSubmitting} themeColor="blue">
+              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a stáhnout PDF' : 'Evaluate and download PDF')}
             </PrimaryButton>
             {showPdfButton ? (
               <SecondaryButton

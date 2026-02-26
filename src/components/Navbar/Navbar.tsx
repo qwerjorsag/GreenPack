@@ -25,16 +25,19 @@ export default function Navbar() {
       case '/electricity': return { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', hover: 'hover:bg-black/10', active: 'bg-black/10 text-black', inactive: 'text-black/70 hover:text-black' };
       case '/electricityaudit': return { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', hover: 'hover:bg-black/10', active: 'bg-black/10 text-black', inactive: 'text-black/70 hover:text-black' };
       case '/water': return { bg: 'bg-blue-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
+      case '/wateraudit': return { bg: 'bg-blue-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
       case '/waste': return { bg: 'bg-stone-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/15', active: 'bg-white/15 text-white', inactive: 'text-white/70 hover:text-white' };
+      case '/wasteaudit': return { bg: 'bg-stone-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/15', active: 'bg-white/15 text-white', inactive: 'text-white/70 hover:text-white' };
       default: return { bg: 'bg-emerald-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
     }
   };
 
   const theme = getTheme();
   const isElectricity = location.pathname === '/electricity' || location.pathname === '/electricityaudit';
+  const useBlackLogo = isElectricity;
   const logoSrc = i18n.language === 'cs'
-    ? (isElectricity ? logoCzBlack : logoCzWhite)
-    : (isElectricity ? logoEnBlack : logoEnWhite);
+    ? (useBlackLogo ? logoCzBlack : logoCzWhite)
+    : (useBlackLogo ? logoEnBlack : logoEnWhite);
 
   const navLinks = [
     { path: '/', icon: <Home className="w-4 h-4" />, label: isCs ? 'Domů' : 'Home' },

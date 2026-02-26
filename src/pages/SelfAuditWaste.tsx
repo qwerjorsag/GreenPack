@@ -152,6 +152,7 @@ export default function SelfAuditWaste() {
               showRatingValueColor={showEvaluation}
               showRating={showEvaluation}
               icon={card.icon}
+              themeColor="stone"
             />
           ))}
         </div>
@@ -168,8 +169,8 @@ export default function SelfAuditWaste() {
                 : 'By submitting, I agree to the processing of the provided data.'}
               themeColor="stone"
             />
-            <PrimaryButton onClick={handleSubmit} disabled={!consent || isSubmitting}>
-              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit' : 'Evaluate')}
+            <PrimaryButton onClick={handleSubmit} disabled={!consent || isSubmitting} themeColor="stone">
+              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a stáhnout PDF' : 'Evaluate and download PDF')}
             </PrimaryButton>
             {showPdfButton ? (
               <SecondaryButton

@@ -188,6 +188,7 @@ export default function SelfAuditElectricity() {
               showRatingValueColor={showEvaluation}
               showRating={showEvaluation}
               icon={card.icon}
+              themeColor="yellow"
             />
           ))}
         </div>
@@ -207,8 +208,9 @@ export default function SelfAuditElectricity() {
             <PrimaryButton
               onClick={handleSubmit}
               disabled={!consent || isSubmitting}
+              themeColor="yellow"
             >
-              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit' : 'Evaluate')}
+              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a stáhnout PDF' : 'Evaluate and download PDF')}
             </PrimaryButton>
             {showPdfButton ? (
               <SecondaryButton
