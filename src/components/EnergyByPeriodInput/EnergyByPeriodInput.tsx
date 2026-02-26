@@ -1,7 +1,9 @@
-﻿import React from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ENERGY_SOURCES } from '../EnergyEmissionsInput';
-import InfoTooltip from '../InfoTooltip';
+import EnergyKwhTable from './EnergyKwhTable';
+import EnergyEmissionsTable from './EnergyEmissionsTable';
+import EnergyGjTable from './EnergyGjTable';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
@@ -70,86 +72,15 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         </h3>
       </div>
 
-      <div className="overflow-x-auto overflow-y-visible pb-4">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
-            <tr>
-              <th className="pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[140px] md:max-w-none">
-                {isCs ? 'Zdroj energie' : 'Energy source'}
-              </th>
-              <th className="px-0.5 py-3 w-6 text-center hidden md:table-cell"></th>
-              {periodsSlice.map((p, idx) => (
-                <th
-                  key={`period-${idx}`}
-                  className={`px-3 py-3 text-center whitespace-normal break-words ${idx === 2 ? 'rounded-tr-xl' : ''}`}
-                >
-                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ENERGY_SOURCES.map((source) => (
-              <tr key={source.id} className="border-b border-stone-100 last:border-0">
-                <td className="pl-4 pr-1 py-3">
-                  <span className="text-sm font-medium text-stone-800">
-                    {isCs ? source.nameCs : source.nameEn}
-                  </span>
-                </td>
-                <td className="px-0.5 py-3 w-6 text-xs text-stone-700 hidden md:table-cell">
-                  <div className="flex justify-center">
-                    <InfoTooltip
-                      label={isCs ? 'VysvÄ›tlenĂ­' : 'Explanation'}
-                      content={isCs ? source.explanationCs : source.explanationEn}
-                    />
-                  </div>
-                </td>
-                {periodsSlice.map((_, idx) => {
-                  const val = values[idx]?.[source.id] ?? '';
-                  return (
-                    <td key={`${source.id}-${idx}`} className="px-3 py-3">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          min="0"
-                          step="1"
-                          value={typeof val === 'number' ? formatWithSpaces(val) : ''}
-                          onChange={(e) => {
-                            const raw = e.target.value.replace(/\s/g, '');
-                            handleChange(idx, source.id, raw);
-                          }}
-                          className="w-full p-1.5 pr-10 text-right border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all"
-                          placeholder="0"
-                        />
-                        {showUnitsKwh && (
-                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 text-[10px] font-medium pointer-events-none">
-                            kWh
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-            <tr className="font-bold bg-stone-100 text-stone-900">
-              <td className="pl-4 pr-1 py-3 uppercase rounded-bl-xl">
-                {isCs ? 'Celkem' : 'Total'}
-              </td>
-              <td className="px-0.5 py-3 w-6"></td>
-              {totals.map((total, idx) => (
-                <td
-                  key={`total-${idx}`}
-                  className={`px-3 py-3 text-right ${idx === totals.length - 1 ? 'rounded-br-xl' : ''}`}
-                >
-                  {formatWithSpaces(total)}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <EnergyKwhTable
+        isCs={isCs}
+        periods={periodsSlice}
+        values={values}
+        showUnits={showUnitsKwh}
+        totals={totals}
+        onChange={handleChange}
+        formatWithSpaces={formatWithSpaces}
+      />
 
       <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
@@ -167,69 +98,18 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
 
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'EMISE (t COâ‚‚e)' : 'EMISSIONS (t COâ‚‚e)'}
+          {isCs ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)'}
         </h3>
       </div>
 
-      <div className="overflow-x-auto overflow-y-visible pb-4">
-        <table className="w-full text-sm text-left tabular-nums table-fixed">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
-            <tr>
-              <th className="pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[140px] md:max-w-none w-1/3">
-                {isCs ? 'Zdroj energie' : 'Energy source'}
-              </th>
-              {periodsSlice.map((p, idx) => (
-                <th
-                  key={`emission-period-${idx}`}
-                  className={`px-3 py-3 text-center whitespace-normal break-words w-1/3 ${idx === 2 ? 'rounded-tr-xl' : ''}`}
-                >
-                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ENERGY_SOURCES.map((source) => (
-              <tr key={`${source.id}-em`} className="border-b border-stone-100 last:border-0">
-                <td className="pl-4 pr-1 py-3">
-                  <span className="text-sm font-medium text-stone-800">
-                    {isCs ? source.nameCs : source.nameEn}
-                  </span>
-                </td>
-                {periodsSlice.map((_, idx) => {
-                  const val = values[idx]?.[source.id];
-                  const kwh = typeof val === 'number' ? val : 0;
-                  const emissions = (kwh * source.ef) / 1000;
-                  return (
-                    <td key={`${source.id}-em-${idx}`} className="px-3 py-3 text-center w-1/3">
-                      <span className="whitespace-nowrap">
-                        {formatEmissions(emissions)}
-                        {showUnitsEm && <span className="text-xs text-stone-500"> t COâ‚‚e</span>}
-                      </span>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-            <tr className="font-bold bg-stone-100 text-stone-900">
-              <td className="pl-4 pr-1 py-3 uppercase rounded-bl-xl">
-                {isCs ? 'Celkem' : 'Total'}
-              </td>
-              {emissionTotals.map((total, idx) => (
-                <td
-                  key={`em-total-${idx}`}
-                  className={`px-3 py-3 text-center w-1/3 ${idx === emissionTotals.length - 1 ? 'rounded-br-xl' : ''}`}
-                >
-                  <span className="whitespace-nowrap">
-                    {formatEmissions(total)}
-                    {showUnitsEm && <span className="text-xs text-stone-500"> t COâ‚‚e</span>}
-                  </span>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <EnergyEmissionsTable
+        isCs={isCs}
+        periods={periodsSlice}
+        values={values}
+        showUnits={showUnitsEm}
+        totals={emissionTotals}
+        formatEmissions={formatEmissions}
+      />
 
       <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
@@ -251,65 +131,14 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         </h3>
       </div>
 
-      <div className="overflow-x-auto overflow-y-visible pb-4">
-        <table className="w-full text-sm text-left tabular-nums table-fixed">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
-            <tr>
-              <th className="pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[140px] md:max-w-none w-1/3">
-                {isCs ? 'Zdroj energie' : 'Energy source'}
-              </th>
-              {periodsSlice.map((p, idx) => (
-                <th
-                  key={`gj-period-${idx}`}
-                  className={`px-3 py-3 text-center whitespace-normal break-words w-1/3 ${idx === 2 ? 'rounded-tr-xl' : ''}`}
-                >
-                  {p.period || (isCs ? `ObdobĂ­ ${idx + 1}` : `Period ${idx + 1}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ENERGY_SOURCES.map((source) => (
-              <tr key={`${source.id}-gj`} className="border-b border-stone-100 last:border-0">
-                <td className="pl-4 pr-1 py-3">
-                  <span className="text-sm font-medium text-stone-800">
-                    {isCs ? source.nameCs : source.nameEn}
-                  </span>
-                </td>
-                {periodsSlice.map((_, idx) => {
-                  const val = values[idx]?.[source.id];
-                  const kwh = typeof val === 'number' ? val : 0;
-                  const gj = kwh * 0.0036;
-                  return (
-                    <td key={`${source.id}-gj-${idx}`} className="px-3 py-3 text-center w-1/3">
-                      <span className="whitespace-nowrap">
-                        {formatGj(gj)}
-                        {showUnitsGj && <span className="text-xs text-stone-500"> GJ</span>}
-                      </span>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-            <tr className="font-bold bg-stone-100 text-stone-900">
-              <td className="pl-4 pr-1 py-3 uppercase rounded-bl-xl">
-                {isCs ? 'Celkem' : 'Total'}
-              </td>
-              {totalsGj.map((total, idx) => (
-                <td
-                  key={`gj-total-${idx}`}
-                  className={`px-3 py-3 text-center w-1/3 ${idx === totalsGj.length - 1 ? 'rounded-br-xl' : ''}`}
-                >
-                  <span className="whitespace-nowrap">
-                    {formatGj(total)}
-                    {showUnitsGj && <span className="text-xs text-stone-500"> GJ</span>}
-                  </span>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <EnergyGjTable
+        isCs={isCs}
+        periods={periodsSlice}
+        values={values}
+        showUnits={showUnitsGj}
+        totals={totalsGj}
+        formatGj={formatGj}
+      />
 
       <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
         <button
@@ -327,4 +156,3 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
     </div>
   );
 }
-

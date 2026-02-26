@@ -1,7 +1,6 @@
 // EnergyConsumptionTable: extend templateRows below to add new indicators.
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DataTable from '../DataTable';
 
 type NormalizationTarget = {
   id: string;
@@ -193,61 +192,60 @@ export default function EnergyConsumptionTable({
           <div className="text-lg font-bold text-stone-900 mb-3">
             {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
           </div>
-          <DataTable
-            columns={[
-              {
-                id: 'label',
-                header: t.year,
-                headerClassName: 'px-4 py-3 rounded-tl-xl',
-                cellClassName: 'px-4 py-3 font-medium bg-stone-50/50',
-                render: (row) => row.label,
-              },
-              ...years.map((year, idx) => ({
-                id: `y-${year}`,
-                header: year,
-                headerClassName: `px-4 py-3 text-center ${idx === years.length - 1 ? 'rounded-tr-xl' : ''}`,
-                cellClassName: 'px-4 py-3 text-center',
-                render: (row) => {
-                  const value = row.values[idx];
-                  if (row.key === 'evaluation' && value && typeof value === 'object') {
-                    return (
-                      <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${evalClass(value.color)}`}>
-                        {value.label}
-                      </span>
-                    );
-                  }
-                  return value;
-                },
-              })),
-            ]}
-            rows={[
-              { key: 'raw', label: `${t.raw} (${row.baseUnit})`, values: byYear.map((c) => formatNumber(c.raw, 0)) },
-              { key: 'converted', label: t.converted, values: byYear.map((c) => formatNumber(c.converted, 2)) },
-              { key: 'normalized', label: `${t.normalized} (${unitLabel(row.normalizationTargets[0].unitLabel)})`, values: byYear.map((c) => formatNumber(c.normalized, 3)) },
-              {
-                key: 'percent',
-                label: t.percentChange,
-                values: byYear.map((cell, idx) => {
-                  const previous = idx > 0 ? byYear[idx - 1] : null;
-                  const pct = percentChange(cell.raw, previous?.raw ?? null);
-                  return pct === null ? '—' : `${formatNumber(pct, 1)}%`;
-                }),
-              },
-              {
-                key: 'evaluation',
-                label: t.evaluation,
-                values: byYear.map((cell, idx) => {
-                  const previous = idx > 0 ? byYear[idx - 1] : null;
-                  const pct = percentChange(cell.raw, previous?.raw ?? null);
-                  return evaluateDisplay(pct, isCs);
-                }),
-              },
-            ]}
-            getRowId={(row) => row.key}
-            getRowClassName={(row) => (row.key === 'evaluation' ? 'font-semibold' : '')}
-            tableClassName="text-sm text-left"
-            className="mb-4"
-          />
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-stone-500 uppercase bg-stone-50">
+                <tr>
+                  <th className="px-4 py-3 rounded-tl-xl">{t.year}</th>
+                  {years.map((year, idx) => (
+                    <th key={year} className={`px-4 py-3 text-center ${idx === years.length - 1 ? 'rounded-tr-xl' : ''}`}>
+                      {year}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { key: 'raw', label: `${t.raw} (${row.baseUnit})`, values: byYear.map((c) => formatNumber(c.raw, 0)) },
+                  { key: 'converted', label: t.converted, values: byYear.map((c) => formatNumber(c.converted, 2)) },
+                  { key: 'normalized', label: `${t.normalized} (${unitLabel(row.normalizationTargets[0].unitLabel)})`, values: byYear.map((c) => formatNumber(c.normalized, 3)) },
+                  {
+                    key: 'percent',
+                    label: t.percentChange,
+                    values: byYear.map((cell, idx) => {
+                      const previous = idx > 0 ? byYear[idx - 1] : null;
+                      const pct = percentChange(cell.raw, previous?.raw ?? null);
+                      return pct === null ? '—' : `${formatNumber(pct, 1)}%`;
+                    }),
+                  },
+                  {
+                    key: 'evaluation',
+                    label: t.evaluation,
+                    values: byYear.map((cell, idx) => {
+                      const previous = idx > 0 ? byYear[idx - 1] : null;
+                      const pct = percentChange(cell.raw, previous?.raw ?? null);
+                      return evaluateDisplay(pct, isCs);
+                    }),
+                  },
+                ].map((rowItem) => (
+                  <tr key={rowItem.key} className="border-b border-stone-100 last:border-0">
+                    <td className="px-4 py-3 font-medium">{rowItem.label}</td>
+                    {rowItem.values.map((value, idx) => (
+                      <td key={`${rowItem.key}-${idx}`} className="px-4 py-3 text-center">
+                        {rowItem.key === 'evaluation' && value && typeof value === 'object' ? (
+                          <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${evalClass(value.color)}`}>
+                            {value.label}
+                          </span>
+                        ) : (
+                          value
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="mt-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
             <div className="text-base font-bold text-stone-900 mb-2">
               {(isCs ? 'Report ' : 'Report ') +

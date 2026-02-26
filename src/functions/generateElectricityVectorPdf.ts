@@ -28,6 +28,7 @@ interface PdfData {
   energyGj: EnergyByPeriod[];
   totalsByPeriod: { totalEnergy: number; totalEmissions: number }[];
   perPeriodIndicators: { roomNights: number | null; floorAreaM2: number | null }[];
+  totalConsumption: Array<{ raw: number | null; converted: number | null; normRN: number | null; normM2: number | null }>;
   energyManagementTables: Array<{
     title: string;
     rows: Array<{ label: string; expected: string; value: string; evaluation: string; recommendation: string; status: string }>;
@@ -109,6 +110,58 @@ export async function generateElectricityVectorPdf(data: PdfData) {
       startY: cursorY,
     });
     cursorY = (doc as any).lastAutoTable.finalY + 12;
+  };
+
+  const percentChange = (current: number | null, previous: number | null) => {
+    if (current === null || previous === null || previous === 0) return null;
+    return ((current - previous) / previous) * 100;
+  };
+
+  const evalLabel = (pct: number | null) => {
+    if (pct === null || Number.isNaN(pct)) return '—';
+    const abs = Math.abs(pct);
+    if (abs >= 10) {
+      return pct > 0
+        ? (lang === 'cs' ? 'Výrazný nárůst' : 'Significant increase')
+        : (lang === 'cs' ? 'Výrazné zlepšení' : 'Significant decrease');
+    }
+    if (abs >= 5) return lang === 'cs' ? 'Střední změna' : 'Moderate change';
+    return lang === 'cs' ? 'Malá změna' : 'Minor change';
+  };
+
+  const reportCategory = (pct: number | null) => {
+    if (pct === null || Number.isNaN(pct)) return 'none' as const;
+    const abs = Math.abs(pct);
+    if (abs >= 20) return 'key' as const;
+    if (abs >= 10) return 'significant' as const;
+    if (abs >= 5) return 'notable' as const;
+    return 'normal' as const;
+  };
+
+  const reportText = (pct: number | null, category: 'normal' | 'notable' | 'significant' | 'key' | 'none') => {
+    if (pct === null || Number.isNaN(pct)) return '—';
+    const isDecrease = pct < 0;
+    if (category === 'normal') {
+      return lang === 'cs'
+        ? 'Stabilní trend – udržujte současné postupy a motivujte personál.'
+        : 'Stable trend – maintain current practices and keep staff motivated.';
+    }
+    if (category === 'notable') {
+      return isDecrease
+        ? (lang === 'cs' ? 'Mírné zlepšení – sledujte, zda trend pokračuje.' : 'Slight improvement observed – monitor if the trend continues.')
+        : (lang === 'cs' ? 'Mírný nárůst spotřeby – prověřte možné důvody.' : 'Slight increase in consumption – analyze possible reasons.');
+    }
+    if (category === 'significant') {
+      return isDecrease
+        ? (lang === 'cs' ? 'Skvělé! Výrazné zlepšení – zahrňte do ESG reportu a inspirujte ostatní.' : 'Great! Significant improvement – include in ESG report and inspire others.')
+        : (lang === 'cs' ? 'Výrazný nárůst – doporučena detailní analýza a akční plán.' : 'Significant increase – detailed analysis and action plan recommended.');
+    }
+    if (category === 'key') {
+      return isDecrease
+        ? (lang === 'cs' ? 'Výrazné zlepšení – analyzujte, co fungovalo, a standardizujte postup.' : 'Major improvement – analyze what worked and standardize the approach.')
+        : (lang === 'cs' ? 'Výrazné zhoršení – nutná okamžitá akce a optimalizace.' : 'Major deterioration – immediate action and optimization needed.');
+    }
+    return '—';
   };
 
   if (data.coverColor && data.coverTitle) {
@@ -224,6 +277,85 @@ export async function generateElectricityVectorPdf(data: PdfData) {
       `${fmtInt(r.nonRenewableKwh)} (${r.nonRenewablePct.toFixed(1).replace('.', ',')}%)`,
     ]),
   });
+
+  doc.addPage();
+  cursorY = 14;
+
+  // Total energy consumption per room-night / per m²
+  const totalConsumption = data.totalConsumption || [];
+  const years = data.years;
+  const rawValues = totalConsumption.map((v) => v.raw);
+  const pctValues = rawValues.map((v, idx) => (idx === 0 ? null : percentChange(v, rawValues[idx - 1] ?? null)));
+
+  addTitle(lang === 'cs' ? 'Celková spotřeba na pokojonoc (PN)' : 'Total energy consumption per room-night (RN)');
+  addTable({
+    head: [[lang === 'cs' ? 'Rok' : 'Year', ...years]],
+    body: [
+      [lang === 'cs' ? 'Spotřeba (kWh)' : 'Consumption (kWh)', ...rawValues.map((v) => fmtInt(v))],
+      [lang === 'cs' ? 'Spotřeba (GJ)' : 'Consumption (GJ)', ...totalConsumption.map((v) => fmt2(v.converted))],
+      [lang === 'cs' ? 'Normalizace (GJ/PN)' : 'Normalized (GJ/RN)', ...totalConsumption.map((v) => fmt2(v.normRN))],
+      [lang === 'cs' ? '% změna' : '% change', ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
+      [lang === 'cs' ? 'Evaluace' : 'Evaluation', ...pctValues.map((v) => evalLabel(v))],
+    ],
+  });
+
+  const rnReportLines = pctValues
+    .map((pct, idx) => {
+      if (idx === 0) return null;
+      const category = reportCategory(pct);
+      const text = reportText(pct, category);
+      return `${years[idx - 1]} → ${years[idx]}: ${text}`;
+    })
+    .filter(Boolean) as string[];
+
+  if (rnReportLines.length) {
+    doc.setFontSize(11);
+    doc.setTextColor(68, 64, 60);
+    doc.text(lang === 'cs' ? 'Report Celková spotřeba na pokojonoc (PN)' : 'Report Total energy consumption per room-night (RN)', marginX, cursorY);
+    cursorY += 6;
+    doc.setFontSize(10);
+    rnReportLines.forEach((line) => {
+      const lines = doc.splitTextToSize(line, 210 - marginX * 2);
+      doc.text(lines, marginX, cursorY);
+      cursorY += lines.length * 5;
+    });
+    cursorY += 6;
+  }
+
+  addTitle(lang === 'cs' ? 'Celková spotřeba na m² za rok' : 'Total energy consumption per m² per year');
+  addTable({
+    head: [[lang === 'cs' ? 'Rok' : 'Year', ...years]],
+    body: [
+      [lang === 'cs' ? 'Spotřeba (kWh)' : 'Consumption (kWh)', ...rawValues.map((v) => fmtInt(v))],
+      [lang === 'cs' ? 'Spotřeba (GJ)' : 'Consumption (GJ)', ...totalConsumption.map((v) => fmt2(v.converted))],
+      [lang === 'cs' ? 'Normalizace (GJ/m²/rok)' : 'Normalized (GJ/m²/year)', ...totalConsumption.map((v) => fmt2(v.normM2))],
+      [lang === 'cs' ? '% změna' : '% change', ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
+      [lang === 'cs' ? 'Evaluace' : 'Evaluation', ...pctValues.map((v) => evalLabel(v))],
+    ],
+  });
+
+  const m2ReportLines = pctValues
+    .map((pct, idx) => {
+      if (idx === 0) return null;
+      const category = reportCategory(pct);
+      const text = reportText(pct, category);
+      return `${years[idx - 1]} → ${years[idx]}: ${text}`;
+    })
+    .filter(Boolean) as string[];
+
+  if (m2ReportLines.length) {
+    doc.setFontSize(11);
+    doc.setTextColor(68, 64, 60);
+    doc.text(lang === 'cs' ? 'Report Celková spotřeba na m² za rok' : 'Report Total energy consumption per m² per year', marginX, cursorY);
+    cursorY += 6;
+    doc.setFontSize(10);
+    m2ReportLines.forEach((line) => {
+      const lines = doc.splitTextToSize(line, 210 - marginX * 2);
+      doc.text(lines, marginX, cursorY);
+      cursorY += lines.length * 5;
+    });
+    cursorY += 6;
+  }
 
   doc.addPage();
   cursorY = 14;

@@ -44,7 +44,7 @@ export default function DataTable<T>({
                 key={col.id}
                 align={col.align}
                 className={col.headerClassName}
-                sx={{ width: col.width }}
+                sx={{ width: col.width, verticalAlign: 'middle' }}
               >
                 {col.header ?? ''}
               </TableCell>
@@ -58,7 +58,12 @@ export default function DataTable<T>({
               className={clsx('border-b border-stone-100 last:border-0', getRowClassName?.(row, idx))}
             >
               {columns.map((col) => (
-                <TableCell key={col.id} align={col.align} className={col.cellClassName}>
+                <TableCell
+                  key={col.id}
+                  align={col.align}
+                  className={col.cellClassName}
+                  sx={{ verticalAlign: 'middle' }}
+                >
                   {col.render ? col.render(row) : (row as any)[col.id]}
                 </TableCell>
               ))}

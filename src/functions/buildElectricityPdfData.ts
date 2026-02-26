@@ -206,6 +206,21 @@ export const buildElectricityPdfData = async ({
     };
   });
 
+  const totalConsumption = yearsForConsumption.map((_, idx) => {
+    const totalEnergy = perPeriodTotals[idx]?.totalEnergy ?? null;
+    const converted = totalEnergy === null ? null : totalEnergy * 0.0036;
+    const roomNights = perPeriodIndicators[idx]?.roomNights ?? null;
+    const floorArea = perPeriodIndicators[idx]?.floorAreaM2 ?? null;
+    const normRN = converted === null || !roomNights ? null : converted / roomNights;
+    const normM2 = converted === null || !floorArea ? null : converted / floorArea;
+    return {
+      raw: totalEnergy,
+      converted,
+      normRN,
+      normM2,
+    };
+  });
+
   return {
     years,
     operationalData,
@@ -218,6 +233,7 @@ export const buildElectricityPdfData = async ({
     perPeriodIndicators,
     energyManagementTables,
     renewablesSummary,
+    totalConsumption,
     accommodationProfileLabel,
     benchmarks: {
       title: isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS',
