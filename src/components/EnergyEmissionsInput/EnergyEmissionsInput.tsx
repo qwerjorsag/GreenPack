@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoTooltip from '../InfoTooltip';
+import DataTable from '../DataTable';
 
 interface EnergySource {
   id: string;
@@ -120,6 +121,114 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
 
   const inputClass = 'bg-stone-50 border-stone-200 rounded-lg focus:ring-stone-200';
 
+  const rows = [
+    ...ENERGY_SOURCES.map((source) => ({ type: 'source' as const, source })),
+    { type: 'total' as const },
+  ];
+
+  const columns = [
+    {
+      id: 'energy',
+      header: isCs ? 'Zdroj energie' : 'Energy source',
+      headerClassName: 'pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none',
+      cellClassName: 'pl-4 pr-1 py-3',
+      render: (row: typeof rows[number]) => {
+        if (row.type === 'total') {
+          return <span className="font-bold uppercase text-stone-900">{isCs ? 'Celkem' : 'Total'}</span>;
+        }
+        return (
+          <span className="text-sm font-medium text-stone-800">
+            {isCs ? row.source.nameCs : row.source.nameEn}
+          </span>
+        );
+      },
+    },
+    {
+      id: 'tooltip',
+      header: '',
+      headerClassName: 'px-0.5 py-3 w-6 text-center',
+      cellClassName: 'px-0.5 py-3 text-xs text-stone-700 w-6',
+      render: (row: typeof rows[number]) => {
+        if (row.type === 'total') {
+          return (
+            <div className="flex justify-center">
+              <InfoTooltip
+                label={isCs ? 'Celkem' : 'Total'}
+                content={isCs ? 'Celková spotřeba energie.' : 'Total energy consumption.'}
+              />
+            </div>
+          );
+        }
+        const explanation = isCs ? row.source.explanationCs : row.source.explanationEn;
+        return (
+          <div className="flex justify-center">
+            <InfoTooltip label={isCs ? 'Vysvětlení' : 'Explanation'} content={explanation} />
+          </div>
+        );
+      },
+    },
+    {
+      id: 'kwh',
+      header: 'kWh',
+      headerClassName: 'px-3 py-3 w-24 text-center whitespace-normal break-words',
+      cellClassName: 'px-2 py-3 w-24',
+      align: 'right' as const,
+      render: (row: typeof rows[number]) => {
+        if (row.type === 'total') {
+          return <span className="font-bold text-stone-900">{formatWithSpaces(totalKwh)}</span>;
+        }
+        const val = values[row.source.id];
+        return (
+          <input
+            type="text"
+            inputMode="numeric"
+            min="0"
+            step="1"
+            value={typeof val === 'number' ? formatWithSpaces(val) : ''}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/\s/g, '');
+              handleValueChange(row.source.id, raw);
+            }}
+            className={`w-full p-1.5 text-right border rounded-lg focus:outline-none focus:ring-2 transition-all ${inputClass}`}
+            placeholder="0"
+          />
+        );
+      },
+    },
+    {
+      id: 'ef',
+      header: 'EF (kg CO₂e/kWh)',
+      headerClassName: 'px-4 py-3 text-center hidden md:table-cell whitespace-normal break-words',
+      cellClassName: 'px-4 py-3 text-center hidden md:table-cell',
+      align: 'center' as const,
+      render: (row: typeof rows[number]) => {
+        if (row.type === 'total') return '';
+        return row.source.ef.toString().replace('.', ',');
+      },
+    },
+    {
+      id: 'emissions',
+      header: isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)',
+      headerClassName: 'px-4 py-3 text-center whitespace-normal break-words max-w-[120px] md:max-w-none',
+      cellClassName: 'px-4 py-3 text-right',
+      render: (row: typeof rows[number]) => {
+        if (row.type === 'total') {
+          return <span className="font-bold text-stone-900">{totalEmissions.toFixed(2).replace('.', ',')}</span>;
+        }
+        const val = values[row.source.id];
+        const emissions = calculateEmissions(val, row.source.ef);
+        return <span className="font-bold">{emissions.toFixed(2).replace('.', ',')}</span>;
+      },
+    },
+    {
+      id: 'corner',
+      header: '',
+      headerClassName: 'px-4 py-3 rounded-tr-xl text-center',
+      cellClassName: 'px-4 py-3',
+      render: () => '',
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -133,87 +242,12 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
         </div>
       </div>
 
-      <div className="overflow-x-auto overflow-y-visible pb-4">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
-            <tr>
-                <th className="pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Zdroj energie' : 'Energy source'}</th>
-                <th className="px-0.5 py-3 w-6 text-center"></th>
-                <th className="px-3 py-3 w-24 text-center whitespace-normal break-words">kWh</th>
-                <th className="px-4 py-3 text-center hidden md:table-cell whitespace-normal break-words">EF (kg CO₂e/kWh)</th>
-                <th className="px-4 py-3 text-center whitespace-normal break-words max-w-[120px] md:max-w-none">{isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)'}</th>
-                <th className="px-4 py-3 rounded-tr-xl text-center"></th>
-            </tr>
-          </thead>
-          <tbody>
-              {ENERGY_SOURCES.map((source) => {
-                const val = values[source.id];
-                const emissions = calculateEmissions(val, source.ef);
-                const explanation = isCs ? source.explanationCs : source.explanationEn;
-                
-                return (
-                  <tr key={source.id} className="border-b border-stone-100 last:border-0">
-                    <td className="pl-4 pr-1 py-3">
-                      <span className="text-sm font-medium text-stone-800">
-                        {isCs ? source.nameCs : source.nameEn}
-                      </span>
-                    </td>
-                    <td className="px-0.5 py-3 text-xs text-stone-700 w-6">
-                      <div className="flex justify-center">
-                        <InfoTooltip
-                          label={isCs ? 'Vysvětlení' : 'Explanation'}
-                          content={explanation}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-2 py-3 w-24">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        min="0"
-                        step="1"
-                        value={typeof val === 'number' ? formatWithSpaces(val) : ''}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/\s/g, '');
-                          handleValueChange(source.id, raw);
-                        }}
-                        className={`w-full p-1.5 text-right border rounded-lg focus:outline-none focus:ring-2 transition-all ${inputClass}`}
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="px-4 py-3 text-center hidden md:table-cell">
-                      {source.ef.toString().replace('.', ',')}
-                    </td>
-                    <td className="px-4 py-3 text-right font-bold">
-                      {emissions.toFixed(2).replace('.', ',')}
-                    </td>
-                  </tr>
-                );
-              })}
-              <tr className="font-bold bg-stone-100 text-stone-900">
-                <td className="px-4 py-3 uppercase rounded-bl-xl">
-                  {isCs ? 'Celkem' : 'Total'}
-                </td>
-                <td className="px-1 py-3 w-6">
-                  <div className="flex justify-center">
-                    <InfoTooltip
-                      label={isCs ? 'Celkem' : 'Total'}
-                      content={isCs ? 'Celková spotřeba energie.' : 'Total energy consumption.'}
-                    />
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  {formatWithSpaces(totalKwh)}
-                </td>
-                <td className="px-4 py-3 hidden md:table-cell"></td>
-                <td className="px-4 py-3 text-right">
-                  {totalEmissions.toFixed(2).replace('.', ',')}
-                </td>
-                <td className="px-4 py-3 rounded-br-xl"></td>
-              </tr>
-            </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={columns}
+        rows={rows}
+        getRowId={(row) => (row.type === 'total' ? 'total' : row.source.id)}
+        getRowClassName={(row) => (row.type === 'total' ? 'font-bold bg-stone-100 text-stone-900' : undefined)}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import DataTable from '../DataTable';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
@@ -43,30 +44,40 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
         </h3>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
-            <tr>
-              <th className="px-4 py-3 rounded-tl-xl">{isCs ? 'Rok' : 'Year'}</th>
-              <th className="px-4 py-3 text-center">{isCs ? 'Obnovitelné (kWh)' : 'Renewable (kWh)'}</th>
-              <th className="px-4 py-3 rounded-tr-xl text-center">{isCs ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.year} className="border-b border-stone-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{row.year}</td>
-                <td className={`px-4 py-3 text-center ${renewableClass(row.renewablePct)}`}>
-                  {formatWithSpaces(row.renewable)} ({row.renewablePct.toFixed(1).replace('.', ',')}%)
-                </td>
-                <td className="px-4 py-3 text-center">
-                  {formatWithSpaces(row.nonRenewable)} ({row.nonRenewablePct.toFixed(1).replace('.', ',')}%)
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={[
+          {
+            id: 'year',
+            header: isCs ? 'Rok' : 'Year',
+            headerClassName: 'px-4 py-3 rounded-tl-xl',
+            cellClassName: 'px-4 py-3 font-medium',
+          },
+          {
+            id: 'renewable',
+            header: isCs ? 'Obnovitelné (kWh)' : 'Renewable (kWh)',
+            headerClassName: 'px-4 py-3 text-center',
+            cellClassName: 'px-4 py-3 text-center',
+            render: (row) => (
+              <span className={renewableClass(row.renewablePct)}>
+                {formatWithSpaces(row.renewable)} ({row.renewablePct.toFixed(1).replace('.', ',')}%)
+              </span>
+            ),
+          },
+          {
+            id: 'nonRenewable',
+            header: isCs ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)',
+            headerClassName: 'px-4 py-3 rounded-tr-xl text-center',
+            cellClassName: 'px-4 py-3 text-center',
+            render: (row) => (
+              <span>
+                {formatWithSpaces(row.nonRenewable)} ({row.nonRenewablePct.toFixed(1).replace('.', ',')}%)
+              </span>
+            ),
+          },
+        ]}
+        rows={rows}
+        getRowId={(row) => row.year}
+      />
     </div>
   );
 }

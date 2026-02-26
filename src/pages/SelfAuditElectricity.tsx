@@ -29,8 +29,10 @@ import SelfAuditCard from '../components/SelfAuditCard';
 import AccommodationProfileInput, { ACCOMMODATION_PROFILES } from '../components/AccommodationProfileInput';
 import selfAuditData from '../data/selfAuditElectricity.json';
 import { getSelfAuditRatingLabel, getSelfAuditRatingColorClass } from '../functions/selfAuditRating';
-import { SelfAuditGaugeMui } from '../components/SelfAuditGauge';
+import SelfAuditSummary from '../components/SelfAuditSummary';
 import { generateElectricitySelfAuditPdf } from '../functions/generateElectricitySelfAuditPdf';
+import { ConsentRow, PrimaryButton, SecondaryButton } from '../components/ui';
+import { captureGaugePng } from '../functions/captureGaugePng';
 import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
 import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 
@@ -112,115 +114,8 @@ export default function SelfAuditElectricity() {
     return Math.round(sum / weightSum);
   }, [scores]);
 
-  const ratingColorForScore = (score: number) => {
-    if (score >= 90) return '#047857';
-    if (score >= 70) return '#16a34a';
-    if (score >= 50) return '#d97706';
-    if (score >= 30) return '#c2410c';
-    return '#dc2626';
-  };
+  const ratingLabel = getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en');
 
-  const captureGaugePng = async (opts: { score: number; ratingLabel?: string; caption?: string }) => {
-    const gaugeEl = document.getElementById('self-audit-gauge');
-    if (!gaugeEl) return undefined;
-    const svgEl = gaugeEl.querySelector('svg');
-    if (!svgEl) return undefined;
-
-    const serializer = new XMLSerializer();
-    const clone = svgEl.cloneNode(true) as SVGSVGElement;
-    const origNodes = Array.from(svgEl.querySelectorAll('*'));
-    const cloneNodes = Array.from(clone.querySelectorAll('*'));
-    origNodes.forEach((node, idx) => {
-      const cloneNode = cloneNodes[idx] as HTMLElement | undefined;
-      if (!cloneNode) return;
-      const style = window.getComputedStyle(node as Element);
-      const keys = [
-        'fill',
-        'stroke',
-        'stroke-width',
-        'stroke-linecap',
-        'stroke-linejoin',
-        'font-size',
-        'font-weight',
-        'font-family',
-        'opacity',
-      ];
-      const inline = keys
-        .map((k) => {
-          const v = style.getPropertyValue(k);
-          return v ? `${k}:${v}` : '';
-        })
-        .filter(Boolean)
-        .join(';');
-      if (inline) cloneNode.setAttribute('style', inline);
-    });
-
-    // Remove any text rendered by the gauge itself to avoid duplicate score text
-    clone.querySelectorAll('text').forEach((el) => el.remove());
-
-    const rect = svgEl.getBoundingClientRect();
-    clone.setAttribute('width', String(rect.width));
-    clone.setAttribute('height', String(rect.height));
-
-    let svgText = serializer.serializeToString(clone);
-    if (!svgText.includes('http://www.w3.org/2000/svg')) {
-      svgText = svgText.replace(
-        '<svg',
-        '<svg xmlns="http://www.w3.org/2000/svg"'
-      );
-    }
-
-    const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-    const img = new Image();
-
-    const width = Math.max(1, Math.round(rect.width));
-    const height = Math.max(1, Math.round(rect.height));
-
-    const canvas = document.createElement('canvas');
-    const scale = 2;
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return undefined;
-    ctx.scale(scale, scale);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
-
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error('Failed to load SVG'));
-      img.src = url;
-    }).catch(() => {
-      URL.revokeObjectURL(url);
-      return undefined;
-    });
-
-    ctx.drawImage(img, 0, 0, width, height);
-    URL.revokeObjectURL(url);
-
-    const color = ratingColorForScore(opts.score);
-    ctx.fillStyle = '#1c1917';
-    ctx.font = '700 18px "Noto Sans", Arial, sans-serif';
-    const scoreText = `${opts.score} / 100`;
-    const scoreWidth = ctx.measureText(scoreText).width;
-    ctx.fillText(scoreText, (width - scoreWidth) / 2, height / 2 + 18);
-
-    if (opts.ratingLabel) {
-      ctx.fillStyle = color;
-      ctx.font = '600 11px "Noto Sans", Arial, sans-serif';
-      const labelWidth = ctx.measureText(opts.ratingLabel).width;
-      ctx.fillText(opts.ratingLabel, (width - labelWidth) / 2, height / 2 + 32);
-    }
-
-    if (opts.caption) {
-      ctx.fillStyle = '#78716c';
-      ctx.font = '400 12px "Noto Sans", Arial, sans-serif';
-      const capWidth = ctx.measureText(opts.caption).width;
-      ctx.fillText(opts.caption, (width - capWidth) / 2, height / 2 + 44);
-    }
-    return canvas.toDataURL('image/png');
-  };
 
   const handleChange = (id: string, value: number) => {
     const clamped = Math.max(0, Math.min(100, value));
@@ -297,47 +192,33 @@ export default function SelfAuditElectricity() {
           ))}
         </div>
 
-        {showEvaluation ? (
-          <div className="mt-12 text-center">
-            <div className="mt-4" id="self-audit-gauge">
-              <SelfAuditGaugeMui
-                score={totalScore}
-                ratingLabel={getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en')}
-              />
-            </div>
-          </div>
-        ) : null}
+        <SelfAuditSummary score={totalScore} ratingLabel={ratingLabel} show={showEvaluation} />
 
         <div className="flex justify-center mt-8">
           <div className="flex flex-col items-center gap-4">
-            <label className="flex items-center gap-3 text-sm text-stone-700">
-              <input
-                type="checkbox"
-                checked={consent}
-                onChange={(e) => setConsent(e.target.checked)}
-                className="h-4 w-4 rounded border-stone-300 accent-yellow-500 focus:ring-yellow-400"
-              />
-              {isCs
+            <ConsentRow
+              checked={consent}
+              onChange={setConsent}
+              label={isCs
                 ? 'Odesláním souhlasím se zpracováním vložených údajů.'
                 : 'By submitting, I agree to the processing of the provided data.'}
-            </label>
-            <button
-              type="button"
+              themeColor="yellow"
+            />
+            <PrimaryButton
               onClick={handleSubmit}
               disabled={!consent || isSubmitting}
-              className="px-6 py-3 rounded-2xl bg-yellow-500 text-black font-bold uppercase tracking-widest text-sm shadow-md shadow-yellow-900/10 hover:bg-yellow-400 transition-all disabled:bg-stone-300 disabled:text-black disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit' : 'Evaluate')}
-            </button>
+            </PrimaryButton>
             {showPdfButton ? (
-              <button
-                type="button"
+              <SecondaryButton
                 onClick={async () => {
                   const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
                   const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
                   const gaugeImage = await captureGaugePng({
+                    elementId: 'self-audit-gauge',
                     score: totalScore,
-                    ratingLabel: getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en'),
+                    ratingLabel,
                   }).catch(() => undefined);
                   await generateElectricitySelfAuditPdf({
                     language: isCs ? 'cs' : 'en',
@@ -355,13 +236,12 @@ export default function SelfAuditElectricity() {
                       ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en'),
                     })),
                     totalScore,
-                    totalRatingLabel: getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en'),
+                    totalRatingLabel: ratingLabel,
                   });
                 }}
-                className="px-6 py-3 rounded-2xl bg-stone-900 text-white font-bold uppercase tracking-widest text-sm shadow-md hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
               >
                 {isCs ? 'Generovat PDF' : 'Generate PDF'}
-              </button>
+              </SecondaryButton>
             ) : null}
           </div>
         </div>
@@ -369,5 +249,7 @@ export default function SelfAuditElectricity() {
     </div>
   );
 }
+
+
 
 
