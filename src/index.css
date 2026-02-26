@@ -85,4 +85,7 @@ input[type="number"] {
   .gp-row {
     @apply border-b border-stone-100 last:border-0;
   }
+  .gp-table-wrap {
+    @apply overflow-x-auto -mx-2 md:mx-0;
+  }
 }

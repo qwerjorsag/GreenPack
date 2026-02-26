@@ -24,7 +24,7 @@ export default function EnergyKwhTable({
   formatWithSpaces,
 }: Props) {
   return (
-    <div className="overflow-x-auto overflow-y-visible pb-4 -mx-2 md:mx-0">
+    <div className="gp-table-wrap overflow-y-visible pb-4">
       <table className="gp-table table-auto text-[11px] md:text-sm">
         <thead className="gp-table-head text-[10px] md:text-xs">
           <tr>

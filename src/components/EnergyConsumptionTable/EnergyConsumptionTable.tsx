@@ -192,7 +192,7 @@ export default function EnergyConsumptionTable({
           <h3 className="mb-3">
             {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
           </h3>
-          <div className="overflow-x-auto">
+          <div className="gp-table-wrap">
             <table className="gp-table">
               <thead className="gp-table-head">
                 <tr>

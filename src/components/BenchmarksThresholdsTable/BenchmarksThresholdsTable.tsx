@@ -177,7 +177,7 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props
       <div className="flex justify-between items-center">
         <h3>{title}</h3>
       </div>
-      <div className="overflow-x-auto">
+      <div className="gp-table-wrap">
         <table className="gp-table">
           <thead className="gp-table-head">
             <tr>

@@ -43,7 +43,7 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
         </h3>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="gp-table-wrap">
         <table className="gp-table">
           <thead className="gp-table-head">
             <tr>

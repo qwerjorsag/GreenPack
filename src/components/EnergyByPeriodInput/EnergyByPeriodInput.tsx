@@ -101,7 +101,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         onToggle={() => setShowUnitsKwh((v) => !v)}
         label={isCs ? 'Zobrazit jednotky' : 'Show units'}
         color="yellow"
-        className="mt-2"
+        className="mt-2 mb-16"
         data-pdf-hide
       />
 
@@ -123,7 +123,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         onToggle={() => setShowUnitsEm((v) => !v)}
         label={isCs ? 'Zobrazit jednotky' : 'Show units'}
         color="yellow"
-        className="mt-2"
+        className="mt-2 mb-16"
         data-pdf-hide
       />
 
@@ -145,7 +145,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         onToggle={() => setShowUnitsGj((v) => !v)}
         label={isCs ? 'Zobrazit jednotky' : 'Show units'}
         color="yellow"
-        className="mt-2"
+        className="mt-2 mb-16"
         data-pdf-hide
       />
     </div>

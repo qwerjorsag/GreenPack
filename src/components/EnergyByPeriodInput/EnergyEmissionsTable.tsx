@@ -21,7 +21,7 @@ export default function EnergyEmissionsTable({
   formatEmissions,
 }: Props) {
   return (
-    <div className="overflow-x-auto overflow-y-visible pb-4 -mx-2 md:mx-0">
+    <div className="gp-table-wrap overflow-y-visible pb-4">
       <table className="gp-table tabular-nums table-fixed">
         <thead className="gp-table-head">
           <tr>

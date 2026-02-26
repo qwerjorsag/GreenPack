@@ -175,7 +175,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
         <h3>{isCs ? 'Provozní údaje' : 'Operational Data'}</h3>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="gp-table-wrap">
         <table className="w-full table-auto text-[11px] md:text-sm text-left">
           <thead className="text-[10px] md:text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
