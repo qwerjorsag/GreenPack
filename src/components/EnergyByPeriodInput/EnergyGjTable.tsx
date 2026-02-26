@@ -21,7 +21,7 @@ export default function EnergyGjTable({
   formatGj,
 }: Props) {
   return (
-    <div className="overflow-x-auto overflow-y-visible pb-4">
+    <div className="overflow-x-auto overflow-y-visible pb-4 -mx-2 md:mx-0">
       <table className="gp-table tabular-nums table-fixed">
         <thead className="gp-table-head">
           <tr>

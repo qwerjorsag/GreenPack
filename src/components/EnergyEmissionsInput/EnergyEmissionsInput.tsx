@@ -233,7 +233,7 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-bold text-stone-900">
+          <h3>
             {isCs ? 'ENERGIE A EMISE' : 'ENERGY & EMISSIONS'}
           </h3>
           <div className="text-xs text-stone-500">

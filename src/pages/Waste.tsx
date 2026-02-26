@@ -61,7 +61,7 @@ export default function Waste() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
+        <div className="gp-card">
           <div className="mb-12">
             <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="stone" />
           </div>
@@ -81,7 +81,7 @@ export default function Waste() {
           </button>
         </div>
 
-        <div className="bg-white rounded-[3rem] p-12 shadow-sm border border-stone-200 mb-12">
+        <div className="gp-card-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
               <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Co měříme?' : 'What we measure?'}</h3>

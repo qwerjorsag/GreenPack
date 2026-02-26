@@ -6,9 +6,10 @@ interface PageHeaderProps {
   description: string;
   icon: React.ReactNode;
   themeColor: 'emerald' | 'blue' | 'orange' | 'amber' | 'yellow' | 'stone';
+  titleClassName?: string;
 }
 
-export default function PageHeader({ title, description, icon, themeColor }: PageHeaderProps) {
+export default function PageHeader({ title, description, icon, themeColor, titleClassName }: PageHeaderProps) {
   const { i18n } = useTranslation();
 
   const themeClasses = {
@@ -59,7 +60,7 @@ export default function PageHeader({ title, description, icon, themeColor }: Pag
           <div className={`w-12 h-12 ${theme.iconBg} rounded-2xl flex items-center justify-center`}>
             {icon}
           </div>
-          <h1 className="text-4xl font-black uppercase tracking-tighter">
+          <h1 className={`text-4xl font-black uppercase tracking-tighter text-white ${titleClassName ?? ''}`}>
             {title}
           </h1>
         </div>

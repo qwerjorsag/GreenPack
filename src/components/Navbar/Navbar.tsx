@@ -1,11 +1,12 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Globe, Home, Zap, Droplets, Trash2 } from 'lucide-react';
+import { Home, Zap, Droplets, Trash2 } from 'lucide-react';
 import logoCzBlack from '../../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
 import logoCzWhite from '../../assets/logos/hk_cr_logo_cz-logo_bile.png';
 import logoEnBlack from '../../assets/logos/hk_cr_logo_aj_black.png';
 import logoEnWhite from '../../assets/logos/hk_cr_logo_aj-logo_white.png';
+import LanguageSwitch from '../ui/LanguageSwitch';
 
 export default function Navbar() {
   const { i18n } = useTranslation();
@@ -15,20 +16,19 @@ export default function Navbar() {
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
 
-  const toggleLanguage = () => {
-    const next = i18n.language === 'en' ? 'cs' : 'en';
-    i18n.changeLanguage(next);
-  };
-
   const getTheme = () => {
     switch (location.pathname) {
-      case '/electricity': return { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', hover: 'hover:bg-black/10', active: 'bg-black/10 text-black', inactive: 'text-black/70 hover:text-black' };
-      case '/electricityaudit': return { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', hover: 'hover:bg-black/10', active: 'bg-black/10 text-black', inactive: 'text-black/70 hover:text-black' };
-      case '/water': return { bg: 'bg-blue-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
-      case '/wateraudit': return { bg: 'bg-blue-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
-      case '/waste': return { bg: 'bg-stone-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/15', active: 'bg-white/15 text-white', inactive: 'text-white/70 hover:text-white' };
-      case '/wasteaudit': return { bg: 'bg-stone-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/15', active: 'bg-white/15 text-white', inactive: 'text-white/70 hover:text-white' };
-      default: return { bg: 'bg-emerald-900', text: 'text-white', border: 'border-black', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
+      case '/electricity':
+      case '/electricityaudit':
+        return { bg: 'bg-yellow-400', text: 'text-black', border: 'border-black', hover: 'hover:bg-black/10', active: 'bg-black/10 text-black', inactive: 'text-black/70 hover:text-black' };
+      case '/water':
+      case '/wateraudit':
+        return { bg: 'bg-blue-900', text: 'text-white', border: 'border-white', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
+      case '/waste':
+      case '/wasteaudit':
+        return { bg: 'bg-stone-900', text: 'text-white', border: 'border-white', hover: 'hover:bg-white/15', active: 'bg-white/15 text-white', inactive: 'text-white/70 hover:text-white' };
+      default:
+        return { bg: 'bg-emerald-900', text: 'text-white', border: 'border-white', hover: 'hover:bg-white/20', active: 'bg-white/20 text-white', inactive: 'text-white/70 hover:text-white' };
     }
   };
 
@@ -101,13 +101,11 @@ export default function Navbar() {
           </div>
         </div>
 
-        <button 
-          onClick={toggleLanguage}
-          className={`flex items-center gap-2 px-4 py-2 border ${theme.border} rounded-full text-xs font-bold uppercase tracking-widest ${theme.hover} transition-colors ${theme.text}`}
-        >
-          <Globe className="w-4 h-4" />
-          {i18n.language}
-        </button>
+        <LanguageSwitch
+          textClassName={theme.text}
+          borderClassName={theme.border}
+          hoverClassName={theme.hover}
+        />
       </div>
     </nav>
   );

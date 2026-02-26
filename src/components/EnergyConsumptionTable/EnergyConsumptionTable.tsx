@@ -189,9 +189,9 @@ export default function EnergyConsumptionTable({
     <div className="space-y-6">
       {computed.map(({ row, byYear }) => (
         <div key={row.id}>
-          <div className="text-lg font-bold text-stone-900 mb-3">
+          <h3 className="mb-3">
             {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
-          </div>
+          </h3>
           <div className="overflow-x-auto">
             <table className="gp-table">
               <thead className="gp-table-head">
@@ -249,8 +249,8 @@ export default function EnergyConsumptionTable({
               </tbody>
             </table>
           </div>
-          <div className="mt-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-            <div className="text-base font-bold text-stone-900 mb-2">
+          <div className="mt-6 mb-6 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+            <div className="gp-subtitle mb-2">
               {(isCs ? 'Report ' : 'Report ') +
                 (row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName)}
             </div>

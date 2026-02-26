@@ -24,7 +24,7 @@ export default function EnergyKwhTable({
   formatWithSpaces,
 }: Props) {
   return (
-    <div className="overflow-x-auto overflow-y-visible pb-4">
+    <div className="overflow-x-auto overflow-y-visible pb-4 -mx-2 md:mx-0">
       <table className="gp-table table-auto text-[11px] md:text-sm">
         <thead className="gp-table-head text-[10px] md:text-xs">
           <tr>
@@ -75,7 +75,7 @@ export default function EnergyKwhTable({
                           const raw = e.target.value.replace(/\s/g, '');
                           onChange(idx, source.id, raw);
                         }}
-                        className="w-full p-1.5 md:p-2 pr-10 h-[34px] md:h-[38px] border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all"
+                        className={`w-full p-1.5 md:p-2 h-[34px] md:h-[38px] border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all ${showUnits ? 'pr-10' : 'pr-2'}`}
                         placeholder="0"
                       />
                       {showUnits && (
@@ -93,7 +93,7 @@ export default function EnergyKwhTable({
             <td className="gp-td px-2 md:px-4 uppercase rounded-bl-xl">
               {isCs ? 'Celkem' : 'Total'}
             </td>
-            <td className="gp-td px-0.5 md:px-0.5 w-6"></td>
+            <td className="gp-td px-0.5 md:px-0.5 w-6 hidden md:table-cell"></td>
             {totals.map((total, idx) => (
               <td
                 key={`total-${idx}`}

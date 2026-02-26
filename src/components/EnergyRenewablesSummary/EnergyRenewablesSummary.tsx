@@ -38,7 +38,7 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-stone-900">
+        <h3>
           {isCs ? 'Obnovitelné zdroje' : 'Renewable sources'}
         </h3>
       </div>

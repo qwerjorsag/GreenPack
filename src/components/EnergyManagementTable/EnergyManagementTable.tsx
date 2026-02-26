@@ -136,7 +136,7 @@ export default function EnergyManagementTable({
     <div className="space-y-4">
       {periodTitle ? (
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold text-stone-900">{periodTitle}</h3>
+          <h3>{periodTitle}</h3>
         </div>
       ) : null}
 

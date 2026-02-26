@@ -137,18 +137,19 @@ export default function Electricity() {
           : 'Energy is one of the largest costs and environmental impacts in the accommodation sector.'}
         icon={<Zap className="w-6 h-6" />}
         themeColor="yellow"
+        titleClassName="!text-black"
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
         <div id="pdf-tables">
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
+          <div className="gp-card">
             <div className="mb-12">
               <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
             </div>
               <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+          <div className="gp-card" data-pdf-card>
             <div className="mb-12">
               <EnergyByPeriodInput
                 periods={periods}
@@ -165,7 +166,7 @@ export default function Electricity() {
             {/*</div>*/}
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+          <div className="gp-card" data-pdf-card>
             <EnergyConsumptionTable
               years={yearsForConsumption}
               denominators={denominatorsForConsumption}
@@ -173,21 +174,21 @@ export default function Electricity() {
             />
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+          <div className="gp-card" data-pdf-card>
             <EnergyRenewablesSummary
               years={yearsForConsumption}
               values={energyByPeriod}
             />
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+          <div className="gp-card" data-pdf-card>
             <BenchmarksThresholdsTable
               years={yearsForConsumption}
               valuesByYear={benchmarkValues}
             />
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
+          <div className="gp-card" data-pdf-card>
             {periods.slice(0, 3).map((period, idx) => (
               <div key={period.id} className={idx === 0 ? '' : 'mt-12'}>
                 <EnergyManagementTable

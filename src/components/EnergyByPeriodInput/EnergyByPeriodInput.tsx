@@ -4,6 +4,7 @@ import { ENERGY_SOURCES } from '../EnergyEmissionsInput';
 import EnergyKwhTable from './EnergyKwhTable';
 import EnergyEmissionsTable from './EnergyEmissionsTable';
 import EnergyGjTable from './EnergyGjTable';
+import UnitSwitch from '../ui/UnitSwitch';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
@@ -24,10 +25,9 @@ const formatEmissions = (value: number) => {
 export default function EnergyByPeriodInput({ periods, values, onChange }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
-  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
-  const [showUnitsKwh, setShowUnitsKwh] = React.useState(!isMobile);
-  const [showUnitsEm, setShowUnitsEm] = React.useState(!isMobile);
-  const [showUnitsGj, setShowUnitsGj] = React.useState(!isMobile);
+  const [showUnitsKwh, setShowUnitsKwh] = React.useState(true);
+  const [showUnitsEm, setShowUnitsEm] = React.useState(true);
+  const [showUnitsGj, setShowUnitsGj] = React.useState(true);
   const periodsSlice = periods.slice(0, 3);
 
   const totals = periodsSlice.map((_, idx) =>
@@ -64,12 +64,26 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
     onChange(next);
   };
 
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const apply = () => {
+      const isMobile = mq.matches;
+      setShowUnitsKwh(!isMobile);
+      setShowUnitsEm(!isMobile);
+      setShowUnitsGj(!isMobile);
+    };
+    apply();
+    mq.addEventListener?.('change', apply);
+    return () => {
+      mq.removeEventListener?.('change', apply);
+    };
+  }, []);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'ENERGIE (kWh)' : 'ENERGY (kWh)'}
-        </h3>
+        <h3>{isCs ? 'ENERGIE (kWh)' : 'ENERGY (kWh)'}</h3>
       </div>
 
       <EnergyKwhTable
@@ -82,24 +96,17 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         formatWithSpaces={formatWithSpaces}
       />
 
-      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
-        <button
-          type="button"
-          onClick={() => setShowUnitsKwh((v) => !v)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${showUnitsKwh ? 'bg-yellow-500' : 'bg-stone-300'}`}
-          aria-pressed={showUnitsKwh}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${showUnitsKwh ? 'translate-x-5' : 'translate-x-1'}`}
-          />
-        </button>
-        <span>{isCs ? 'Zobrazit jednotky' : 'Show units'}</span>
-      </div>
+      <UnitSwitch
+        checked={showUnitsKwh}
+        onToggle={() => setShowUnitsKwh((v) => !v)}
+        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        color="yellow"
+        className="mt-2"
+        data-pdf-hide
+      />
 
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)'}
-        </h3>
+        <h3>{isCs ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)'}</h3>
       </div>
 
       <EnergyEmissionsTable
@@ -111,24 +118,17 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         formatEmissions={formatEmissions}
       />
 
-      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
-        <button
-          type="button"
-          onClick={() => setShowUnitsEm((v) => !v)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${showUnitsEm ? 'bg-yellow-500' : 'bg-stone-300'}`}
-          aria-pressed={showUnitsEm}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${showUnitsEm ? 'translate-x-5' : 'translate-x-1'}`}
-          />
-        </button>
-        <span>{isCs ? 'Zobrazit jednotky' : 'Show units'}</span>
-      </div>
+      <UnitSwitch
+        checked={showUnitsEm}
+        onToggle={() => setShowUnitsEm((v) => !v)}
+        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        color="yellow"
+        className="mt-2"
+        data-pdf-hide
+      />
 
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-stone-900">
-          {isCs ? 'ENERGIE (GJ)' : 'ENERGY (GJ)'}
-        </h3>
+        <h3>{isCs ? 'ENERGIE (GJ)' : 'ENERGY (GJ)'}</h3>
       </div>
 
       <EnergyGjTable
@@ -140,19 +140,14 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
         formatGj={formatGj}
       />
 
-      <div className="flex items-center gap-3 text-sm text-stone-700" data-pdf-hide>
-        <button
-          type="button"
-          onClick={() => setShowUnitsGj((v) => !v)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${showUnitsGj ? 'bg-yellow-500' : 'bg-stone-300'}`}
-          aria-pressed={showUnitsGj}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${showUnitsGj ? 'translate-x-5' : 'translate-x-1'}`}
-          />
-        </button>
-        <span>{isCs ? 'Zobrazit jednotky' : 'Show units'}</span>
-      </div>
+      <UnitSwitch
+        checked={showUnitsGj}
+        onToggle={() => setShowUnitsGj((v) => !v)}
+        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        color="yellow"
+        className="mt-2"
+        data-pdf-hide
+      />
     </div>
   );
 }

@@ -172,7 +172,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold">{isCs ? 'Provozní údaje' : 'Operational Data'}</h3>
+        <h3>{isCs ? 'Provozní údaje' : 'Operational Data'}</h3>
       </div>
 
       <div className="overflow-x-auto">
