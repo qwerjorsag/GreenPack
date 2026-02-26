@@ -44,28 +44,28 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
+        <table className="gp-table">
+          <thead className="gp-table-head">
             <tr>
-              <th className="px-4 py-3 rounded-tl-xl">{isCs ? 'Rok' : 'Year'}</th>
-              <th className="px-4 py-3 text-center">
+              <th className="gp-th gp-th-left">{isCs ? 'Rok' : 'Year'}</th>
+              <th className="gp-th gp-th-center">
                 {isCs ? 'Obnovitelné (kWh)' : 'Renewable (kWh)'}
               </th>
-              <th className="px-4 py-3 rounded-tr-xl text-center">
+              <th className="gp-th gp-th-center gp-th-right">
                 {isCs ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)'}
               </th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.year} className="border-b border-stone-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{row.year}</td>
-                <td className="px-4 py-3 text-center">
+              <tr key={row.year} className="gp-row">
+                <td className="gp-td font-medium">{row.year}</td>
+                <td className="gp-td gp-td-center">
                   <span className={renewableClass(row.renewablePct)}>
                     {formatWithSpaces(row.renewable)} ({row.renewablePct.toFixed(1).replace('.', ',')}%)
                   </span>
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="gp-td gp-td-center">
                   {formatWithSpaces(row.nonRenewable)} ({row.nonRenewablePct.toFixed(1).replace('.', ',')}%)
                 </td>
               </tr>

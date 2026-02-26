@@ -178,17 +178,17 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props
         <h3 className="text-lg font-bold text-stone-900">{title}</h3>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-stone-500 uppercase bg-stone-50">
+        <table className="gp-table">
+          <thead className="gp-table-head">
             <tr>
-              <th className="px-4 py-3 rounded-tl-xl">{isCs ? 'Ukazatel' : 'Indicator'}</th>
+              <th className="gp-th gp-th-left">{isCs ? 'Ukazatel' : 'Indicator'}</th>
               {years.map((year) => (
-                <th key={year} className="px-4 py-3 text-center">{year}</th>
+                <th key={year} className="gp-th gp-th-center">{year}</th>
               ))}
-              <th className="px-4 py-3 text-center">{isCs ? 'Skóre pro rok X' : 'Score for year X'}</th>
-              <th className="px-4 py-3 text-center">{isCs ? 'Váha' : 'Weight'}</th>
-              <th className="px-4 py-3 text-center">{isCs ? 'Vážené skóre' : 'Weighted score'}</th>
-              <th className="px-4 py-3 rounded-tr-xl text-center"></th>
+              <th className="gp-th gp-th-center">{isCs ? 'Skóre pro rok X' : 'Score for year X'}</th>
+              <th className="gp-th gp-th-center">{isCs ? 'Váha' : 'Weight'}</th>
+              <th className="gp-th gp-th-center">{isCs ? 'Vážené skóre' : 'Weighted score'}</th>
+              <th className="gp-th gp-th-center gp-th-right"></th>
             </tr>
           </thead>
           <tbody>
@@ -196,48 +196,48 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props
               const scoreX = scoreForYear(valuesByYear[row.key]?.[0] ?? null, row);
               const wScoreX = weightedScore(scoreX, row.weight);
               return (
-                <tr key={row.key} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-3 font-medium">{isCs ? row.labelCs : row.labelEn}</td>
+                <tr key={row.key} className="gp-row">
+                  <td className="gp-td font-medium">{isCs ? row.labelCs : row.labelEn}</td>
                   {years.map((_, idx) => (
-                    <td key={`${row.key}-${idx}`} className="px-4 py-3 text-center">
+                    <td key={`${row.key}-${idx}`} className="gp-td gp-td-center">
                       {fmt(valuesByYear[row.key]?.[idx] ?? null, 2)}
                     </td>
                   ))}
-                  <td className="px-4 py-3 text-center">{fmt(scoreX, 2)}</td>
-                  <td className="px-4 py-3 text-center">{row.weight}</td>
-                  <td className="px-4 py-3 text-center">{fmt(wScoreX, 2)}</td>
-                  <td className="px-4 py-3 text-center"></td>
+                  <td className="gp-td gp-td-center">{fmt(scoreX, 2)}</td>
+                  <td className="gp-td gp-td-center">{row.weight}</td>
+                  <td className="gp-td gp-td-center">{fmt(wScoreX, 2)}</td>
+                  <td className="gp-td gp-td-center"></td>
                 </tr>
               );
             })}
             <tr className="font-bold bg-stone-100 text-stone-900">
-              <td className="px-4 py-3 uppercase">
+              <td className="gp-td uppercase">
                 {isCs ? 'Celkové vážené skóre' : 'Total weighted score'}
               </td>
               {years.map((_, idx) => (
-                <td key={`total-${idx}`} className="px-4 py-3 text-center">
+                <td key={`total-${idx}`} className="gp-td gp-td-center">
                   {fmt(totals.perYear[idx] ?? null, 2)}
                 </td>
               ))}
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
             </tr>
             <tr className="bg-stone-50 text-stone-700">
-              <td className="px-4 py-3 uppercase">{ratingMatrix.headers.rating}</td>
+              <td className="gp-td uppercase">{ratingMatrix.headers.rating}</td>
               {years.map((_, idx) => {
                 const band = getBand(totals.perYear[idx] ?? null);
                 return (
-                  <td key={`tier-${idx}`} className="px-4 py-3 text-center">
+                  <td key={`tier-${idx}`} className="gp-td gp-td-center">
                     {band ? cleanLabel(band.label) : '—'}
                   </td>
                 );
               })}
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
-              <td className="px-4 py-3 text-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
+              <td className="gp-td gp-td-center"></td>
             </tr>
           </tbody>
         </table>

@@ -25,18 +25,18 @@ export default function EnergyKwhTable({
 }: Props) {
   return (
     <div className="overflow-x-auto overflow-y-visible pb-4">
-      <table className="w-full table-auto text-[11px] md:text-sm text-left">
-        <thead className="text-[10px] md:text-xs text-stone-500 uppercase bg-stone-50">
+      <table className="gp-table table-auto text-[11px] md:text-sm">
+        <thead className="gp-table-head text-[10px] md:text-xs">
           <tr>
-            <th className="px-2 md:px-4 py-3 md:py-4 rounded-tl-xl whitespace-normal break-words max-w-[140px] md:max-w-none">
+            <th className="gp-th gp-th-left px-2 md:px-4 whitespace-normal break-words max-w-[140px] md:max-w-none">
               {isCs ? 'Zdroj energie' : 'Energy source'}
             </th>
-            <th className="px-0.5 py-3 md:py-4 w-6 text-center hidden md:table-cell"></th>
+            <th className="gp-th px-0.5 md:px-0.5 w-6 text-center hidden md:table-cell"></th>
             {periods.map((p, idx) => (
               <th
                 key={`period-${idx}`}
-                className={`px-2 md:px-4 py-3 md:py-4 text-center whitespace-normal break-words ${
-                  idx === 2 ? 'rounded-tr-xl' : ''
+                className={`gp-th gp-th-center px-2 md:px-4 whitespace-normal break-words ${
+                  idx === 2 ? 'gp-th-right' : ''
                 }`}
               >
                 {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
@@ -46,13 +46,13 @@ export default function EnergyKwhTable({
         </thead>
         <tbody>
           {ENERGY_SOURCES.map((source) => (
-            <tr key={source.id} className="border-b border-stone-100 last:border-0">
-              <td className="px-2 md:px-4 py-3 md:py-4">
+            <tr key={source.id} className="gp-row">
+              <td className="gp-td px-2 md:px-4">
                 <span className="text-sm font-medium text-stone-800">
                   {isCs ? source.nameCs : source.nameEn}
                 </span>
               </td>
-              <td className="px-0.5 py-3 md:py-4 w-6 text-xs text-stone-700 hidden md:table-cell">
+              <td className="gp-td px-0.5 md:px-0.5 w-6 text-xs text-stone-700 hidden md:table-cell">
                 <div className="flex justify-center">
                   <InfoTooltip
                     label={isCs ? 'Vysvětlení' : 'Explanation'}
@@ -63,7 +63,7 @@ export default function EnergyKwhTable({
               {periods.map((_, idx) => {
                 const val = values[idx]?.[source.id] ?? '';
                 return (
-                  <td key={`${source.id}-${idx}`} className="px-2 md:px-4 py-3 md:py-4 align-top">
+                  <td key={`${source.id}-${idx}`} className="gp-td px-2 md:px-4 align-top">
                     <div className="relative">
                       <input
                         type="text"
@@ -90,16 +90,14 @@ export default function EnergyKwhTable({
             </tr>
           ))}
           <tr className="font-bold bg-stone-100 text-stone-900">
-            <td className="px-2 md:px-4 py-3 md:py-4 uppercase rounded-bl-xl">
+            <td className="gp-td px-2 md:px-4 uppercase rounded-bl-xl">
               {isCs ? 'Celkem' : 'Total'}
             </td>
-            <td className="px-0.5 py-3 md:py-4 w-6"></td>
+            <td className="gp-td px-0.5 md:px-0.5 w-6"></td>
             {totals.map((total, idx) => (
               <td
                 key={`total-${idx}`}
-                className={`px-2 md:px-4 py-3 md:py-4 text-right ${
-                  idx === totals.length - 1 ? 'rounded-br-xl' : ''
-                }`}
+                className={`gp-td px-2 md:px-4 text-right ${idx === totals.length - 1 ? 'rounded-br-xl' : ''}`}
               >
                 {formatWithSpaces(total)}
               </td>

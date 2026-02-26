@@ -193,12 +193,15 @@ export default function EnergyConsumptionTable({
             {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-stone-500 uppercase bg-stone-50">
+            <table className="gp-table">
+              <thead className="gp-table-head">
                 <tr>
-                  <th className="px-4 py-3 rounded-tl-xl">{t.year}</th>
+                  <th className="gp-th gp-th-left">{t.year}</th>
                   {years.map((year, idx) => (
-                    <th key={year} className={`px-4 py-3 text-center ${idx === years.length - 1 ? 'rounded-tr-xl' : ''}`}>
+                    <th
+                      key={year}
+                      className={`gp-th gp-th-center ${idx === years.length - 1 ? 'gp-th-right' : ''}`}
+                    >
                       {year}
                     </th>
                   ))}
@@ -228,10 +231,10 @@ export default function EnergyConsumptionTable({
                     }),
                   },
                 ].map((rowItem) => (
-                  <tr key={rowItem.key} className="border-b border-stone-100 last:border-0">
-                    <td className="px-4 py-3 font-medium">{rowItem.label}</td>
+                  <tr key={rowItem.key} className="gp-row">
+                    <td className="gp-td font-medium">{rowItem.label}</td>
                     {rowItem.values.map((value, idx) => (
-                      <td key={`${rowItem.key}-${idx}`} className="px-4 py-3 text-center">
+                      <td key={`${rowItem.key}-${idx}`} className="gp-td gp-td-center">
                         {rowItem.key === 'evaluation' && value && typeof value === 'object' ? (
                           <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${evalClass(value.color)}`}>
                             {value.label}

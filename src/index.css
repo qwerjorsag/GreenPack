@@ -17,3 +17,33 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+@layer components {
+  .gp-table {
+    @apply w-full text-sm text-left;
+  }
+  .gp-table-head {
+    @apply text-xs text-stone-500 uppercase bg-stone-50;
+  }
+  .gp-th {
+    @apply px-4 py-3;
+  }
+  .gp-th-left {
+    @apply rounded-tl-xl;
+  }
+  .gp-th-right {
+    @apply rounded-tr-xl;
+  }
+  .gp-th-center {
+    @apply text-center;
+  }
+  .gp-td {
+    @apply px-4 py-3;
+  }
+  .gp-td-center {
+    @apply text-center;
+  }
+  .gp-row {
+    @apply border-b border-stone-100 last:border-0;
+  }
+}
