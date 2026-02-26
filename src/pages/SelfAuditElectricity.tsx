@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Zap,
@@ -26,9 +26,13 @@ import {
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import SelfAuditCard from '../components/SelfAuditCard';
-import AccommodationProfileInput from '../components/AccommodationProfileInput';
+import AccommodationProfileInput, { ACCOMMODATION_PROFILES } from '../components/AccommodationProfileInput';
 import selfAuditData from '../data/selfAuditElectricity.json';
 import { getSelfAuditRatingLabel, getSelfAuditRatingColorClass } from '../functions/selfAuditRating';
+import { SelfAuditGaugeMui } from '../components/SelfAuditGauge';
+import { generateElectricitySelfAuditPdf } from '../functions/generateElectricitySelfAuditPdf';
+import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
+import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 
 type AuditCard = {
   id: string;
@@ -81,6 +85,11 @@ export default function SelfAuditElectricity() {
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
+  const [showPdfButton, setShowPdfButton] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, []);
 
   const scores = useMemo(() => {
     return CARDS.reduce<Record<string, number>>((acc, card) => {
@@ -136,7 +145,7 @@ export default function SelfAuditElectricity() {
         return res.json();
       })
       .then(() => {
-        window.alert(isCs ? 'Self-Audit odeslán.' : 'Self-Audit submitted.');
+        setShowPdfButton(true);
       })
       .catch(() => {
         window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
@@ -180,7 +189,10 @@ export default function SelfAuditElectricity() {
 
         {showEvaluation ? (
           <div className="mt-12 text-center">
-            <div className="text-sm text-stone-500">{isCs ? 'Souhrnné skóre' : 'Overall score'}</div>
+            <div className="mt-4">
+              <SelfAuditGaugeMui score={totalScore} />
+            </div>
+            <div className="mt-4 text-sm text-stone-500">{isCs ? 'Souhrnné skóre' : 'Overall score'}</div>
             <div className="text-3xl font-bold text-stone-900">{totalScore} / 100</div>
             <div className={`mt-2 text-sm font-semibold ${getSelfAuditRatingColorClass(totalScore)}`}>
               {getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en')}
@@ -209,9 +221,40 @@ export default function SelfAuditElectricity() {
             >
               {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit' : 'Evaluate')}
             </button>
+            {showPdfButton ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
+                  const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
+                  await generateElectricitySelfAuditPdf({
+                    language: isCs ? 'cs' : 'en',
+                    coverColor: [250, 204, 21],
+                    coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
+                    coverLogoType: 'PNG',
+                    title: isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
+                    accommodationProfileLabel,
+                    cards: CARDS.map((card) => ({
+                      title: isCs ? card.title.cs : card.title.en,
+                      question: card.question ? (isCs ? card.question.cs : card.question.en) : undefined,
+                      description: isCs ? card.description.cs : card.description.en,
+                      score: scores[card.id] ?? 0,
+                      ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en'),
+                    })),
+                    totalScore,
+                    totalRatingLabel: getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en'),
+                  });
+                }}
+                className="px-6 py-3 rounded-2xl bg-stone-900 text-white font-bold uppercase tracking-widest text-sm shadow-md hover:bg-stone-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              >
+                {isCs ? 'Generovat PDF' : 'Generate PDF'}
+              </button>
+            ) : null}
           </div>
         </div>
       </main>
     </div>
   );
 }
+
+

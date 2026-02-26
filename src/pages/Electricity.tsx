@@ -628,9 +628,9 @@ export default function Electricity() {
             )}
             <Link
               to="/electricityaudit"
-              className="px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-stone-100 transition-all"
+              className="px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-yellow-400 hover:scale-105 transition-all"
             >
-              {isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit'}
+              {isCs ? 'Přejít na Self-Audit elektřiny' : 'Go to Electricity Self-Audit'}
             </Link>
           </div>
         </div>

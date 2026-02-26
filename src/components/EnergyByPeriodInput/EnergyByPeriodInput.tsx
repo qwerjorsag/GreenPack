@@ -22,9 +22,10 @@ const formatEmissions = (value: number) => {
 export default function EnergyByPeriodInput({ periods, values, onChange }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
-  const [showUnitsKwh, setShowUnitsKwh] = React.useState(true);
-  const [showUnitsEm, setShowUnitsEm] = React.useState(true);
-  const [showUnitsGj, setShowUnitsGj] = React.useState(true);
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+  const [showUnitsKwh, setShowUnitsKwh] = React.useState(!isMobile);
+  const [showUnitsEm, setShowUnitsEm] = React.useState(!isMobile);
+  const [showUnitsGj, setShowUnitsGj] = React.useState(!isMobile);
   const periodsSlice = periods.slice(0, 3);
 
   const totals = periodsSlice.map((_, idx) =>
