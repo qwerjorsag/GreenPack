@@ -1,0 +1,68 @@
+{
+  "cards": [
+    {
+      "id": "water_leak_detection",
+      "weight": 1,
+      "title": {
+        "cs": "Detekce úniků vody",
+        "en": "Water Leak Detection"
+      },
+      "question": {
+        "cs": "Máte zavedený systém pro rychlé odhalení úniků vody?",
+        "en": "Do you have a system in place to quickly detect water leaks?"
+      },
+      "description": {
+        "cs": "Pravidelné kontroly a monitoring pomáhají minimalizovat ztráty vody a náklady.",
+        "en": "Regular checks and monitoring help minimize water loss and costs."
+      }
+    },
+    {
+      "id": "low_flow_fixtures",
+      "weight": 1,
+      "title": {
+        "cs": "Úsporné armatury",
+        "en": "Low-flow Fixtures"
+      },
+      "question": {
+        "cs": "Používáte úsporné sprchy a perlátory u umyvadel?",
+        "en": "Do you use low-flow showers and faucet aerators?"
+      },
+      "description": {
+        "cs": "Úsporné armatury výrazně snižují spotřebu vody bez ztráty komfortu.",
+        "en": "Low-flow fixtures reduce water use without sacrificing comfort."
+      }
+    },
+    {
+      "id": "linen_towel_reuse",
+      "weight": 1,
+      "title": {
+        "cs": "Opakované použití prádla",
+        "en": "Linen & Towel Reuse"
+      },
+      "question": {
+        "cs": "Nabízíte hostům možnost opakovaného použití ručníků a ložního prádla?",
+        "en": "Do you offer guests the option to reuse towels and bed linen?"
+      },
+      "description": {
+        "cs": "Re-use programy snižují spotřebu vody i energie při praní.",
+        "en": "Re-use programs reduce both water and energy used for laundry."
+      }
+    },
+    {
+      "id": "water_consumption_tracking",
+      "weight": 1,
+      "title": {
+        "cs": "Sledování spotřeby vody",
+        "en": "Water Consumption Tracking"
+      },
+      "question": {
+        "cs": "Sledujete spotřebu vody pravidelně a vyhodnocujete odchylky?",
+        "en": "Do you regularly track water consumption and review deviations?"
+      },
+      "description": {
+        "cs": "Průběžné sledování pomáhá rychle reagovat na nárůst spotřeby.",
+        "en": "Ongoing tracking helps quickly react to usage spikes."
+      }
+    }
+  ]
+}

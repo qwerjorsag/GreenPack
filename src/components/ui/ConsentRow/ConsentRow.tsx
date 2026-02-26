@@ -6,11 +6,11 @@ type Props = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label: string;
-  themeColor?: 'yellow' | 'stone';
+  themeColor?: 'yellow' | 'stone' | 'blue';
 };
 
 export default function ConsentRow({ checked, onChange, label, themeColor = 'yellow' }: Props) {
-  const accent = themeColor === 'yellow' ? '#facc15' : '#0f172a';
+  const accent = themeColor === 'yellow' ? '#facc15' : themeColor === 'blue' ? '#3b82f6' : '#0f172a';
   return (
     <FormControlLabel
       control={

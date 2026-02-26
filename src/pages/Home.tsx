@@ -40,6 +40,39 @@ export default function Home() {
       hoverBorder: 'hover:border-stone-500',
       hoverShadow: 'hover:shadow-stone-900/10',
       ctaText: 'text-stone-700'
+    },
+    {
+      id: 'self-audit-electricity',
+      title: i18n.language === 'cs' ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
+      description: i18n.language === 'cs' ? 'Rychlé zhodnocení úspor a opatření pro váš provoz.' : 'Quick assessment of savings and measures for your operation.',
+      icon: <Zap className="w-8 h-8 text-amber-600 group-hover:text-amber-700 transition-colors" />,
+      path: '/electricityaudit',
+      color: 'bg-amber-50',
+      hoverBorder: 'hover:border-amber-500',
+      hoverShadow: 'hover:shadow-amber-900/10',
+      ctaText: 'text-amber-700'
+    },
+    {
+      id: 'self-audit-water',
+      title: i18n.language === 'cs' ? 'Self-Audit vody' : 'Water Self-Audit',
+      description: i18n.language === 'cs' ? 'Rychlé zhodnocení spotřeby vody a úsporných opatření.' : 'Quick assessment of water use and saving measures.',
+      icon: <Droplets className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />,
+      path: '/wateraudit',
+      color: 'bg-blue-50',
+      hoverBorder: 'hover:border-blue-500',
+      hoverShadow: 'hover:shadow-blue-900/10',
+      ctaText: 'text-blue-600'
+    },
+    {
+      id: 'self-audit-waste',
+      title: i18n.language === 'cs' ? 'Self-Audit odpadu' : 'Waste Self-Audit',
+      description: i18n.language === 'cs' ? 'Rychlé zhodnocení třídění a prevence odpadu.' : 'Quick assessment of waste sorting and prevention.',
+      icon: <Trash2 className="w-8 h-8 text-stone-700 group-hover:text-stone-800 transition-colors" />,
+      path: '/wasteaudit',
+      color: 'bg-stone-100',
+      hoverBorder: 'hover:border-stone-500',
+      hoverShadow: 'hover:shadow-stone-900/10',
+      ctaText: 'text-stone-700'
     }
   ];
 
@@ -86,7 +119,7 @@ export default function Home() {
             </h2>
             <p className="text-emerald-100 text-lg mb-8 opacity-80">
               {i18n.language === 'cs'
-                ? 'Pomozte nám zmapovat ekologickou stopu evropských hotelů.'
+                ? 'Zmapujte energetickou náročnost svého ubytovacího zařízení a identifikujte prostor pro zlepšení.'
                 : 'Map your sustainability and discover room for improvement.'}
             </p>
           </motion.div>

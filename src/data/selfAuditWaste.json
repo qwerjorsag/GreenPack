@@ -1,0 +1,68 @@
+{
+  "cards": [
+    {
+      "id": "waste_sorting_system",
+      "weight": 1,
+      "title": {
+        "cs": "Třídění odpadu",
+        "en": "Waste Sorting"
+      },
+      "question": {
+        "cs": "Máte na provozu zavedený systém třídění odpadu?",
+        "en": "Do you have a waste sorting system in place?"
+      },
+      "description": {
+        "cs": "Správné třídění snižuje množství směsného odpadu a náklady.",
+        "en": "Proper sorting reduces mixed waste volume and costs."
+      }
+    },
+    {
+      "id": "food_waste_reduction",
+      "weight": 1,
+      "title": {
+        "cs": "Snižování potravinového odpadu",
+        "en": "Food Waste Reduction"
+      },
+      "question": {
+        "cs": "Sledujete a aktivně snižujete potravinový odpad?",
+        "en": "Do you monitor and actively reduce food waste?"
+      },
+      "description": {
+        "cs": "Monitoring pomáhá optimalizovat nákupy a snížit ztráty.",
+        "en": "Tracking helps optimize purchasing and reduce losses."
+      }
+    },
+    {
+      "id": "single_use_reduction",
+      "weight": 1,
+      "title": {
+        "cs": "Omezení jednorázových plastů",
+        "en": "Single-use Reduction"
+      },
+      "question": {
+        "cs": "Omezujete používání jednorázových obalů a plastů?",
+        "en": "Do you reduce the use of single-use packaging and plastics?"
+      },
+      "description": {
+        "cs": "Snížení jednorázových obalů zlepšuje ekologickou stopu.",
+        "en": "Reducing single-use packaging improves environmental impact."
+      }
+    },
+    {
+      "id": "recycling_partner",
+      "weight": 1,
+      "title": {
+        "cs": "Recyklační partner",
+        "en": "Recycling Partner"
+      },
+      "question": {
+        "cs": "Máte spolehlivého partnera pro recyklaci odpadu?",
+        "en": "Do you have a reliable partner for waste recycling?"
+      },
+      "description": {
+        "cs": "Spolupráce s partnerem zajišťuje správné zpracování odpadu.",
+        "en": "A partner ensures proper waste processing and recovery."
+      }
+    }
+  ]
+}
