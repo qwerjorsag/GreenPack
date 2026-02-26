@@ -140,7 +140,7 @@ export default function Electricity() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
-        <div id="pdf-tables">
+        <div id="pdf-tables" className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
           <SectionCard className="mb-12" data-pdf-card>
             <div className="mb-12">
               <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
