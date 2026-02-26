@@ -44,14 +44,14 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
       </div>
 
       <div className="gp-table-wrap">
-        <table className="gp-table">
+        <table className="gp-table table-fixed min-w-0">
           <thead className="gp-table-head">
             <tr>
-              <th className="gp-th gp-th-left">{isCs ? 'Rok' : 'Year'}</th>
-              <th className="gp-th gp-th-center">
+              <th className="gp-th gp-th-left w-10 px-2 md:px-4">{isCs ? 'Rok' : 'Year'}</th>
+              <th className="gp-th gp-th-center w-[45%] px-2 md:px-4">
                 {isCs ? 'Obnovitelné (kWh)' : 'Renewable (kWh)'}
               </th>
-              <th className="gp-th gp-th-center gp-th-right">
+              <th className="gp-th gp-th-center gp-th-right w-[45%] px-2 md:px-4">
                 {isCs ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)'}
               </th>
             </tr>
@@ -59,13 +59,13 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
           <tbody>
             {rows.map((row) => (
               <tr key={row.year} className="gp-row">
-                <td className="gp-td font-medium">{row.year}</td>
-                <td className="gp-td gp-td-center">
+                <td className="gp-td font-medium w-10 px-2 md:px-4">{row.year}</td>
+                <td className="gp-td gp-td-center w-[45%] px-2 md:px-4">
                   <span className={renewableClass(row.renewablePct)}>
                     {formatWithSpaces(row.renewable)} ({row.renewablePct.toFixed(1).replace('.', ',')}%)
                   </span>
                 </td>
-                <td className="gp-td gp-td-center">
+                <td className="gp-td gp-td-center w-[45%] px-2 md:px-4">
                   {formatWithSpaces(row.nonRenewable)} ({row.nonRenewablePct.toFixed(1).replace('.', ',')}%)
                 </td>
               </tr>

@@ -196,11 +196,11 @@ export default function EnergyConsumptionTable({
             <table className="gp-table">
               <thead className="gp-table-head">
                 <tr>
-                  <th className="gp-th gp-th-left">{t.year}</th>
+                  <th className="gp-th gp-th-left px-1 md:px-4">{t.year}</th>
                   {years.map((year, idx) => (
                     <th
                       key={year}
-                      className={`gp-th gp-th-center ${idx === years.length - 1 ? 'gp-th-right' : ''}`}
+                      className={`gp-th gp-th-center px-1 md:px-4 ${idx === years.length - 1 ? 'gp-th-right' : ''}`}
                     >
                       {year}
                     </th>
@@ -232,9 +232,9 @@ export default function EnergyConsumptionTable({
                   },
                 ].map((rowItem) => (
                   <tr key={rowItem.key} className="gp-row">
-                    <td className="gp-td font-medium">{rowItem.label}</td>
+                    <td className="gp-td px-1 md:px-4 font-medium">{rowItem.label}</td>
                     {rowItem.values.map((value, idx) => (
-                      <td key={`${rowItem.key}-${idx}`} className="gp-td gp-td-center">
+                      <td key={`${rowItem.key}-${idx}`} className="gp-td gp-td-center px-1 md:px-4">
                         {rowItem.key === 'evaluation' && value && typeof value === 'object' ? (
                           <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${evalClass(value.color)}`}>
                             {value.label}

@@ -60,7 +60,7 @@ export default function Waste() {
         themeColor="stone"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16">
+      <main className="max-w-5xl mx-auto px-3 md:px-6 py-16">
         <div className="gp-card">
           <div className="mb-12">
             <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="stone" />

@@ -225,9 +225,9 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       max="100"
                       value={row.occupancyRate}
                       onChange={(e) => updatePeriod(row.id, 'occupancyRate', e.target.value)}
-                      className="w-full p-1.5 md:p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      className="w-full p-1.5 md:p-2 pr-2 md:pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none">%</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none hidden md:inline">%</span>
                   </div>
                 </td>
               ))}
@@ -290,9 +290,9 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         const raw = e.target.value.replace(/\s/g, '');
                         updatePeriod(row.id, 'floorArea', raw);
                       }}
-                      className="w-full p-1.5 md:p-2 pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                      className="w-full p-1.5 md:p-2 pr-2 md:pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
-                    <span className="absolute right-3 top-[19px] -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none">m²</span>
+                    <span className="absolute right-3 top-[19px] -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none hidden md:inline">m²</span>
                   </div>
                 </td>
               ))}

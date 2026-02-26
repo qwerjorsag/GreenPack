@@ -140,14 +140,16 @@ export default function EnergyManagementTable({
         </div>
       ) : null}
 
-      <div className="overflow-x-auto">
+      <div className="gp-table-wrap">
         <table className="min-w-full text-sm text-left border-separate border-spacing-0">
           <thead className="text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
-              <th className="px-4 py-3 rounded-tl-2xl">{isCs ? 'Metrika' : 'Metric'}</th>
+              <th className="px-1 md:px-4 py-3 rounded-tl-2xl w-10 md:w-auto">
+                {isCs ? 'Metrika' : 'Metric'}
+              </th>
               <th className="px-4 py-3 hidden md:table-cell">{isCs ? 'Očekávaná hodnota' : 'Expected value'}</th>
-              <th className="px-4 py-3">{isCs ? 'Výsledek' : 'Results'}</th>
-              <th className="px-4 py-3 rounded-tr-2xl">{isCs ? 'Doporučení' : 'Recommendation'}</th>
+              <th className="px-1 md:px-4 py-3">{isCs ? 'Výsledek' : 'Results'}</th>
+              <th className="px-1 md:px-4 py-3 rounded-tr-2xl">{isCs ? 'Doporučení' : 'Recommendation'}</th>
             </tr>
           </thead>
           <tbody className="bg-white">
@@ -175,17 +177,17 @@ export default function EnergyManagementTable({
 
               return (
                 <tr key={metric.key} className={`border-b border-stone-100 last:border-0 ${rowClass}`}>
-                  <td className="px-4 py-3">
+                  <td className="px-1 md:px-4 py-3 w-10 md:w-auto">
                     <div className={`font-semibold ${rowTextClass}`}>
                       {isCs ? metric.labelCs : metric.labelEn}
                     </div>
                   </td>
                   <td className={`px-4 py-3 ${rowTextClass} hidden md:table-cell`}>{range ? range.label : '-'}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-1 md:px-4 py-3">
                     <div className={`font-semibold ${rowTextClass}`}>{formatValue(value)}</div>
                     <div className={`text-xs font-semibold ${statusClass}`}>{statusText}</div>
                   </td>
-                  <td className={`px-4 py-3 ${rowTextClass}`}>{recommendation}</td>
+                  <td className={`px-1 md:px-4 py-3 ${rowTextClass}`}>{recommendation}</td>
                 </tr>
               );
             })}
