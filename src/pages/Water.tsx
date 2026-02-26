@@ -65,9 +65,9 @@ export default function Water() {
           <div className="mb-12">
             <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="blue" />
           </div>
-          <div>
+
             <PeriodDataInput data={periods} onChange={setPeriods} themeColor="blue" />
-          </div>
+
         </div>
 
         <div className="flex justify-center mb-12">

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -179,13 +179,13 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
         <table className="w-full table-auto text-[11px] md:text-sm text-left">
           <thead className="text-[10px] md:text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
-                <th className="px-2 md:px-4 py-2 md:py-3 rounded-tl-xl whitespace-normal break-words">
+                <th className="px-2 md:px-4 py-3 md:py-4 rounded-tl-xl whitespace-normal break-words">
                   {isCs ? 'Období' : 'Period'}
                 </th>
                 {data.slice(0, 3).map((row, index) => (
                   <th
                     key={row.id}
-                    className={`px-2 md:px-4 py-2 md:py-3 whitespace-normal break-words ${index === 2 ? 'rounded-tr-xl' : ''}`}
+                    className={`px-2 md:px-4 py-3 md:py-4 whitespace-normal break-words ${index === 2 ? 'rounded-tr-xl' : ''}`}
                   >
                     {index === 0 ? (
                       <input
@@ -198,7 +198,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         updatePeriod(row.id, 'period', onlyDigits);
                       }}
                       placeholder={currentYear}
-                        className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
+                        className="w-full p-1.5 md:p-2 h-[34px] md:h-[38px] bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                       />
                   ) : (
                     <HoverTooltip content={autoText}>
@@ -213,11 +213,11 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
           </thead>
           <tbody>
             <tr className="border-b border-stone-100">
-              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+              <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
                 {isCs ? 'Obsazenost (%)' : 'Occupancy rate (%)'}
               </td>
               {data.slice(0, 3).map((row) => (
-                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
+                <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
                   <div className="relative">
                     <input
                       type="number"
@@ -233,11 +233,11 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
               ))}
             </tr>
             <tr className="border-b border-stone-100">
-              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+              <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
                 {isCs ? 'Provozní dny' : 'Operating days'}
               </td>
               {data.slice(0, 3).map((row) => (
-                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
+                <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
                   <div className="relative">
                     <input
                       type="number"
@@ -257,11 +257,11 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
               ))}
             </tr>
             <tr className="border-b border-stone-100">
-              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+              <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
                 {isCs ? 'Počet pokojů' : 'Number of rooms'}
               </td>
               {data.slice(0, 3).map((row) => (
-                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
+                <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
                   <div className="relative">
                     <input
                       type="number"
@@ -275,11 +275,11 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
               ))}
             </tr>
             <tr className="border-b border-stone-100">
-              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+              <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
                 {isCs ? 'Podlahová plocha (m²)' : 'Floor area (m²)'}
               </td>
               {data.slice(0, 3).map((row) => (
-                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top">
+                <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
                   <div className="relative">
                     <input
                       type="text"
@@ -298,11 +298,11 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
               ))}
             </tr>
             <tr className="border-b border-stone-100">
-              <td className="px-2 md:px-4 py-2 md:py-3 font-medium">
+              <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
                 {isCs ? 'Pokojonoci' : 'Room night'}
               </td>
               {data.slice(0, 3).map((row) => (
-                <td key={row.id} className="px-2 md:px-4 py-2 md:py-3 align-top bg-stone-50/50">
+                <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top bg-stone-50/50">
                   <HoverTooltip content={autoText}>
                     <div className="h-[34px] md:h-[38px] flex items-center justify-center cursor-not-allowed">
                       {Math.floor(calculateRoomNight(row)).toLocaleString('cs-CZ')}
@@ -317,3 +317,5 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
     </div>
   );
 }
+
+

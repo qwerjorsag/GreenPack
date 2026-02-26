@@ -1,6 +1,7 @@
- // EnergyConsumptionTable: extend templateRows below to add new indicators.
+// EnergyConsumptionTable: extend templateRows below to add new indicators.
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import DataTable from '../DataTable';
 
 type NormalizationTarget = {
   id: string;
@@ -169,7 +170,7 @@ export default function EnergyConsumptionTable({
         const normalized = converted === null || denom === null || denom === 0 ? null : converted / denom;
         return { year, raw, converted, normalized };
       });
-      return { row, target, byYear };
+      return { row, byYear };
     });
   }, [rows, years, values, denominators]);
 
@@ -178,78 +179,81 @@ export default function EnergyConsumptionTable({
     return unit.replace('RN', 'PN').replace('/year', '/rok');
   };
 
+  const evalClass = (color: string) => {
+    if (color === 'red') return 'bg-red-100 text-red-700';
+    if (color === 'green') return 'bg-emerald-100 text-emerald-700';
+    if (color === 'orange') return 'bg-amber-100 text-amber-700';
+    return 'bg-stone-100 text-stone-600';
+  };
+
   return (
-    <div className="energy-consumption-table">
+    <div className="space-y-6">
       {computed.map(({ row, byYear }) => (
-        <div key={row.id} className="table-block">
-          <div className="table-title">
+        <div key={row.id}>
+          <div className="text-lg font-bold text-stone-900 mb-3">
             {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
           </div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th className="sticky left col-year">{t.year}</th>
-                  {years.map((year) => (
-                    <th key={`${row.id}-year-${year}`}>{year}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="sticky left col-year">{t.raw} ({row.baseUnit})</td>
-                  {byYear.map((cell) => (
-                    <td key={`${row.id}-raw-${cell.year}`} className="text-center">{formatNumber(cell.raw, 0)}</td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="sticky left col-year">{t.converted}</td>
-                  {byYear.map((cell) => (
-                    <td key={`${row.id}-conv-${cell.year}`} className="text-center">{formatNumber(cell.converted, 2)}</td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="sticky left col-year">
-                    {t.normalized} ({unitLabel(row.normalizationTargets[0].unitLabel)})
-                  </td>
-                  {byYear.map((cell) => (
-                    <td key={`${row.id}-norm-${cell.year}`} className="text-center">{formatNumber(cell.normalized, 3)}</td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="sticky left col-year">{t.percentChange}</td>
-                  {byYear.map((cell, idx) => {
-                    const previous = idx > 0 ? byYear[idx - 1] : null;
-                    const pct = percentChange(cell.raw, previous?.raw ?? null);
+          <DataTable
+            columns={[
+              {
+                id: 'label',
+                header: t.year,
+                headerClassName: 'px-4 py-3 rounded-tl-xl',
+                cellClassName: 'px-4 py-3 font-medium bg-stone-50/50',
+                render: (row) => row.label,
+              },
+              ...years.map((year, idx) => ({
+                id: `y-${year}`,
+                header: year,
+                headerClassName: `px-4 py-3 text-center ${idx === years.length - 1 ? 'rounded-tr-xl' : ''}`,
+                cellClassName: 'px-4 py-3 text-center',
+                render: (row) => {
+                  const value = row.values[idx];
+                  if (row.key === 'evaluation' && value && typeof value === 'object') {
                     return (
-                      <td key={`${row.id}-pct-${cell.year}`} className="text-center">
-                        {pct === null ? '—' : `${formatNumber(pct, 1)}%`}
-                      </td>
+                      <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${evalClass(value.color)}`}>
+                        {value.label}
+                      </span>
                     );
-                  })}
-                </tr>
-                <tr>
-                  <td className="sticky left col-year">{t.evaluation}</td>
-                  {byYear.map((cell, idx) => {
-                    const previous = idx > 0 ? byYear[idx - 1] : null;
-                    const pct = percentChange(cell.raw, previous?.raw ?? null);
-                    const evalInfo = evaluateDisplay(pct, isCs);
-                    return (
-                      <td key={`${row.id}-eval-${cell.year}`} className={`eval ${evalInfo.color} text-center`}>
-                        {evalInfo.label}
-                      </td>
-                    );
-                  })}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="report-block">
-            <div className="report-title">
+                  }
+                  return value;
+                },
+              })),
+            ]}
+            rows={[
+              { key: 'raw', label: `${t.raw} (${row.baseUnit})`, values: byYear.map((c) => formatNumber(c.raw, 0)) },
+              { key: 'converted', label: t.converted, values: byYear.map((c) => formatNumber(c.converted, 2)) },
+              { key: 'normalized', label: `${t.normalized} (${unitLabel(row.normalizationTargets[0].unitLabel)})`, values: byYear.map((c) => formatNumber(c.normalized, 3)) },
+              {
+                key: 'percent',
+                label: t.percentChange,
+                values: byYear.map((cell, idx) => {
+                  const previous = idx > 0 ? byYear[idx - 1] : null;
+                  const pct = percentChange(cell.raw, previous?.raw ?? null);
+                  return pct === null ? '—' : `${formatNumber(pct, 1)}%`;
+                }),
+              },
+              {
+                key: 'evaluation',
+                label: t.evaluation,
+                values: byYear.map((cell, idx) => {
+                  const previous = idx > 0 ? byYear[idx - 1] : null;
+                  const pct = percentChange(cell.raw, previous?.raw ?? null);
+                  return evaluateDisplay(pct, isCs);
+                }),
+              },
+            ]}
+            getRowId={(row) => row.key}
+            getRowClassName={(row) => (row.key === 'evaluation' ? 'font-semibold' : '')}
+            tableClassName="text-sm text-left"
+            className="mb-4"
+          />
+          <div className="mt-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+            <div className="text-base font-bold text-stone-900 mb-2">
               {(isCs ? 'Report ' : 'Report ') +
                 (row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName)}
             </div>
-            <div className="report-list">
+            <div className="grid gap-2 text-sm text-stone-600">
               {byYear.map((cell, idx) => {
                 if (idx === 0) return null;
                 const previous = byYear[idx - 1];
@@ -257,8 +261,8 @@ export default function EnergyConsumptionTable({
                 const category = reportCategory(pct);
                 const text = reportText(pct, category, isCs);
                 return (
-                  <div key={`${row.id}-report-${cell.year}`} className="report-item">
-                    <span className="report-year">{previous.year} → {cell.year}:</span> {text}
+                  <div key={`${row.id}-report-${cell.year}`}>
+                    <span className="font-semibold text-stone-900">{previous.year} → {cell.year}:</span> {text}
                   </div>
                 );
               })}
@@ -266,67 +270,6 @@ export default function EnergyConsumptionTable({
           </div>
         </div>
       ))}
-
-      <style>{`
-        .energy-consumption-table {
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-          color: #1c1917;
-        }
-        .table-block { margin-bottom: 20px; }
-        .table-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #1c1917; }
-        .table-wrap {
-          overflow-x: auto;
-          border: 1px solid #e7e5e4;
-          border-radius: 14px;
-          background: white;
-        }
-        table {
-          width: 100%;
-          border-collapse: separate;
-          border-spacing: 0;
-          min-width: 320px;
-          table-layout: auto;
-        }
-        thead th {
-          position: sticky;
-          top: 0;
-          background: #f5f5f4;
-          color: #78716c;
-          font-size: 11px;
-          text-transform: uppercase;
-          z-index: 2;
-          border-bottom: 1px solid #e7e5e4;
-        }
-        th, td {
-          padding: 8px;
-          border-bottom: 1px solid #f0f0ef;
-          vertical-align: top;
-          background: white;
-          font-size: 0.875rem;
-        }
-        .sticky.left {
-          position: sticky;
-          left: 0;
-          z-index: 3;
-          background: #fafaf9;
-        }
-        .col-year { min-width: 64px; text-align: center; }
-        th, td { word-break: break-word; }
-        .eval.red { background: #fee2e2; color: #991b1b; font-weight: 600; }
-        .eval.green { background: #dcfce7; color: #166534; font-weight: 600; }
-        .eval.orange { background: #ffedd5; color: #9a3412; font-weight: 600; }
-        .eval.neutral { background: #f5f5f4; color: #57534e; font-weight: 600; }
-        .report-block {
-          margin-top: 8px;
-          padding: 10px 12px;
-          border: 1px solid #e7e5e4;
-          border-radius: 12px;
-          background: #fafaf9;
-        }
-        .report-title { font-weight: 700; font-size: 16px; margin-bottom: 6px; color: #1c1917; }
-        .report-list { display: grid; gap: 6px; font-size: 14px; color: #57534e; }
-        .report-year { font-weight: 600; color: #1c1917; }
-      `}</style>
     </div>
   );
 }

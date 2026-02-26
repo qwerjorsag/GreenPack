@@ -12,7 +12,7 @@ import EnergyConsumptionTable from '../components/EnergyConsumptionTable';
 import EnergyRenewablesSummary from '../components/EnergyRenewablesSummary';
 import BenchmarksThresholdsTable from '../components/BenchmarksThresholdsTable';
 import { generateElectricityVectorPdf } from '../functions/generateElectricityVectorPdf';
-import { ConsentRow, PrimaryButton, SecondaryButton, SectionCard } from '../components/ui';
+import { ConsentRow, PrimaryButton, SecondaryButton } from '../components/ui';
 import { useElectricityDerived } from '../hooks/useElectricityDerived';
 import { useElectricityValidation } from '../hooks/useElectricityValidation';
 import { buildElectricityPdfData } from '../functions/buildElectricityPdfData';
@@ -140,14 +140,15 @@ export default function Electricity() {
       />
 
       <main className="max-w-5xl mx-auto px-6 py-16">
-        <div id="pdf-tables" className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
-          <SectionCard className="mb-12" data-pdf-card>
+        <div id="pdf-tables">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12">
             <div className="mb-12">
               <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
             </div>
-            <div className="mb-12">
               <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />
-            </div>
+          </div>
+
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <div className="mb-12">
               <EnergyByPeriodInput
                 periods={periods}
@@ -155,38 +156,38 @@ export default function Electricity() {
                 onChange={setEnergyByPeriod}
               />
             </div>
-            <div className="mb-12" data-pdf-hide>
-              <EnergyEmissionsInput
-                themeColor="yellow"
-                values={energyValues}
-                onValuesChange={setEnergyValues}
-              />
-            </div>
-          </SectionCard>
+            {/*<div className="mb-12" data-pdf-hide>*/}
+            {/*  <EnergyEmissionsInput*/}
+            {/*    themeColor="yellow"*/}
+            {/*    values={energyValues}*/}
+            {/*    onValuesChange={setEnergyValues}*/}
+            {/*  />*/}
+            {/*</div>*/}
+          </div>
 
-          <SectionCard className="mb-12" data-pdf-card>
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <EnergyConsumptionTable
               years={yearsForConsumption}
               denominators={denominatorsForConsumption}
               values={valuesForConsumption}
             />
-          </SectionCard>
+          </div>
 
-          <SectionCard className="mb-12" data-pdf-card>
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <EnergyRenewablesSummary
               years={yearsForConsumption}
               values={energyByPeriod}
             />
-          </SectionCard>
+          </div>
 
-          <SectionCard className="mb-12" data-pdf-card>
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             <BenchmarksThresholdsTable
               years={yearsForConsumption}
               valuesByYear={benchmarkValues}
             />
-          </SectionCard>
+          </div>
 
-          <SectionCard className="mb-12" data-pdf-card>
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-stone-200 mb-12" data-pdf-card>
             {periods.slice(0, 3).map((period, idx) => (
               <div key={period.id} className={idx === 0 ? '' : 'mt-12'}>
                 <EnergyManagementTable
@@ -203,7 +204,7 @@ export default function Electricity() {
                 />
               </div>
             ))}
-          </SectionCard>
+          </div>
         </div>
 
         <div className="flex justify-center mb-12">
