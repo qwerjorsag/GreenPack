@@ -60,7 +60,7 @@ export default function PageHeader({ title, description, icon, themeColor, title
           <div className={`w-12 h-12 ${theme.iconBg} rounded-2xl flex items-center justify-center`}>
             {icon}
           </div>
-          <h1 className={`text-4xl font-black uppercase tracking-tighter text-white ${titleClassName ?? ''}`}>
+          <h1 className={`text-4xl font-black uppercase tracking-tighter text-stone-200 ${titleClassName ?? ''}`}>
             {title}
           </h1>
         </div>

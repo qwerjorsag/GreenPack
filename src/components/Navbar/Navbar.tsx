@@ -69,8 +69,8 @@ export default function Navbar() {
 
   return (
     <nav className={`${theme.bg} ${theme.text} transition-all duration-300 border-b ${theme.border} sticky top-0 z-50 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-1 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-1 sm:px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-0">
           <Link to="https://www.komora.cz/" className="flex items-center hover:opacity-80 transition-opacity">
             <div className="h-10 w-40 flex items-center">
               <img

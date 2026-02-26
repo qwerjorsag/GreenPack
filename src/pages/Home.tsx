@@ -37,7 +37,7 @@ export default function Home() {
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-6xl font-black tracking-tighter uppercase mb-4 text-white"
+                className="text-6xl font-black tracking-tighter uppercase mb-4 text-stone-200"
               >
                 GreenPack
               </motion.h1>
@@ -58,7 +58,7 @@ export default function Home() {
             transition={{ delay: 0.2 }}
             className="max-w-2xl"
           >
-            <h2 className="text-4xl font-bold mb-6 leading-tight text-white">
+            <h2 className="text-4xl font-bold mb-6 leading-tight text-stone-200">
               {i18n.language === 'cs' 
                 ? 'Budoucnost ubytování je v udržitelnosti.' 
                 : 'The future of accommodation is in sustainability.'}
