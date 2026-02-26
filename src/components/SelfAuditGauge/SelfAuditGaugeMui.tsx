@@ -32,16 +32,16 @@ export default function SelfAuditGaugeMui({ score, ratingLabel, caption }: Props
           endAngle={90}
           innerRadius="70%"
           outerRadius="100%"
-          width={240}
-          height={140}
+          width={192}
+          height={112}
           sx={{
             [`& .${gaugeClasses.valueArc}`]: { fill: color },
             [`& .${gaugeClasses.referenceArc}`]: { fill: '#e5e7eb' },
             [`& .${gaugeClasses.valueText}`]: { display: 'none' },
           }}
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center translate-y-8">
-          <div className="text-2xl font-bold text-stone-900">{value} / 100</div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center translate-y-10">
+          <div className="text-xl font-bold text-stone-900">{value} / 100</div>
           {ratingLabel ? (
             <div className="mt-1 text-sm font-semibold" style={{ color }}>
               {ratingLabel}

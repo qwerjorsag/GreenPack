@@ -17,6 +17,7 @@ interface PdfData {
   coverLogoType?: 'PNG' | 'JPG' | 'JPEG';
   title: string;
   accommodationProfileLabel?: string;
+  gaugeImage?: string;
   cards: CardData[];
   totalScore: number;
   totalRatingLabel?: string;
@@ -61,9 +62,9 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   doc.addFont('NotoSans.ttf', 'NotoSans', 'bold');
   doc.setFont('NotoSans', 'normal');
 
-  const addTitle = (text: string, size = 12, barHeight = 8) => {
+  const addTitle = (text: string, size = 12, barHeight = 8, fillColor?: [number, number, number]) => {
     const barWidth = 210 - marginX * 2;
-    const color = data.coverColor ?? [245, 245, 244];
+    const color = fillColor ?? data.coverColor ?? [245, 245, 244];
     doc.setFillColor(color[0], color[1], color[2]);
     doc.rect(marginX, cursorY - 6, barWidth, barHeight, 'F');
     doc.setFont('NotoSans', 'normal');
@@ -238,7 +239,15 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
 
   data.cards.forEach(drawCard);
 
-  addTitle(data.language === 'cs' ? 'Souhrnné skóre' : 'Overall score', 12, 8);
+  cursorY += 10;
+  doc.setFont('NotoSans', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(28, 25, 23);
+  const overallTitle = data.language === 'cs' ? 'Souhrnné skóre' : 'Overall score';
+  const overallWidth = doc.getTextWidth(overallTitle);
+  doc.text(overallTitle, (210 - overallWidth) / 2, cursorY);
+  doc.setFont('NotoSans', 'normal');
+  cursorY += 6;
 
   const ensureSpace = (height: number) => {
     if (cursorY + height > 280) {
@@ -251,26 +260,39 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
     const gaugeHeight = 70;
     ensureSpace(gaugeHeight);
     const centerX = 105;
-    const centerY = cursorY + 50;
+    const centerY = cursorY + 46;
     const radius = 38;
+    const drawArc = (startDeg: number, endDeg: number) => {
+      const step = 4;
+      const points: Array<[number, number]> = [];
+      const dir = startDeg > endDeg ? -1 : 1;
+      for (let deg = startDeg; dir > 0 ? deg <= endDeg : deg >= endDeg; deg += dir * step) {
+        const rad = (deg * Math.PI) / 180;
+        points.push([centerX + radius * Math.cos(rad), centerY + radius * Math.sin(rad)]);
+      }
+      if (points.length < 2) return;
+      for (let i = 0; i < points.length - 1; i += 1) {
+        doc.line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
+      }
+    };
 
     // segments: red, orange, amber, green, emerald
     const segments = [
-      { from: 180, to: 144, color: [220, 38, 38] },
-      { from: 144, to: 108, color: [194, 65, 12] },
-      { from: 108, to: 72, color: [217, 119, 6] },
-      { from: 72, to: 36, color: [22, 163, 74] },
-      { from: 36, to: 0, color: [4, 120, 87] },
+      { from: 180, to: 216, color: [220, 38, 38] },
+      { from: 216, to: 252, color: [194, 65, 12] },
+      { from: 252, to: 288, color: [217, 119, 6] },
+      { from: 288, to: 324, color: [22, 163, 74] },
+      { from: 324, to: 360, color: [4, 120, 87] },
     ];
 
     doc.setLineWidth(6);
     segments.forEach((seg) => {
       doc.setDrawColor(seg.color[0], seg.color[1], seg.color[2]);
-      (doc as any).arc(centerX, centerY, radius, seg.from, seg.to);
+      drawArc(seg.from, seg.to);
     });
 
     // needle
-    const angle = 180 - (data.totalScore / 100) * 180;
+    const angle = 180 + (data.totalScore / 100) * 180;
     const rad = (angle * Math.PI) / 180;
     const needleX = centerX + (radius - 8) * Math.cos(rad);
     const needleY = centerY + (radius - 8) * Math.sin(rad);
@@ -300,7 +322,17 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   };
 
   const ratingColorFn = (score: number) => ratingColor(score);
-  drawGauge();
+  if (data.gaugeImage) {
+    ensureSpace(64);
+    const imgWidth = 96;
+    const imgHeight = 64;
+    const x = (210 - imgWidth) / 2;
+    const y = cursorY;
+    doc.addImage(data.gaugeImage, 'PNG', x, y, imgWidth, imgHeight);
+    cursorY = y + imgHeight + 6;
+  } else {
+    drawGauge();
+  }
 
   doc.save('greenpack-electricity-self-audit.pdf');
 }
