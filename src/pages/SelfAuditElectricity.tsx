@@ -169,7 +169,7 @@ export default function SelfAuditElectricity() {
         themeColor="yellow"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16">
+      <main className="max-w-5xl mx-auto px-6 py-16 bg-yellow-100/80">
         <div className="mb-10">
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
         </div>

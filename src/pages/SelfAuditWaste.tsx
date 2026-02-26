@@ -133,7 +133,7 @@ export default function SelfAuditWaste() {
         themeColor="stone"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16">
+      <main className="max-w-5xl mx-auto px-6 py-16 bg-black/5">
         <div className="mb-10">
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="stone" />
         </div>

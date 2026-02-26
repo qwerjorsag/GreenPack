@@ -140,7 +140,7 @@ export default function Electricity() {
         titleClassName="!text-black"
       />
 
-      <main className="max-w-5xl mx-auto px-3 md:px-6 py-16">
+      <main className="max-w-5xl mx-auto px-3 md:px-6 py-16 bg-yellow-400/10">
         <div id="pdf-tables">
           <div className="gp-card">
             <div className="mb-12">

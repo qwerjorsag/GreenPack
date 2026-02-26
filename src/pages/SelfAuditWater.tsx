@@ -132,7 +132,7 @@ export default function SelfAuditWater() {
         themeColor="blue"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16">
+      <main className="max-w-5xl mx-auto px-6 py-16 bg-blue-50/90">
         <div className="mb-10">
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="blue" />
         </div>

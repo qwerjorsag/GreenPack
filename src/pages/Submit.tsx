@@ -60,7 +60,7 @@ export default function Submit() {
 
   return (
     <div className="min-h-screen bg-emerald-50/50 font-sans text-stone-900">
-      <main className="max-w-2xl mx-auto px-6 py-12 pb-24">
+      <main className="max-w-2xl mx-auto px-6 py-12 pb-24 bg-emerald-50/90">
         <div className="bg-white rounded-[2.5rem] shadow-sm border border-emerald-100 p-12">
           <h1 className="text-4xl font-black uppercase tracking-tighter mb-2">GreenPack</h1>
           <p className="text-stone-400 font-medium uppercase tracking-widest text-xs mb-12">
