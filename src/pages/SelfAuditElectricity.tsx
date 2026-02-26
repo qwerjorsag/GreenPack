@@ -190,12 +190,11 @@ export default function SelfAuditElectricity() {
         {showEvaluation ? (
           <div className="mt-12 text-center">
             <div className="mt-4">
-              <SelfAuditGaugeMui score={totalScore} />
-            </div>
-            <div className="mt-4 text-sm text-stone-500">{isCs ? 'Souhrnné skóre' : 'Overall score'}</div>
-            <div className="text-3xl font-bold text-stone-900">{totalScore} / 100</div>
-            <div className={`mt-2 text-sm font-semibold ${getSelfAuditRatingColorClass(totalScore)}`}>
-              {getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en')}
+              <SelfAuditGaugeMui
+                score={totalScore}
+                ratingLabel={getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en')}
+                caption={isCs ? 'Souhrnné skóre' : 'Overall score'}
+              />
             </div>
           </div>
         ) : null}
