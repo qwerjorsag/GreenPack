@@ -10,7 +10,7 @@ import {
 import PageHeader from '../components/PageHeader';
 import SelfAuditCard from '../components/SelfAuditCard';
 import AccommodationProfileInput, { ACCOMMODATION_PROFILES } from '../components/AccommodationProfileInput';
-import selfAuditData from '../data/selfAuditWaste.json';
+import selfAuditData from '../data/selfAuditCardsQuestions/selfAuditWaste.json';
 import { getSelfAuditRatingLabel, getSelfAuditRatingColorClass } from '../functions/selfAuditRating';
 import SelfAuditSummary from '../components/SelfAuditSummary';
 import { generateElectricitySelfAuditPdf } from '../functions/generateElectricitySelfAuditPdf';

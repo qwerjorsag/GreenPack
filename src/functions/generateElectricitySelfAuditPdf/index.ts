@@ -185,6 +185,7 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
     }
 
     doc.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+    doc.setLineWidth(0.6);
     doc.setFillColor(255, 255, 255);
     (doc as any).roundedRect(marginX, cursorY, contentWidth, cardHeight, 4, 4, 'FD');
 
