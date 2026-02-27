@@ -25,7 +25,7 @@ export default function PrimaryButton({ children, onClick, disabled, className, 
         'px-6 py-3 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-md transition-all',
         disabled
           ? 'bg-stone-300 text-black cursor-not-allowed'
-          : `${theme.bg} ${theme.text} ${theme.shadow} ${theme.hover} cursor-pointer`,
+          : `${theme.bg} ${theme.text} ${theme.shadow} ${theme.hover} cursor-pointer hover:scale-[1.05]`,
         className
       )}
     >

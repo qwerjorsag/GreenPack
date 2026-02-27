@@ -222,7 +222,7 @@ export default function Electricity() {
               onClick={handleSubmit}
               disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields || !consent}
             >
-              {isSubmitting ? (isCs ? 'Odesílám...' : 'Submitting...') : (isCs ? 'Odeslat' : 'Submit')}
+              {isSubmitting ? (isCs ? 'Generuji...' : 'Generating...') : (isCs ? 'Vygenerovat PDF' : 'Generate PDF')}
             </PrimaryButton>
             {showPdfButton && (
               <SecondaryButton onClick={handleGeneratePdf}>
@@ -231,7 +231,7 @@ export default function Electricity() {
             )}
             <Link
               to="/electricityaudit"
-              className="px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-yellow-400 hover:scale-105 transition-all"
+              className="mt-6 px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-yellow-400 hover:scale-105 transition-all"
             >
               {isCs ? 'Přejít na Self-Audit elektřiny' : 'Go to Electricity Self-Audit'}
             </Link>

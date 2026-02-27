@@ -210,6 +210,7 @@ export default function SelfAuditElectricity() {
               onClick={handleSubmit}
               disabled={!consent || isSubmitting}
               themeColor="yellow"
+              className="mt-3"
             >
               {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a stáhnout PDF' : 'Evaluate and download PDF')}
             </PrimaryButton>
