@@ -1,20 +1,72 @@
 ﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Droplets } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import AccommodationProfileInput from '../components/AccommodationProfileInput';
 import PeriodDataInput, { PeriodData } from '../components/PeriodDataInput';
+import BenchmarksThresholdsTable from '../components/BenchmarksThresholdsTable';
+import WaterSourceTable from '../components/WaterSourceTable';
+import WaterSummaryCard from '../components/WaterSummaryCard';
+import { ConsentRow, PrimaryButton } from '../components/ui';
 
 export default function Water() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
-  const [profile, setProfile] = useState('1');
+  const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [periods, setPeriods] = useState<PeriodData[]>([
     { id: '1', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
     { id: '2', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' },
     { id: '3', period: '', occupancyRate: '', operatingDays: '', rooms: '', floorArea: '' }
   ]);
+  const [waterSources, setWaterSources] = useState([
+    {
+      id: 'municipal',
+      labelCs: 'Městský vodovod',
+      labelEn: 'Municipal water supply',
+      withdrawn: '',
+      returned: '',
+    },
+    {
+      id: 'groundwater',
+      labelCs: 'Podzemní voda (vlastní vrt)',
+      labelEn: 'Groundwater (own borehole)',
+      withdrawn: '',
+      returned: '',
+    },
+    {
+      id: 'rainwater',
+      labelCs: 'Zachytávání dešťové vody',
+      labelEn: 'Rainwater harvesting',
+      withdrawn: '',
+      returned: '',
+    },
+    {
+      id: 'greywater',
+      labelCs: 'Recyklace / šedá voda',
+      labelEn: 'Recycled / greywater use',
+      withdrawn: '',
+      returned: '',
+    },
+    {
+      id: 'other',
+      labelCs: 'Jiné',
+      labelEn: 'Other',
+      withdrawn: '',
+      returned: '',
+    },
+  ]);
+  const yearsForConsumption = periods.slice(0, 3).map((p, idx) => Number(p.period || 0) || 2024 + idx);
+
+  const placeholderValues = {
+    energyIntensityM2: [null, null, null],
+    energyIntensityRoomNight: [null, null, null],
+    emissionsIntensityM2: [null, null, null],
+    emissionsIntensityRoomNight: [null, null, null],
+    renewableShare: [null, null, null],
+  };
 
   const isLeapYear = (year: number) => {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
@@ -37,8 +89,31 @@ export default function Water() {
     );
   });
 
+  const missingProfile = !profile;
+  const missingConsent = !consent;
+  const waterDisabled = isSubmitting || hasInvalidOperatingDays || hasEmptyFields || missingConsent || missingProfile;
+  const waterTooltip = i18n.language === 'cs'
+    ? missingProfile
+      ? 'Vyberte profil ubytování.'
+      : hasInvalidOperatingDays
+        ? 'Rok má max 365 dnů.'
+        : hasEmptyFields
+          ? 'Vyplňte všechna pole v tabulkách: Provozní údaje a Zdroje vody.'
+          : missingConsent
+            ? 'Je nutné souhlasit se zpracováním údajů.'
+            : ''
+    : missingProfile
+      ? 'Please select an accommodation profile.'
+      : hasInvalidOperatingDays
+        ? 'The year has a maximum of 365 days.'
+        : hasEmptyFields
+          ? 'Please complete all fields in the tables: Operational Data and Water Sources.'
+          : missingConsent
+            ? 'You must agree to data processing.'
+            : '';
+
   const handleSubmit = () => {
-    if (hasInvalidOperatingDays || hasEmptyFields) return;
+    if (hasInvalidOperatingDays || hasEmptyFields || !consent || !profile) return;
     setIsSubmitting(true);
     const payload = { profile, periods };
     if (typeof window !== 'undefined') {
@@ -51,8 +126,21 @@ export default function Water() {
       window.alert(i18n.language === 'cs' ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
     }, 300);
   };
+
+  const totalWithdrawn = waterSources.reduce((sum, r) => sum + (typeof r.withdrawn === 'number' ? r.withdrawn : 0), 0);
+  const recycledRow = waterSources.find((r) => r.id === 'greywater');
+  const recycledShare = totalWithdrawn > 0 && recycledRow && typeof recycledRow.withdrawn === 'number'
+    ? (recycledRow.withdrawn / totalWithdrawn) * 100
+    : 0;
+  const totalRoomNights = periods.reduce((sum, p) => {
+    const occ = typeof p.occupancyRate === 'number' ? p.occupancyRate : 0;
+    const days = typeof p.operatingDays === 'number' ? p.operatingDays : 0;
+    const rooms = typeof p.rooms === 'number' ? p.rooms : 0;
+    return sum + (occ / 100) * days * rooms;
+  }, 0);
+  const perRoomNightM3 = totalRoomNights > 0 ? totalWithdrawn / totalRoomNights : 0;
   return (
-    <div className="min-h-screen bg-emerald-50/30 font-sans text-stone-900">
+    <div className="min-h-screen bg-blue-50/90 font-sans text-stone-900">
       <PageHeader 
         title={i18n.language === 'cs' ? 'Voda' : 'Water'}
         description={i18n.language === 'cs' ? 'Voda je vzácný zdroj. Naše metodika pomáhá ubytovacím zařízením identifikovat úniky a možnosti pro recyklaci šedé vody.' : 'Water is a precious resource. Our methodology helps accommodation facilities identify leaks and opportunities for greywater recycling.'}
@@ -60,7 +148,7 @@ export default function Water() {
         themeColor="blue"
       />
 
-      <main className="max-w-5xl mx-auto px-3 md:px-6 py-16 bg-blue-50/90">
+      <main className="max-w-5xl mx-auto px-3 md:px-6 py-16 bg-transparent">
         <div className="gp-card">
           <div className="mb-12">
             <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="blue" />
@@ -70,50 +158,62 @@ export default function Water() {
 
         </div>
 
-        <div className="flex justify-center mb-12">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting || hasInvalidOperatingDays || hasEmptyFields}
-            className="px-6 py-3 rounded-2xl bg-blue-700 text-white font-bold uppercase tracking-widest text-sm shadow-md shadow-blue-900/10 hover:bg-blue-600 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {isSubmitting ? (i18n.language === 'cs' ? 'Odesílám...' : 'Submitting...') : (i18n.language === 'cs' ? 'Odeslat' : 'Submit')}
-          </button>
+        <div className="gp-card">
+          <WaterSourceTable
+            isCs={i18n.language === 'cs'}
+            rows={waterSources}
+            onChange={setWaterSources}
+          />
         </div>
 
-        <div className="gp-card-lg">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Co měříme?' : 'What we measure?'}</h3>
-              <ul className="space-y-4">
-                {[
-                  { label: t('fields.waterTotal'), value: 'm³' },
-                  { label: t('fields.waterRecycled'), value: '%' },
-                  { label: i18n.language === 'cs' ? 'Efektivita splachování' : 'Flushing efficiency', value: 'L' }
-                ].map((item, i) => (
-                  <li key={i} className="flex justify-between items-center p-4 bg-stone-50 rounded-2xl">
-                    <span className="text-stone-600 font-medium">{item.label}</span>
-                    <span className="px-3 py-1 bg-white border border-stone-200 rounded-lg text-xs font-bold">{item.value}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold mb-6">{i18n.language === 'cs' ? 'Proč je to důležité?' : 'Why it matters?'}</h3>
-              <p className="text-stone-500 leading-relaxed mb-6">
-                {i18n.language === 'cs'
-                  ? 'Snížení spotřeby vody o 20 % může ušetřit tisíce eur ročně na poplatcích za vodné a stočné.'
-                  : 'Reducing water consumption by 20% can save thousands of euros per year in water and sewage fees.'}
-              </p>
-              <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100">
-                <p className="text-blue-800 text-sm font-medium italic">
-                  "Water is the driving force of all nature." — Leonardo da Vinci
-                </p>
-              </div>
-            </div>
-          </div>
+        <WaterSummaryCard
+          isCs={i18n.language === 'cs'}
+          totalWaterM3={totalWithdrawn}
+          recycledShare={recycledShare}
+          perRoomNightM3={perRoomNightM3}
+        />
+
+        <div className="gp-card">
+          <BenchmarksThresholdsTable
+            years={yearsForConsumption}
+            valuesByYear={placeholderValues}
+            ratingMatrixSource="water"
+          />
         </div>
       </main>
+
+      <div className="max-w-5xl mx-auto px-3 md:px-6 pb-16">
+        <div className="flex flex-col items-center gap-4">
+          <ConsentRow
+            checked={consent}
+            onChange={setConsent}
+            label={i18n.language === 'cs'
+              ? 'Odesláním souhlasím se zpracováním vložených údajů.'
+              : 'By submitting I agree to the processing of the entered data.'}
+            themeColor="blue"
+          />
+          <span className="group relative inline-block">
+            <PrimaryButton
+              onClick={handleSubmit}
+              disabled={waterDisabled}
+              themeColor="blue"
+            >
+              {isSubmitting ? (i18n.language === 'cs' ? 'Generuji...' : 'Generating...') : (i18n.language === 'cs' ? 'Generovat PDF' : 'Generate PDF')}
+            </PrimaryButton>
+            {waterDisabled && (
+              <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                {waterTooltip}
+              </div>
+            )}
+          </span>
+          <Link
+            to="/wateraudit"
+            className="mt-6 px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-blue-600 hover:text-white hover:scale-105 transition-all"
+          >
+            {i18n.language === 'cs' ? 'Přejít na Self-Audit vody' : 'Go to Water Self-Audit'}
+          </Link>
+        </div>
+      </div>
       
     </div>
   );

@@ -129,8 +129,8 @@ export const buildElectricityPdfData = async ({
   });
 
   const ratingMatrix = isCs
-    ? (await import('../data/ratingMatrix.cs.json')).default.ratingMatrix
-    : (await import('../data/ratingMatrix.en.json')).default.ratingMatrix;
+    ? (await import('../data/ratingMatrixElectricity/ratingMatrix.cs.json')).default.ratingMatrix
+    : (await import('../data/ratingMatrixElectricity/ratingMatrix.en.json')).default.ratingMatrix;
 
   const getBand = (score: string) => {
     const num = parseFloat(score.replace(',', '.'));

@@ -31,10 +31,11 @@ import selfAuditData from '../data/selfAuditElectricity.json';
 import { getSelfAuditRatingLabel, getSelfAuditRatingColorClass } from '../functions/selfAuditRating';
 import SelfAuditSummary from '../components/SelfAuditSummary';
 import { generateElectricitySelfAuditPdf } from '../functions/generateElectricitySelfAuditPdf';
-import { ConsentRow, PrimaryButton, SecondaryButton } from '../components/ui';
+import { ConsentRow, PrimaryButton } from '../components/ui';
 import { captureGaugePng } from '../functions/captureGaugePng';
 import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
 import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
+import SelfAuditDownloadWindow from '../components/SelfAuditDownloadWindow';
 
 type AuditCard = {
   id: string;
@@ -83,11 +84,11 @@ export default function SelfAuditElectricity() {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
   const [inputs, setInputs] = useState<Record<string, number>>({});
-  const [profile, setProfile] = useState('1');
+  const [profile, setProfile] = useState('');
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
-  const [showPdfButton, setShowPdfButton] = useState(false);
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -123,7 +124,7 @@ export default function SelfAuditElectricity() {
   };
 
   const handleSubmit = () => {
-    if (!consent) return;
+    if (!consent || !profile) return;
     setIsSubmitting(true);
     setShowEvaluation(true);
 
@@ -150,7 +151,7 @@ export default function SelfAuditElectricity() {
         return res.json();
       })
       .then(() => {
-        setShowPdfButton(true);
+        setShowPdfModal(true);
       })
       .catch(() => {
         window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
@@ -158,8 +159,37 @@ export default function SelfAuditElectricity() {
       .finally(() => setIsSubmitting(false));
   };
 
+  const handleGeneratePdf = async () => {
+    const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
+    const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
+    const gaugeImage = await captureGaugePng({
+      elementId: 'self-audit-gauge',
+      score: totalScore,
+      ratingLabel,
+    }).catch(() => undefined);
+    await generateElectricitySelfAuditPdf({
+      language: isCs ? 'cs' : 'en',
+      coverColor: [250, 204, 21],
+      coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
+      coverLogoType: 'PNG',
+      title: isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
+      accommodationProfileLabel,
+      gaugeImage,
+      cards: CARDS.map((card) => ({
+        title: isCs ? card.title.cs : card.title.en,
+        question: card.question ? (isCs ? card.question.cs : card.question.en) : undefined,
+        description: isCs ? card.description.cs : card.description.en,
+        score: scores[card.id] ?? 0,
+        ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en'),
+      })),
+      totalScore,
+      totalRatingLabel: ratingLabel,
+    });
+    setShowPdfModal(false);
+  };
+
   return (
-    <div className="min-h-screen bg-yellow-50/30 font-sans text-stone-900">
+    <div className="min-h-screen bg-yellow-400/10 font-sans text-stone-900">
       <PageHeader
         title={isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit'}
         description={isCs
@@ -170,7 +200,7 @@ export default function SelfAuditElectricity() {
         titleClassName="!text-black"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16 bg-yellow-400/10">
+      <main className="max-w-5xl mx-auto px-6 py-16 bg-transparent">
         <div className="mb-10">
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
         </div>
@@ -206,50 +236,46 @@ export default function SelfAuditElectricity() {
                 : 'By submitting, I agree to the processing of the provided data.'}
               themeColor="yellow"
             />
-            <PrimaryButton
-              onClick={handleSubmit}
-              disabled={!consent || isSubmitting}
-              themeColor="yellow"
-              className="mt-3"
-            >
-              {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a stáhnout PDF' : 'Evaluate and download PDF')}
-            </PrimaryButton>
-            {showPdfButton ? (
-              <SecondaryButton
-                onClick={async () => {
-                  const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
-                  const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
-                  const gaugeImage = await captureGaugePng({
-                    elementId: 'self-audit-gauge',
-                    score: totalScore,
-                    ratingLabel,
-                  }).catch(() => undefined);
-                  await generateElectricitySelfAuditPdf({
-                    language: isCs ? 'cs' : 'en',
-                    coverColor: [250, 204, 21],
-                    coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
-                    coverLogoType: 'PNG',
-                    title: isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
-                    accommodationProfileLabel,
-                    gaugeImage,
-                    cards: CARDS.map((card) => ({
-                      title: isCs ? card.title.cs : card.title.en,
-                      question: card.question ? (isCs ? card.question.cs : card.question.en) : undefined,
-                      description: isCs ? card.description.cs : card.description.en,
-                      score: scores[card.id] ?? 0,
-                      ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en'),
-                    })),
-                    totalScore,
-                    totalRatingLabel: ratingLabel,
-                  });
-                }}
+            <span className="group relative inline-block">
+              <PrimaryButton
+                onClick={handleSubmit}
+                disabled={!consent || isSubmitting || !profile}
+                themeColor="yellow"
+                className="mt-3"
               >
-                {isCs ? 'Generovat PDF' : 'Generate PDF'}
-              </SecondaryButton>
-            ) : null}
+                {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a generovat PDF' : 'Evaluate and generate PDF')}
+              </PrimaryButton>
+              {(!profile || !consent || isSubmitting) && (
+                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  {isCs
+                    ? !profile
+                      ? 'Vyberte profil ubytování.'
+                      : !consent
+                        ? 'Je nutné souhlasit se zpracováním údajů.'
+                        : 'Probíhá vyhodnocení.'
+                    : !profile
+                      ? 'Please select an accommodation profile.'
+                      : !consent
+                        ? 'You must agree to data processing.'
+                        : 'Evaluation is in progress.'}
+                </div>
+              )}
+            </span>
           </div>
         </div>
       </main>
+      <SelfAuditDownloadWindow
+        open={showPdfModal}
+        onClose={() => setShowPdfModal(false)}
+        onDownload={handleGeneratePdf}
+        title={isCs ? 'Generovat PDF' : 'Generate PDF'}
+        description={isCs
+          ? 'Data byla úspěšně odeslána. Nyní si můžete stáhnout PDF report.'
+          : 'Your data has been submitted. You can now download the PDF report.'}
+        downloadLabel={isCs ? 'Generovat PDF' : 'Generate PDF'}
+        closeLabel={isCs ? 'Zavřít' : 'Close'}
+        themeColor="yellow"
+      />
     </div>
   );
 }

@@ -1,7 +1,11 @@
 ﻿import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import ratingMatrixEn from '../../data/ratingMatrix.en.json';
-import ratingMatrixCs from '../../data/ratingMatrix.cs.json';
+import ratingMatrixElectricityEn from '../../data/ratingMatrixElectricity/ratingMatrix.en.json';
+import ratingMatrixElectricityCs from '../../data/ratingMatrixElectricity/ratingMatrix.cs.json';
+import ratingMatrixWaterSourceEn from '../../data/ratingMatrixWaterSource/ratingMatrix.en.json';
+import ratingMatrixWaterSourceCs from '../../data/ratingMatrixWaterSource/ratingMatrix.cs.json';
+import ratingMatrixWasteEn from '../../data/ratingMatrixWaste/ratingMatrix.en.json';
+import ratingMatrixWasteCs from '../../data/ratingMatrixWaste/ratingMatrix.cs.json';
 
 type Thresholds = {
   goodMax: number;
@@ -33,6 +37,7 @@ type InputsState = Record<IndicatorKey, Array<number | null>>;
 interface Props {
   years: number[];
   valuesByYear: InputsState;
+  ratingMatrixSource?: 'electricity' | 'water' | 'waste';
 }
 
 export const BENCHMARK_INDICATORS: IndicatorRow[] = [
@@ -140,11 +145,21 @@ const fmt = (value: number | null, digits = 2) => {
   return value.toFixed(digits).replace('.', ',');
 };
 
-export default function BenchmarksThresholdsTable({ years, valuesByYear }: Props) {
+export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingMatrixSource = 'electricity' }: Props) {
   const { i18n } = useTranslation();
   const isCs = i18n.language === 'cs';
   const title = isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS';
-  const ratingMatrix = isCs ? ratingMatrixCs.ratingMatrix : ratingMatrixEn.ratingMatrix;
+  const ratingMatrix = isCs
+    ? (ratingMatrixSource === 'water'
+        ? ratingMatrixWaterSourceCs.ratingMatrix
+        : ratingMatrixSource === 'waste'
+          ? ratingMatrixWasteCs.ratingMatrix
+          : ratingMatrixElectricityCs.ratingMatrix)
+    : (ratingMatrixSource === 'water'
+        ? ratingMatrixWaterSourceEn.ratingMatrix
+        : ratingMatrixSource === 'waste'
+          ? ratingMatrixWasteEn.ratingMatrix
+          : ratingMatrixElectricityEn.ratingMatrix);
 
   const getBand = (score: number | null) => {
     if (score === null || Number.isNaN(score)) return null;

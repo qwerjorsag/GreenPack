@@ -75,8 +75,8 @@ export default function EnergyKwhTable({
                           const raw = e.target.value.replace(/\s/g, '');
                           onChange(idx, source.id, raw);
                         }}
-                        className={`w-full p-1.5 md:p-2 h-[34px] md:h-[38px] border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all ${showUnits ? 'pr-10' : 'pr-2'}`}
-                        placeholder="0"
+                        className={`w-full p-1.5 md:p-2 h-[34px] md:h-[38px] border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all placeholder:text-red-500 ${showUnits ? 'pr-10' : 'pr-2'}`}
+                        placeholder={isCs ? 'Vyplnit' : 'Enter'}
                       />
                       {showUnits && (
                         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 text-[10px] font-medium pointer-events-none">

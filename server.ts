@@ -222,13 +222,22 @@ async function startServer() {
         };
       }
 
-      const doc = new ElectricityModel({ profile: profileSafe, operationalData: normalizedPeriods, energyByPeriod });
+      const normalizedEnergyByPeriod =
+        energyByPeriod && typeof energyByPeriod === "object"
+          ? energyByPeriod
+          : { year1: {}, year2: {}, year3: {} };
+
+      const doc = new ElectricityModel({
+        profile: profileSafe,
+        operationalData: normalizedPeriods,
+        energyByPeriod: normalizedEnergyByPeriod,
+      });
       await doc.save();
 
       res.json({ status: "ok", id: doc._id });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Electricity submission error:", err);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: err?.message || "Internal server error" });
     }
   });
 

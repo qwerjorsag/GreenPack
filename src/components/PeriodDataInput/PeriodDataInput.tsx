@@ -111,6 +111,12 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
   };
 
+  const blockSigns = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === '+' || e.key === '-' || e.key === 'e' || e.key === 'E') {
+      e.preventDefault();
+    }
+  };
+
   const updatePeriod = (id: string, field: keyof PeriodData, value: string | number) => {
     let finalValue = value;
     
@@ -197,6 +203,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         const onlyDigits = e.target.value.replace(/\D/g, '').slice(0, 4);
                         updatePeriod(row.id, 'period', onlyDigits);
                       }}
+                      onKeyDown={blockSigns}
                       placeholder={currentYear}
                         className="w-full p-1.5 md:p-2 h-[34px] md:h-[38px] bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                       />
@@ -225,6 +232,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       max="100"
                       value={row.occupancyRate}
                       onChange={(e) => updatePeriod(row.id, 'occupancyRate', e.target.value)}
+                      onKeyDown={blockSigns}
                       className="w-full p-1.5 md:p-2 pr-2 md:pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none hidden md:inline">%</span>
@@ -245,6 +253,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       max="366"
                       value={row.operatingDays}
                       onChange={(e) => updatePeriod(row.id, 'operatingDays', e.target.value)}
+                      onKeyDown={blockSigns}
                       className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                   </div>
@@ -268,6 +277,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                       min="0"
                       value={row.rooms}
                       onChange={(e) => updatePeriod(row.id, 'rooms', e.target.value)}
+                      onKeyDown={blockSigns}
                       className="w-full p-1.5 md:p-2 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                   </div>
@@ -290,6 +300,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                         const raw = e.target.value.replace(/\s/g, '');
                         updatePeriod(row.id, 'floorArea', raw);
                       }}
+                      onKeyDown={blockSigns}
                       className="w-full p-1.5 md:p-2 pr-2 md:pr-8 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-200"
                     />
                     <span className="absolute right-3 top-[19px] -translate-y-1/2 text-stone-400 text-xs font-medium pointer-events-none hidden md:inline">m²</span>
