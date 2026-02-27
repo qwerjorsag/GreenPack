@@ -208,16 +208,16 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
     const sliderX = marginX + cardPadding;
     const sliderY = y;
     const sliderW = contentWidth - cardPadding * 2 - 30;
+    const scoreColor = ratingColor(card.score);
     doc.setDrawColor(180, 180, 180);
     doc.setLineWidth(1.2);
     doc.line(sliderX, sliderY, sliderX + sliderW, sliderY);
-    doc.setDrawColor(accent[0], accent[1], accent[2]);
+    doc.setDrawColor(scoreColor[0], scoreColor[1], scoreColor[2]);
     doc.setLineWidth(2);
     doc.line(sliderX, sliderY, sliderX + (sliderW * card.score) / 100, sliderY);
 
     // Score text
     doc.setFont('NotoSans', 'bold');
-    const scoreColor = ratingColor(card.score);
     doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
     doc.text(`${card.score} / 100`, sliderX + sliderW + 4, sliderY + 1.5);
     y += sliderHeight + 2;
