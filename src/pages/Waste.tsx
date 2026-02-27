@@ -176,7 +176,7 @@ export default function Waste() {
     }, 300);
   };
   return (
-    <div className="min-h-screen bg-black/10 font-sans text-stone-900">
+    <div className="min-h-screen bg-black/5 font-sans text-stone-900">
       <PageHeader 
         title={i18n.language === 'cs' ? 'Odpad' : 'Waste'}
         description={i18n.language === 'cs' ? 'Efektivní nakládání s odpady snižuje náklady na odvoz a zlepšuje image vašeho ubytování u hostů.' : 'Effective waste management reduces disposal costs and improves the image of your accommodation with guests.'}

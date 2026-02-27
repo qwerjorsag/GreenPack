@@ -153,7 +153,7 @@ export default function SelfAuditWaste() {
   };
 
   return (
-    <div className="min-h-screen bg-black/10 font-sans text-stone-900">
+    <div className="min-h-screen bg-black/5 font-sans text-stone-900">
       <PageHeader
         title={isCs ? 'Self-Audit odpadu' : 'Waste Self-Audit'}
         description={isCs

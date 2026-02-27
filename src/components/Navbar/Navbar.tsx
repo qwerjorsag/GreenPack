@@ -35,6 +35,7 @@ export default function Navbar() {
   const theme = getTheme();
   const isElectricity = location.pathname === '/electricity' || location.pathname === '/electricityaudit';
   const useBlackLogo = isElectricity;
+  const borderBg = theme.border.replace('border-', 'bg-');
   const logoSrc = i18n.language === 'cs'
     ? (useBlackLogo ? logoCzBlack : logoCzWhite)
     : (useBlackLogo ? logoEnBlack : logoEnWhite);
@@ -68,7 +69,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`${theme.bg} ${theme.text} transition-all duration-300 border-b ${theme.border} sticky top-0 z-50 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
+    <nav className={`${theme.bg} ${theme.text} transition-all duration-300 sticky top-0 z-50 w-full ${hidden ? '-translate-y-full' : 'translate-y-0'} relative`}>
       <div className="max-w-7xl mx-auto px-1 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-0">
           <Link to="https://www.komora.cz/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -81,7 +82,7 @@ export default function Navbar() {
             </div>
           </Link>
           
-          <div className={`h-6 w-px ${theme.border.replace('border-', 'bg-')} hidden md:block`}></div>
+          <div className={`h-6 w-px ${theme.border.replace('border-', 'bg-')} hidden md:block md:ml-2 md:mr-2`}></div>
 
           <div className="flex items-center gap-0.5 sm:gap-1">
             {navLinks.map((link) => (
@@ -107,6 +108,7 @@ export default function Navbar() {
           hoverClassName={theme.hover}
         />
       </div>
+      <div className={`absolute inset-x-0 bottom-0 h-px ${borderBg}`} />
     </nav>
   );
 }
