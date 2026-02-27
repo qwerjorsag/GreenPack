@@ -15,6 +15,8 @@ import { computeSustainabilityKPIs, METHODOLOGY_VERSION } from "./src/shared/rul
 import { SubmissionModel } from "./server/models/Submission";
 import { ElectricityModel } from "./server/models/Electricity";
 import { ElectricitySelfAuditModel } from "./server/models/ElectricitySelfAudit";
+import { WaterSelfAuditModel } from "./server/models/WaterSelfAudit";
+import { WasteSelfAuditModel } from "./server/models/WasteSelfAudit";
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
@@ -243,16 +245,51 @@ async function startServer() {
 
   app.post("/api/electricityselfaudit", limiter, async (req, res) => {
     try {
-      const { profile, answers, language } = req.body || {};
+      const { profile, answers, language, totalScore } = req.body || {};
       const doc = new ElectricitySelfAuditModel({
         profile: profile ?? "unknown",
         language: language === "en" ? "en" : "cs",
         answers: answers && typeof answers === "object" ? answers : {},
+        totalScore: typeof totalScore === "number" ? totalScore : 0,
       });
       await doc.save();
       res.json({ status: "ok", id: doc._id });
     } catch (err) {
       console.error("Electricity self-audit submission error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/waterselfaudit", limiter, async (req, res) => {
+    try {
+      const { profile, answers, language, totalScore } = req.body || {};
+      const doc = new WaterSelfAuditModel({
+        profile: profile ?? "unknown",
+        language: language === "en" ? "en" : "cs",
+        answers: answers && typeof answers === "object" ? answers : {},
+        totalScore: typeof totalScore === "number" ? totalScore : 0,
+      });
+      await doc.save();
+      res.json({ status: "ok", id: doc._id });
+    } catch (err) {
+      console.error("Water self-audit submission error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/wasteselfaudit", limiter, async (req, res) => {
+    try {
+      const { profile, answers, language, totalScore } = req.body || {};
+      const doc = new WasteSelfAuditModel({
+        profile: profile ?? "unknown",
+        language: language === "en" ? "en" : "cs",
+        answers: answers && typeof answers === "object" ? answers : {},
+        totalScore: typeof totalScore === "number" ? totalScore : 0,
+      });
+      await doc.save();
+      res.json({ status: "ok", id: doc._id });
+    } catch (err) {
+      console.error("Waste self-audit submission error:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
