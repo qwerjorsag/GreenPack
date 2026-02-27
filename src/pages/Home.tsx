@@ -19,7 +19,9 @@ export default function Home() {
     title: i18n.language === 'cs' ? tile.title.cs : tile.title.en,
     description: i18n.language === 'cs' ? tile.description.cs : tile.description.en,
     icon: iconMap[tile.icon],
-    ctaLabel: i18n.language === 'cs' ? tilesData.cta.cs : tilesData.cta.en,
+    ctaLabel: tile.cta
+      ? (i18n.language === 'cs' ? tile.cta.cs : tile.cta.en)
+      : (i18n.language === 'cs' ? tilesData.cta.cs : tilesData.cta.en),
   }));
 
   return (

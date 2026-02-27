@@ -167,9 +167,10 @@ export default function SelfAuditElectricity() {
           : 'Quick assessment of savings and measures for your operation.'}
         icon={<Zap className="w-6 h-6" />}
         themeColor="yellow"
+        titleClassName="!text-black"
       />
 
-      <main className="max-w-5xl mx-auto px-6 py-16 bg-yellow-100/80">
+      <main className="max-w-5xl mx-auto px-6 py-16 bg-yellow-400/10">
         <div className="mb-10">
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
         </div>

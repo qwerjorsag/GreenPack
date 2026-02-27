@@ -15,6 +15,10 @@
       "description": {
         "cs": "Sledování spotřeby energie a obnovitelných zdrojů.",
         "en": "Track energy consumption and renewable sources."
+      },
+      "cta": {
+        "cs": "Vyplnit analýzu",
+        "en": "Fill in analysis"
       }
     },
     {
@@ -32,6 +36,10 @@
       "description": {
         "cs": "Analýza spotřeby vody a recyklace.",
         "en": "Analyze water usage and recycling."
+      },
+      "cta": {
+        "cs": "Vyplnit analýzu",
+        "en": "Fill in analysis"
       }
     },
     {
@@ -49,6 +57,10 @@
       "description": {
         "cs": "Správa odpadu a efektivita recyklace.",
         "en": "Waste management and recycling efficiency."
+      },
+      "cta": {
+        "cs": "Vyplnit analýzu",
+        "en": "Fill in analysis"
       }
     },
     {
@@ -104,7 +116,7 @@
     }
   ],
   "cta": {
-    "cs": "Více informací",
-    "en": "Learn More"
+    "cs": "Udělat self audit",
+    "en": "Run self audit"
   }
 }

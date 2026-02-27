@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@mui/material/Button';
 import clsx from 'clsx';
 
 type Props = {
@@ -12,30 +11,25 @@ type Props = {
 
 export default function PrimaryButton({ children, onClick, disabled, className, themeColor = 'yellow' }: Props) {
   const theme = {
-    yellow: { bg: '#facc15', hover: '#fbbf24', shadow: 'rgba(113, 63, 18, 0.1)', text: '#000000' },
-    blue: { bg: '#2563eb', hover: '#3b82f6', shadow: 'rgba(30, 58, 138, 0.2)', text: '#ffffff' },
-    stone: { bg: '#1c1917', hover: '#292524', shadow: 'rgba(28, 25, 23, 0.2)', text: '#ffffff' },
+    yellow: { bg: 'bg-yellow-500', hover: 'hover:bg-yellow-400', shadow: 'shadow-yellow-900/10', text: 'text-black' },
+    blue: { bg: 'bg-blue-700', hover: 'hover:bg-blue-600', shadow: 'shadow-blue-900/10', text: 'text-white' },
+    stone: { bg: 'bg-stone-900', hover: 'hover:bg-stone-800', shadow: 'shadow-stone-900/10', text: 'text-white' },
   }[themeColor];
 
   return (
-    <Button
-      variant="contained"
+    <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
-      sx={{
-        backgroundColor: theme.bg,
-        color: theme.text,
-        boxShadow: `0 10px 20px -10px ${theme.shadow}`,
-        transition: 'transform 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease',
-        '&:hover': { backgroundColor: theme.hover, transform: 'scale(1.05)' },
-        '&.Mui-disabled': { backgroundColor: '#d6d3d1', color: '#000000' },
-      }}
       className={clsx(
-        'px-6 py-3 rounded-2xl font-bold uppercase tracking-widest text-sm transition-all disabled:cursor-not-allowed cursor-pointer',
+        'px-6 py-3 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-md transition-all',
+        disabled
+          ? 'bg-stone-300 text-black cursor-not-allowed'
+          : `${theme.bg} ${theme.text} ${theme.shadow} ${theme.hover} cursor-pointer`,
         className
       )}
     >
       {children}
-    </Button>
+    </button>
   );
 }
