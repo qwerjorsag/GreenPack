@@ -64,7 +64,7 @@ export default function SelfAuditDownloadWindow({
             type="button"
             onClick={onDownload}
             className={clsx(
-              'px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-widest shadow-md transition-all hover:scale-110 focus:outline-none focus:ring-2 cursor-pointer',
+              'px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-widest shadow-md transition-all hover:scale-105 focus:outline-none focus:ring-2 cursor-pointer',
               theme.bg,
               theme.text,
               theme.ring
