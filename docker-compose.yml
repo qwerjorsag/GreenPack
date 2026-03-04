@@ -3,20 +3,9 @@ services:
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/ecostay
-      - NODE_ENV=development
-    depends_on:
-      - mongo
+      - NODE_ENV=production
     volumes:
       - ./reports:/app/reports
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
-volumes:
-  mongo_data:
