@@ -13,7 +13,7 @@ import Waste from './pages/Waste';
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/GreenPack">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
