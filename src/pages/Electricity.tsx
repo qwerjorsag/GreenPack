@@ -19,6 +19,7 @@ import { useElectricityValidation } from '../hooks/useElectricityValidation';
 import { buildElectricityPdfData } from '../functions/buildElectricityPdfData';
 import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
 import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
+import { apiUrl } from '../lib/api';
 
 export default function Electricity() {
   const { i18n } = useTranslation();
@@ -120,7 +121,7 @@ export default function Electricity() {
       energyByPeriod: energyByPeriodByKey,
     };
     try {
-      const res = await fetch('/api/electricity', {
+      const res = await fetch(apiUrl('/api/electricity'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

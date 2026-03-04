@@ -36,6 +36,7 @@ import { captureGaugePng } from '../functions/captureGaugePng';
 import pdfLogoCz from '../assets/logos/hk_cr_-logo_cz-logo_zakladni_black.png';
 import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 import SelfAuditDownloadWindow from '../components/SelfAuditDownloadWindow';
+import { apiUrl } from '../lib/api';
 
 type AuditCard = {
   id: string;
@@ -133,7 +134,7 @@ export default function SelfAuditElectricity() {
       return acc;
     }, {});
 
-    fetch('/api/electricityselfaudit', {
+    fetch(apiUrl('/api/electricityselfaudit'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
