@@ -82,7 +82,8 @@ const CARDS: AuditCard[] = selfAuditData.cards.map((card) => ({
 }));
 
 export default function SelfAuditElectricity() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('self-audit-electricity');
+  const { t: tElectricity } = useTranslation('electricity');
   const isCs = i18n.language === 'cs';
   const [inputs, setInputs] = useState<Record<string, number>>({});
   const [profile, setProfile] = useState('');
@@ -155,14 +156,14 @@ export default function SelfAuditElectricity() {
         setShowPdfModal(true);
       })
       .catch(() => {
-        window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
+        window.alert(t('errors.submitFailed'));
       })
       .finally(() => setIsSubmitting(false));
   };
 
   const handleGeneratePdf = async () => {
     const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
-    const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
+    const accommodationProfileLabel = selectedProfile ? tElectricity(`profiles.items.${selectedProfile.id}.title`) : undefined;
     const gaugeImage = await captureGaugePng({
       elementId: 'self-audit-gauge',
       score: totalScore,
@@ -173,7 +174,7 @@ export default function SelfAuditElectricity() {
       coverColor: [250, 204, 21],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
       coverLogoType: 'PNG',
-      title: isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit',
+      title: t('pdf.title'),
       accommodationProfileLabel,
       gaugeImage,
       cards: CARDS.map((card) => ({
@@ -192,10 +193,8 @@ export default function SelfAuditElectricity() {
   return (
     <div className="min-h-screen bg-yellow-400/10 font-sans text-stone-900">
       <PageHeader
-        title={isCs ? 'Self-Audit elektřiny' : 'Electricity Self-Audit'}
-        description={isCs
-          ? 'Rychlé zhodnocení úspor a opatření pro váš provoz.'
-          : 'Quick assessment of savings and measures for your operation.'}
+        title={t('page.title')}
+        description={t('page.description')}
         icon={<Zap className="w-6 h-6" />}
         themeColor="yellow"
         titleClassName="!text-black"
@@ -232,9 +231,7 @@ export default function SelfAuditElectricity() {
             <ConsentRow
               checked={consent}
               onChange={setConsent}
-              label={isCs
-                ? 'Odesláním souhlasím se zpracováním vložených údajů.'
-                : 'By submitting, I agree to the processing of the provided data.'}
+              label={t('consent.label')}
               themeColor="yellow"
             />
             <span className="group relative inline-block">
@@ -244,21 +241,15 @@ export default function SelfAuditElectricity() {
                 themeColor="yellow"
                 className="mt-3"
               >
-                {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a generovat PDF' : 'Evaluate and generate PDF')}
+                {isSubmitting ? t('buttons.evaluating') : t('buttons.evaluate')}
               </PrimaryButton>
               {(!profile || !consent || isSubmitting) && (
                 <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  {isCs
-                    ? !profile
-                      ? 'Vyberte profil ubytování.'
-                      : !consent
-                        ? 'Je nutné souhlasit se zpracováním údajů.'
-                        : 'Probíhá vyhodnocení.'
-                    : !profile
-                      ? 'Please select an accommodation profile.'
-                      : !consent
-                        ? 'You must agree to data processing.'
-                        : 'Evaluation is in progress.'}
+                  {!profile
+                    ? t('tooltip.missingProfile')
+                    : !consent
+                      ? t('tooltip.missingConsent')
+                      : t('tooltip.evaluating')}
                 </div>
               )}
             </span>
@@ -269,12 +260,10 @@ export default function SelfAuditElectricity() {
         open={showPdfModal}
         onClose={() => setShowPdfModal(false)}
         onDownload={handleGeneratePdf}
-        title={isCs ? 'Generovat PDF' : 'Generate PDF'}
-        description={isCs
-          ? 'Data byla úspěšně odeslána. Nyní si můžete stáhnout PDF report.'
-          : 'Your data has been submitted. You can now download the PDF report.'}
-        downloadLabel={isCs ? 'Generovat PDF' : 'Generate PDF'}
-        closeLabel={isCs ? 'Zavřít' : 'Close'}
+        title={t('modal.title')}
+        description={t('modal.description')}
+        downloadLabel={t('modal.download')}
+        closeLabel={t('modal.close')}
         themeColor="yellow"
       />
     </div>

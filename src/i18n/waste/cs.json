@@ -1,0 +1,34 @@
+{
+  "page": {
+    "title": "Odpad",
+    "description": "Efektivní nakládání s odpady snižuje náklady na odvoz a zlepšuje image vašeho ubytování u hostů."
+  },
+  "validation": {
+    "missingProfile": "Vyberte profil ubytování.",
+    "invalidOperatingDays": "Rok má max 365 dnů.",
+    "missingFields": "Vyplňte všechna pole v tabulkách: Provozní údaje a Toky odpadu.",
+    "missingConsent": "Je nutné souhlasit se zpracováním údajů."
+  },
+  "alerts": {
+    "submitted": "Data odeslána. PDF bude doplněno později."
+  },
+  "buttons": {
+    "generating": "Generuji...",
+    "generatePdf": "Generovat PDF",
+    "goToSelfAudit": "Přejít na Self-Audit odpadu"
+  },
+  "consent": {
+    "label": "Odesláním souhlasím se zpracováním vložených údajů."
+  },
+  "summary": {
+    "title": "Co měříme?",
+    "items": {
+      "totalWaste": "Celkový odpad (kg)",
+      "recycledWaste": "Recyklovaný odpad (kg)",
+      "recyclingRate": "Míra recyklace (%)"
+    },
+    "whyTitle": "Proč je to důležité?",
+    "whyText": "Průměrný hotel vyprodukuje 1 kg odpadu na hosta a noc. Správným tříděním lze recyklovat až 80 % tohoto objemu.",
+    "quote": "\"There is no such thing as 'away'. When we throw anything away, it must go somewhere.\" — Annie Leonard"
+  }
+}

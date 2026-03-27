@@ -5,8 +5,9 @@ import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  const isProd = mode === 'production';
   return {
-    base: '/GreenPack/',
+    base: isProd ? '/GreenPack/' : '/',
     build: {
       outDir: 'docs',
     },

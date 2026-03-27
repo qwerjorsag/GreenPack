@@ -1,0 +1,34 @@
+{
+  "page": {
+    "title": "Voda",
+    "description": "Voda je vzácný zdroj. Naše metodika pomáhá ubytovacím zařízením identifikovat úniky a možnosti pro recyklaci šedé vody."
+  },
+  "validation": {
+    "missingProfile": "Vyberte profil ubytování.",
+    "invalidOperatingDays": "Rok má max 365 dnů.",
+    "missingFields": "Vyplňte všechna pole v tabulkách: Provozní údaje a Zdroje vody.",
+    "missingConsent": "Je nutné souhlasit se zpracováním údajů."
+  },
+  "alerts": {
+    "submitted": "Data odeslána. PDF bude doplněno později."
+  },
+  "buttons": {
+    "generating": "Generuji...",
+    "generatePdf": "Generovat PDF",
+    "goToSelfAudit": "Přejít na Self-Audit vody"
+  },
+  "consent": {
+    "label": "Odesláním souhlasím se zpracováním vložených údajů."
+  },
+  "summary": {
+    "title": "Co měříme?",
+    "items": {
+      "totalWater": "Celková spotřeba vody (m³)",
+      "recycledShare": "Recyklovaná voda (%)",
+      "perRoomNight": "Spotřeba na pokojonoc (m³)"
+    },
+    "whyTitle": "Proč je to důležité?",
+    "whyText": "Snížení spotřeby vody o 20 % může ušetřit tisíce eur ročně na poplatcích za vodné a stočné.",
+    "quote": "\"Water is the driving force of all nature.\" — Leonardo da Vinci"
+  }
+}

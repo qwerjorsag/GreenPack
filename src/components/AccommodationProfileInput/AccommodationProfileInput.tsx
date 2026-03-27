@@ -4,52 +4,28 @@ import { Building, Coffee, Home, Utensils, Waves } from 'lucide-react';
 
 export interface Profile {
   id: string;
-  titleEn: string;
-  titleCs: string;
-  tooltipEn: string;
-  tooltipCs: string;
   icon: React.ReactNode;
 }
 
 export const ACCOMMODATION_PROFILES: Profile[] = [
   {
     id: '1',
-    titleEn: 'Guesthouse / Pension - only accommodation, no gastronomy',
-    titleCs: 'Penzion - pouze ubytování, bez gastronomie',
-    tooltipEn: 'Typically smaller facilities focused on lodging without dining services; lower energy use from kitchens.',
-    tooltipCs: 'Typicky menší zařízení zaměřená na ubytování bez gastronomie; nižší spotřeba energie z kuchyní.',
     icon: <Building className="w-6 h-6" />
   },
   {
     id: '2',
-    titleEn: 'Hotel / Pension - only continental breakfast, reception, basic services',
-    titleCs: 'Hotel / Penzion - pouze kontinentální snídaně, recepce, základní služby',
-    tooltipEn: 'Basic services with limited food preparation; moderate energy use from breakfast and reception operations.',
-    tooltipCs: 'Základní služby s omezenou přípravou jídla; střední spotřeba energie ze snídaní a provozu recepce.',
     icon: <Coffee className="w-6 h-6" />
   },
   {
     id: '3',
-    titleEn: 'Self-catering accommodation, small accommodation',
-    titleCs: 'Ubytování s vlastním stravováním, malé ubytování',
-    tooltipEn: 'Guests cook on-site; energy use depends on room occupancy and appliance efficiency.',
-    tooltipCs: 'Hosté si vaří sami; spotřeba energie závisí na obsazenosti a účinnosti spotřebičů.',
     icon: <Home className="w-6 h-6" />
   },
   {
     id: '4',
-    titleEn: 'Hotel with restaurant - full gastronomy',
-    titleCs: 'Hotel s restaurací - plná gastronomie',
-    tooltipEn: 'Full restaurant operations increase energy use (kitchen, refrigeration, ventilation).',
-    tooltipCs: 'Plný provoz restaurace zvyšuje spotřebu energie (kuchyň, chlazení, vzduchotechnika).',
     icon: <Utensils className="w-6 h-6" />
   },
   {
     id: '5',
-    titleEn: 'Hotel with wellness / pool / conferences - high consumption',
-    titleCs: 'Hotel s wellness / bazénem / konferencemi - vysoká spotřeba',
-    tooltipEn: 'Wellness, pools, and conferences significantly raise heating, water, and HVAC demand.',
-    tooltipCs: 'Wellness, bazény a konference výrazně zvyšují nároky na vytápění, vodu a HVAC.',
     icon: <Waves className="w-6 h-6" />
   }
 ];
@@ -61,8 +37,7 @@ interface Props {
 }
 
 export default function AccommodationProfileInput({ value, onChange, themeColor = 'emerald' }: Props) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
   const selected = ACCOMMODATION_PROFILES.find((p) => p.id === value);
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const hoverTimerRef = React.useRef<number | null>(null);
@@ -80,10 +55,10 @@ export default function AccommodationProfileInput({ value, onChange, themeColor 
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold" data-pdf-title>{isCs ? 'Profil ubytování' : 'Accommodation Profile'}</h3>
+      <h3 className="text-lg font-bold" data-pdf-title>{t('profiles.title')}</h3>
       <div data-pdf-show style={{ display: 'none' }}>
         <div className="text-sm font-medium">
-          {selected ? (isCs ? selected.titleCs : selected.titleEn) : '-'}
+          {selected ? t(`profiles.items.${selected.id}.title`) : '-'}
         </div>
         <div data-pdf-space />
       </div>
@@ -113,11 +88,11 @@ export default function AccommodationProfileInput({ value, onChange, themeColor 
               {p.icon}
             </div>
             <span className="text-sm font-medium leading-snug">
-              {isCs ? p.titleCs : p.titleEn}
+              {t(`profiles.items.${p.id}.title`)}
             </span>
             {hoveredId === p.id && (
               <div className="absolute z-20 left-4 right-4 -bottom-3 translate-y-full rounded-xl border border-stone-200 bg-white p-3 text-xs text-stone-700 shadow-lg">
-                {isCs ? p.tooltipCs : p.tooltipEn}
+                {t(`profiles.items.${p.id}.tooltip`)}
               </div>
             )}
           </button>

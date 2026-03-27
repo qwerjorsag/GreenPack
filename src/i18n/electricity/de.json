@@ -1,0 +1,111 @@
+{
+  "page": {
+    "title": "Strom",
+    "description": "Energie zählt zu den größten Kosten- und Umweltfaktoren in der Beherbergung."
+  },
+  "validation": {
+    "missingProfile": "Bitte wählen Sie ein Unterkunftsprofil.",
+    "invalidOperatingDays": "Das Jahr hat maximal 365 Tage.",
+    "missingFields": "Bitte füllen Sie alle Felder in den Tabellen aus: Betriebsdaten und ENERGIE (kWh).",
+    "missingConsent": "Sie müssen der Datenverarbeitung zustimmen."
+  },
+  "errors": {
+    "submitFailed": "Senden fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "buttons": {
+    "pdfDownloaded": "PDF heruntergeladen",
+    "generating": "Wird erstellt...",
+    "generatePdf": "PDF erstellen",
+    "goToSelfAudit": "Zum Strom Self-Audit"
+  },
+  "consent": {
+    "label": "Mit dem Absenden stimme ich der Verarbeitung der bereitgestellten Daten zu."
+  },
+  "modal": {
+    "title": "PDF herunterladen",
+    "description": "Ihre Daten wurden gesendet. Sie können nun den PDF‑Bericht herunterladen.",
+    "download": "PDF herunterladen",
+    "close": "Schließen"
+  },
+  "profiles": {
+    "title": "Unterkunftsprofil",
+    "items": {
+      "1": {
+        "title": "Pension – nur Unterkunft, keine Gastronomie",
+        "tooltip": "Kleinere Betriebe ohne Gastronomie; geringerer Energieverbrauch durch Küchen."
+      },
+      "2": {
+        "title": "Hotel / Pension – nur kontinentales Frühstück, Rezeption, Basisservices",
+        "tooltip": "Basisservices mit begrenzter Speisenzubereitung; moderater Energiebedarf."
+      },
+      "3": {
+        "title": "Selbstversorger‑Unterkunft, kleine Unterkunft",
+        "tooltip": "Gäste kochen selbst; Verbrauch abhängig von Belegung und Geräteeffizienz."
+      },
+      "4": {
+        "title": "Hotel mit Restaurant – volle Gastronomie",
+        "tooltip": "Restaurantbetrieb erhöht den Energieverbrauch (Küche, Kühlung, Lüftung)."
+      },
+      "5": {
+        "title": "Hotel mit Wellness / Pool / Konferenzen – hoher Verbrauch",
+        "tooltip": "Wellness, Pools und Konferenzen erhöhen Heiz‑, Wasser‑ und HVAC‑Bedarf."
+      }
+    }
+  },
+  "periodData": {
+    "title": "Betriebsdaten",
+    "period": "Periode",
+    "autoText": "Dieser Wert wird automatisch berechnet",
+    "occupancyRate": "Auslastung (%)",
+    "operatingDays": "Betriebstage",
+    "operatingDaysError": "Das Jahr hat maximal 365 Tage",
+    "rooms": "Anzahl der Zimmer",
+    "floorArea": "Fläche (m²)",
+    "roomNights": "Zimmernächte"
+  },
+  "energyByPeriod": {
+    "kwhTitle": "ENERGIE (kWh)",
+    "emissionsTitle": "EMISSIONEN (t CO₂e)",
+    "gjTitle": "ENERGIE (GJ)",
+    "showUnits": "Einheiten anzeigen"
+  },
+  "energyKwhTable": {
+    "energySource": "Energiequelle",
+    "periodFallback": "Periode {{index}}",
+    "explanation": "Erklärung",
+    "placeholder": "Eintragen",
+    "total": "Summe"
+  },
+  "energyEmissionsInput": {
+    "title": "ENERGIE & EMISSIONEN",
+    "deprecated": "Ursprüngliche Version zur Entfernung",
+    "energySource": "Energiequelle",
+    "total": "Summe",
+    "totalTooltip": "Gesamtenergieverbrauch.",
+    "explanation": "Erklärung",
+    "emissions": "Emissionen (t CO₂e)"
+  },
+  "summary": {
+    "title": "Was messen wir?",
+    "items": {
+      "totalEnergy": "Gesamtenergieverbrauch (kWh)",
+      "renewableShare": "Anteil erneuerbarer Elektrizität (%)",
+      "perRoomNight": "Verbrauch pro Zimmernacht (kWh)"
+    },
+    "whyTitle": "Warum ist das wichtig?",
+    "whyText": "Die Energieintensität beeinflusst Betriebskosten und CO₂‑Fußabdruck. Monitoring zeigt Einsparpotenziale.",
+    "quote": "\"Energy efficiency is the fastest, cheapest and cleanest way to reduce emissions.\" — International Energy Agency"
+  },
+  "benchmarks": {
+    "title": "BENCHMARKS & SCHWELLENWERTE",
+    "indicator": "Indikator",
+    "scoreForYear": "Punktzahl für Jahr X",
+    "weight": "Gewicht",
+    "weightedScore": "Gewichtete Punktzahl",
+    "totalWeightedScore": "Gesamte gewichtete Punktzahl",
+    "year": "Jahr"
+  },
+  "energyManagement": {
+    "periodTitle": "Periode – {{period}}"
+  }
+}

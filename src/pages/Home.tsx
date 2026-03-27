@@ -6,7 +6,7 @@ import HomeTile from '../components/HomeTile';
 import tilesData from '../data/homeTiles.json';
 
 export default function Home() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation('home');
 
   const iconMap: Record<string, React.ReactNode> = {
     electricity: <Zap className="w-8 h-8 text-amber-600 group-hover:text-amber-700 transition-colors" />,
@@ -16,12 +16,10 @@ export default function Home() {
 
   const tiles = tilesData.tiles.map((tile) => ({
     ...tile,
-    title: i18n.language === 'cs' ? tile.title.cs : tile.title.en,
-    description: i18n.language === 'cs' ? tile.description.cs : tile.description.en,
+    title: t(`tiles.${tile.id}.title`),
+    description: t(`tiles.${tile.id}.description`),
     icon: iconMap[tile.icon],
-    ctaLabel: tile.cta
-      ? (i18n.language === 'cs' ? tile.cta.cs : tile.cta.en)
-      : (i18n.language === 'cs' ? tilesData.cta.cs : tilesData.cta.en),
+    ctaLabel: tile.cta ? t(`tiles.${tile.id}.cta`) : t('ctaDefault'),
   }));
 
   return (
@@ -61,14 +59,10 @@ export default function Home() {
             className="max-w-2xl"
           >
             <h2 className="text-4xl font-bold mb-6 leading-tight text-stone-200">
-              {i18n.language === 'cs' 
-                ? 'Budoucnost ubytování je v udržitelnosti.' 
-                : 'The future of accommodation is in sustainability.'}
+              {t('hero.headline')}
             </h2>
             <p className="text-emerald-100 text-lg mb-8 opacity-80">
-              {i18n.language === 'cs'
-                ? 'Zmapujte energetickou náročnost svého ubytovacího zařízení a identifikujte prostor pro zlepšení.'
-                : 'Map your sustainability and discover room for improvement.'}
+              {t('hero.description')}
             </p>
           </motion.div>
         </div>

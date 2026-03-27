@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "electricity": "Strom",
+    "water": "Wasser",
+    "waste": "Abfall"
+  },
+  "footer": {
+    "copyright": "© 2026 Projekt der Handelskammer",
+    "privacy": "Datenschutz",
+    "methodology": "Methodik",
+    "contact": "Kontakt",
+    "alt": "Handelskammer"
+  }
+}

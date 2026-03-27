@@ -146,9 +146,9 @@ const fmt = (value: number | null, digits = 2) => {
 };
 
 export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingMatrixSource = 'electricity' }: Props) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('electricity');
   const isCs = i18n.language === 'cs';
-  const title = isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS';
+  const title = t('benchmarks.title');
   const ratingMatrix = isCs
     ? (ratingMatrixSource === 'water'
         ? ratingMatrixWaterSourceCs.ratingMatrix
@@ -196,18 +196,18 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingM
         <table className="gp-table">
           <thead className="gp-table-head">
             <tr>
-              <th className="gp-th gp-th-left px-1 md:px-4">{isCs ? 'Ukazatel' : 'Indicator'}</th>
+              <th className="gp-th gp-th-left px-1 md:px-4">{t('benchmarks.indicator')}</th>
               {years.map((year) => (
                 <th key={year} className="gp-th gp-th-center px-1 md:px-4">{year}</th>
               ))}
               <th className="gp-th gp-th-center px-1 md:px-4 hidden md:table-cell">
-                {isCs ? 'Skóre pro rok X' : 'Score for year X'}
+                {t('benchmarks.scoreForYear')}
               </th>
               <th className="gp-th gp-th-center px-1 md:px-4 hidden md:table-cell">
-                {isCs ? 'Váha' : 'Weight'}
+                {t('benchmarks.weight')}
               </th>
               <th className="gp-th gp-th-center px-1 md:px-4 hidden md:table-cell">
-                {isCs ? 'Vážené skóre' : 'Weighted score'}
+                {t('benchmarks.weightedScore')}
               </th>
               <th className="gp-th gp-th-center gp-th-right px-1 md:px-4"></th>
             </tr>
@@ -233,7 +233,7 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingM
             })}
             <tr className="font-bold bg-stone-100 text-stone-900">
               <td className="gp-td px-1 md:px-4 uppercase">
-                {isCs ? 'Celkové vážené skóre' : 'Total weighted score'}
+                {t('benchmarks.totalWeightedScore')}
               </td>
               {years.map((_, idx) => (
                 <td key={`total-${idx}`} className="gp-td gp-td-center px-1 md:px-4">
@@ -268,7 +268,7 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingM
           const band = getBand(totals.perYear[idx] ?? null);
           return (
             <div key={`desc-${year}`} className="rounded-2xl border border-stone-200 bg-white p-4">
-              <div className="text-sm font-bold text-stone-900">{isCs ? 'Rok' : 'Year'} {year}</div>
+              <div className="text-sm font-bold text-stone-900">{t('benchmarks.year')} {year}</div>
               <div className="mt-2 text-stone-700">
                 <span className="font-semibold">{ratingMatrix.headers.rating}:</span>{' '}
                 {band ? cleanLabel(band.label) : '—'}

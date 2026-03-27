@@ -47,7 +47,8 @@ const CARDS: AuditCard[] = selfAuditData.cards.map((card) => ({
 }));
 
 export default function SelfAuditWaste() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('self-audit-waste');
+  const { t: tElectricity } = useTranslation('electricity');
   const isCs = i18n.language === 'cs';
   const [inputs, setInputs] = useState<Record<string, number>>({});
   const [profile, setProfile] = useState('');
@@ -119,14 +120,14 @@ export default function SelfAuditWaste() {
         setShowPdfModal(true);
       })
       .catch(() => {
-        window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
+        window.alert(t('errors.submitFailed'));
       })
       .finally(() => setIsSubmitting(false));
   };
 
   const handleGeneratePdf = async () => {
     const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
-    const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : undefined;
+    const accommodationProfileLabel = selectedProfile ? tElectricity(`profiles.items.${selectedProfile.id}.title`) : undefined;
     const gaugeImage = await captureGaugePng({
       elementId: 'self-audit-gauge',
       score: totalScore,
@@ -137,7 +138,7 @@ export default function SelfAuditWaste() {
       coverColor: [214, 211, 209],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
       coverLogoType: 'PNG',
-      title: isCs ? 'Self-Audit odpadu' : 'Waste Self-Audit',
+      title: t('pdf.title'),
       accommodationProfileLabel,
       gaugeImage,
       cards: CARDS.map((card) => ({
@@ -156,10 +157,8 @@ export default function SelfAuditWaste() {
   return (
     <div className="min-h-screen bg-black/5 font-sans text-stone-900">
       <PageHeader
-        title={isCs ? 'Self-Audit odpadu' : 'Waste Self-Audit'}
-        description={isCs
-          ? 'Rychlé zhodnocení třídění a prevence odpadu.'
-          : 'Quick assessment of waste sorting and prevention.'}
+        title={t('page.title')}
+        description={t('page.description')}
         icon={<Trash2 className="w-6 h-6" />}
         themeColor="stone"
       />
@@ -195,28 +194,20 @@ export default function SelfAuditWaste() {
             <ConsentRow
               checked={consent}
               onChange={setConsent}
-              label={isCs
-                ? 'Odesláním souhlasím se zpracováním vložených údajů.'
-                : 'By submitting, I agree to the processing of the provided data.'}
+              label={t('consent.label')}
               themeColor="stone"
             />
             <span className="group relative inline-block">
               <PrimaryButton onClick={handleSubmit} disabled={!consent || isSubmitting || !profile} themeColor="stone">
-                {isSubmitting ? (isCs ? 'Vyhodnocuji...' : 'Evaluating...') : (isCs ? 'Vyhodnotit a generovat PDF' : 'Evaluate and generate PDF')}
+                {isSubmitting ? t('buttons.evaluating') : t('buttons.evaluate')}
               </PrimaryButton>
               {(!profile || !consent || isSubmitting) && (
                 <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  {isCs
-                    ? !profile
-                      ? 'Vyberte profil ubytování.'
-                      : !consent
-                        ? 'Je nutné souhlasit se zpracováním údajů.'
-                        : 'Probíhá vyhodnocení.'
-                    : !profile
-                      ? 'Please select an accommodation profile.'
-                      : !consent
-                        ? 'You must agree to data processing.'
-                        : 'Evaluation is in progress.'}
+                  {!profile
+                    ? t('tooltip.missingProfile')
+                    : !consent
+                      ? t('tooltip.missingConsent')
+                      : t('tooltip.evaluating')}
                 </div>
               )}
             </span>
@@ -227,12 +218,10 @@ export default function SelfAuditWaste() {
         open={showPdfModal}
         onClose={() => setShowPdfModal(false)}
         onDownload={handleGeneratePdf}
-        title={isCs ? 'Generovat PDF' : 'Generate PDF'}
-        description={isCs
-          ? 'Data byla úspěšně odeslána. Nyní si můžete stáhnout PDF report.'
-          : 'Your data has been submitted. You can now download the PDF report.'}
-        downloadLabel={isCs ? 'Generovat PDF' : 'Generate PDF'}
-        closeLabel={isCs ? 'Zavřít' : 'Close'}
+        title={t('modal.title')}
+        description={t('modal.description')}
+        downloadLabel={t('modal.download')}
+        closeLabel={t('modal.close')}
         themeColor="stone"
       />
     </div>

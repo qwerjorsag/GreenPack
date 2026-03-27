@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Home",
+    "electricity": "Electricity",
+    "water": "Water",
+    "waste": "Waste"
+  },
+  "footer": {
+    "copyright": "© 2026 Chamber of Commerce project",
+    "privacy": "Privacy",
+    "methodology": "Methodology",
+    "contact": "Contact",
+    "alt": "Chamber of Commerce"
+  }
+}

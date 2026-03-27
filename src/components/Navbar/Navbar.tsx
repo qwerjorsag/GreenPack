@@ -9,9 +9,8 @@ import logoEnWhite from '../../assets/logos/hk_cr_logo_aj-logo_white.png';
 import LanguageSwitch from '../ui/LanguageSwitch';
 
 export default function Navbar() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('common');
   const location = useLocation();
-  const isCs = i18n.language === 'cs';
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -41,10 +40,10 @@ export default function Navbar() {
     : (useBlackLogo ? logoEnBlack : logoEnWhite);
 
   const navLinks = [
-    { path: '/', icon: <Home className="w-4 h-4" />, label: isCs ? 'Domů' : 'Home' },
-    { path: '/electricity', icon: <Zap className="w-4 h-4" />, label: isCs ? 'Elektřina' : 'Electricity' },
-    { path: '/water', icon: <Droplets className="w-4 h-4" />, label: isCs ? 'Voda' : 'Water' },
-    { path: '/waste', icon: <Trash2 className="w-4 h-4" />, label: isCs ? 'Odpad' : 'Waste' },
+    { path: '/', icon: <Home className="w-4 h-4" />, label: t('nav.home') },
+    { path: '/electricity', icon: <Zap className="w-4 h-4" />, label: t('nav.electricity') },
+    { path: '/water', icon: <Droplets className="w-4 h-4" />, label: t('nav.water') },
+    { path: '/waste', icon: <Trash2 className="w-4 h-4" />, label: t('nav.waste') },
   ];
 
   useEffect(() => {
@@ -76,7 +75,7 @@ export default function Navbar() {
             <div className="h-10 w-40 flex items-center">
               <img
                 src={logoSrc}
-                alt="Hospodářská komora"
+                alt={t('footer.alt')}
                 className="h-full w-full object-contain"
               />
             </div>

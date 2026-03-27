@@ -12,8 +12,9 @@ import Water from './pages/Water';
 import Waste from './pages/Waste';
 
 export default function App() {
+  const baseUrl = import.meta.env.BASE_URL;
   return (
-    <Router basename="/GreenPack">
+    <Router basename={baseUrl}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

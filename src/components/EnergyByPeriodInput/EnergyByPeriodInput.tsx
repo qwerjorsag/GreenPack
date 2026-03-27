@@ -23,8 +23,7 @@ const formatEmissions = (value: number) => {
 };
 
 export default function EnergyByPeriodInput({ periods, values, onChange }: Props) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
   const [showUnitsKwh, setShowUnitsKwh] = React.useState(true);
   const [showUnitsEm, setShowUnitsEm] = React.useState(true);
   const [showUnitsGj, setShowUnitsGj] = React.useState(true);
@@ -83,11 +82,10 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3>{isCs ? 'ENERGIE (kWh)' : 'ENERGY (kWh)'}</h3>
+        <h3>{t('energyByPeriod.kwhTitle')}</h3>
       </div>
 
       <EnergyKwhTable
-        isCs={isCs}
         periods={periodsSlice}
         values={values}
         showUnits={showUnitsKwh}
@@ -99,18 +97,17 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
       <UnitSwitch
         checked={showUnitsKwh}
         onToggle={() => setShowUnitsKwh((v) => !v)}
-        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        label={t('energyByPeriod.showUnits')}
         color="yellow"
         className="mt-2 mb-16"
         data-pdf-hide
       />
 
       <div className="flex justify-between items-center">
-        <h3>{isCs ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)'}</h3>
+        <h3>{t('energyByPeriod.emissionsTitle')}</h3>
       </div>
 
       <EnergyEmissionsTable
-        isCs={isCs}
         periods={periodsSlice}
         values={values}
         showUnits={showUnitsEm}
@@ -121,18 +118,17 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
       <UnitSwitch
         checked={showUnitsEm}
         onToggle={() => setShowUnitsEm((v) => !v)}
-        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        label={t('energyByPeriod.showUnits')}
         color="yellow"
         className="mt-2 mb-16"
         data-pdf-hide
       />
 
       <div className="flex justify-between items-center">
-        <h3>{isCs ? 'ENERGIE (GJ)' : 'ENERGY (GJ)'}</h3>
+        <h3>{t('energyByPeriod.gjTitle')}</h3>
       </div>
 
       <EnergyGjTable
-        isCs={isCs}
         periods={periodsSlice}
         values={values}
         showUnits={showUnitsGj}
@@ -143,7 +139,7 @@ export default function EnergyByPeriodInput({ periods, values, onChange }: Props
       <UnitSwitch
         checked={showUnitsGj}
         onToggle={() => setShowUnitsGj((v) => !v)}
-        label={isCs ? 'Zobrazit jednotky' : 'Show units'}
+        label={t('energyByPeriod.showUnits')}
         color="yellow"
         className="mt-2 mb-16"
         data-pdf-hide

@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Domů",
+    "electricity": "Elektřina",
+    "water": "Voda",
+    "waste": "Odpad"
+  },
+  "footer": {
+    "copyright": "© 2026 Projekt Hospodářské komory",
+    "privacy": "Soukromí",
+    "methodology": "Metodika",
+    "contact": "Kontakt",
+    "alt": "Hospodářská komora"
+  }
+}

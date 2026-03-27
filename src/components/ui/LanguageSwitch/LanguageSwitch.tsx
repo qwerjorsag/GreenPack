@@ -18,8 +18,13 @@ export default function LanguageSwitch({
 }: Props) {
   const { i18n } = useTranslation();
 
+  const languages = ['cs', 'en', 'de'] as const;
+  const labels: Record<string, string> = { cs: 'CS', en: 'EN', de: 'DE' };
+
   const toggleLanguage = () => {
-    const next = i18n.language === 'en' ? 'cs' : 'en';
+    const current = i18n.language.split('-')[0];
+    const idx = languages.indexOf(current as (typeof languages)[number]);
+    const next = languages[(idx + 1) % languages.length];
     i18n.changeLanguage(next);
   };
 
@@ -36,7 +41,7 @@ export default function LanguageSwitch({
       )}
     >
       <Globe className="w-4 h-4" />
-      {i18n.language}
+      {labels[i18n.language.split('-')[0]] || i18n.language}
     </button>
   );
 }

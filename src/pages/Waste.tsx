@@ -11,7 +11,7 @@ import WasteSummaryCard from '../components/WasteSummaryCard';
 import { ConsentRow, PrimaryButton } from '../components/ui';
 
 export default function Waste() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('waste');
 
   const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,25 +141,15 @@ export default function Waste() {
   const missingProfile = !profile;
   const missingConsent = !consent;
   const wasteDisabled = isSubmitting || hasInvalidOperatingDays || hasEmptyFields || missingConsent || missingProfile;
-  const wasteTooltip = i18n.language === 'cs'
-    ? missingProfile
-      ? 'Vyberte profil ubytování.'
-      : hasInvalidOperatingDays
-        ? 'Rok má max 365 dnů.'
-        : hasEmptyFields
-          ? 'Vyplňte všechna pole v tabulkách: Provozní údaje a Toky odpadu.'
-          : missingConsent
-            ? 'Je nutné souhlasit se zpracováním údajů.'
-            : ''
-    : missingProfile
-      ? 'Please select an accommodation profile.'
-      : hasInvalidOperatingDays
-        ? 'The year has a maximum of 365 days.'
-        : hasEmptyFields
-          ? 'Please complete all fields in the tables: Operational Data and Waste Streams.'
-          : missingConsent
-            ? 'You must agree to data processing.'
-            : '';
+  const wasteTooltip = missingProfile
+    ? t('validation.missingProfile')
+    : hasInvalidOperatingDays
+      ? t('validation.invalidOperatingDays')
+      : hasEmptyFields
+        ? t('validation.missingFields')
+        : missingConsent
+          ? t('validation.missingConsent')
+          : '';
 
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields || !consent || !profile) return;
@@ -172,14 +162,14 @@ export default function Waste() {
     }
     setTimeout(() => {
       setIsSubmitting(false);
-      window.alert(i18n.language === 'cs' ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
+      window.alert(t('alerts.submitted'));
     }, 300);
   };
   return (
     <div className="min-h-screen bg-black/5 font-sans text-stone-900">
       <PageHeader 
-        title={i18n.language === 'cs' ? 'Odpad' : 'Waste'}
-        description={i18n.language === 'cs' ? 'Efektivní nakládání s odpady snižuje náklady na odvoz a zlepšuje image vašeho ubytování u hostů.' : 'Effective waste management reduces disposal costs and improves the image of your accommodation with guests.'}
+        title={t('page.title')}
+        description={t('page.description')}
         icon={<Trash2 className="w-6 h-6 text-white" />}
         themeColor="stone"
       />
@@ -203,7 +193,6 @@ export default function Waste() {
         </div>
 
         <WasteSummaryCard
-          isCs={i18n.language === 'cs'}
           totalWasteKg={totalWaste}
           recycledKg={totalRecycled}
           recyclingRate={recyclingRate}
@@ -224,9 +213,7 @@ export default function Waste() {
           <ConsentRow
             checked={consent}
             onChange={setConsent}
-            label={i18n.language === 'cs'
-              ? 'Odesláním souhlasím se zpracováním vložených údajů.'
-              : 'By submitting I agree to the processing of the entered data.'}
+            label={t('consent.label')}
             themeColor="stone"
           />
           <span className="group relative inline-block">
@@ -235,7 +222,7 @@ export default function Waste() {
               disabled={wasteDisabled}
               themeColor="stone"
             >
-              {isSubmitting ? (i18n.language === 'cs' ? 'Generuji...' : 'Generating...') : (i18n.language === 'cs' ? 'Generovat PDF' : 'Generate PDF')}
+              {isSubmitting ? t('buttons.generating') : t('buttons.generatePdf')}
           </PrimaryButton>
             {wasteDisabled && (
               <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -247,7 +234,7 @@ export default function Waste() {
             to="/wasteaudit"
             className="mt-6 px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-stone-700 hover:text-white hover:scale-105 transition-all"
           >
-            {i18n.language === 'cs' ? 'Přejít na Self-Audit odpadu' : 'Go to Waste Self-Audit'}
+            {t('buttons.goToSelfAudit')}
           </Link>
         </div>
       </div>

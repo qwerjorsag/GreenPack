@@ -83,8 +83,7 @@ function HoverTooltip({ content, children }: { content: string; children: React.
 }
 
 export default function PeriodDataInput({ data, onChange, themeColor = 'emerald' }: Props) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
 
   // Ensure exactly 3 rows exist
   useEffect(() => {
@@ -173,12 +172,12 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
   };
 
   const currentYear = new Date().getFullYear().toString();
-  const autoText = isCs ? 'Tato hodnota se počítá automaticky' : 'This value is calculated automatically';
+  const autoText = t('periodData.autoText');
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3>{isCs ? 'Provozní údaje' : 'Operational Data'}</h3>
+        <h3>{t('periodData.title')}</h3>
       </div>
 
       <div className="gp-table-wrap">
@@ -186,7 +185,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
           <thead className="text-[10px] md:text-xs text-stone-500 uppercase bg-stone-50">
             <tr>
                 <th className="px-2 md:px-4 py-3 md:py-4 rounded-tl-xl whitespace-normal break-words">
-                  {isCs ? 'Období' : 'Period'}
+                  {t('periodData.period')}
                 </th>
                 {data.slice(0, 3).map((row, index) => (
                   <th
@@ -221,7 +220,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
           <tbody>
             <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
-                {isCs ? 'Obsazenost (%)' : 'Occupancy rate (%)'}
+                {t('periodData.occupancyRate')}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
@@ -242,7 +241,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
             </tr>
             <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
-                {isCs ? 'Provozní dny' : 'Operating days'}
+                {t('periodData.operatingDays')}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
@@ -259,7 +258,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
                   </div>
                   {row.operatingDays === 366 && row.period && !isLeapYear(parseInt(row.period, 10)) && (
                     <div className="text-red-500 text-xs mt-1 font-medium">
-                      {isCs ? 'Rok má max 365 dnů' : 'Year has max 365 days'}
+                      {t('periodData.operatingDaysError')}
                     </div>
                   )}
                 </td>
@@ -267,7 +266,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
             </tr>
             <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
-                {isCs ? 'Počet pokojů' : 'Number of rooms'}
+                {t('periodData.rooms')}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
@@ -286,7 +285,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
             </tr>
             <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
-                {isCs ? 'Podlahová plocha (m²)' : 'Floor area (m²)'}
+                {t('periodData.floorArea')}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top">
@@ -310,7 +309,7 @@ export default function PeriodDataInput({ data, onChange, themeColor = 'emerald'
             </tr>
             <tr className="border-b border-stone-100">
               <td className="px-2 md:px-4 py-3 md:py-4 font-medium">
-                {isCs ? 'Pokojonoci' : 'Room night'}
+                {t('periodData.roomNights')}
               </td>
               {data.slice(0, 3).map((row) => (
                 <td key={row.id} className="px-2 md:px-4 py-3 md:py-4 align-top bg-stone-50/50">

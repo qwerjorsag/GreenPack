@@ -1,11 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ENERGY_SOURCES } from '../EnergyEmissionsInput';
 import InfoTooltip from '../InfoTooltip';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
 type Props = {
-  isCs: boolean;
   periods: { period: string }[];
   values: EnergyByPeriod[];
   showUnits: boolean;
@@ -15,7 +15,6 @@ type Props = {
 };
 
 export default function EnergyKwhTable({
-  isCs,
   periods,
   values,
   showUnits,
@@ -23,13 +22,16 @@ export default function EnergyKwhTable({
   onChange,
   formatWithSpaces,
 }: Props) {
+  const { i18n, t } = useTranslation('electricity');
+  const isCs = i18n.language === 'cs';
+
   return (
     <div className="gp-table-wrap overflow-y-visible pb-4">
       <table className="gp-table table-auto text-[11px] md:text-sm">
         <thead className="gp-table-head text-[10px] md:text-xs">
           <tr>
             <th className="gp-th gp-th-left px-2 md:px-4 whitespace-normal break-words max-w-[140px] md:max-w-none">
-              {isCs ? 'Zdroj energie' : 'Energy source'}
+              {t('energyKwhTable.energySource')}
             </th>
             <th className="gp-th px-0.5 md:px-0.5 w-6 text-center hidden md:table-cell"></th>
             {periods.map((p, idx) => (
@@ -39,7 +41,7 @@ export default function EnergyKwhTable({
                   idx === 2 ? 'gp-th-right' : ''
                 }`}
               >
-                {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
+                {p.period || t('energyKwhTable.periodFallback', { index: idx + 1 })}
               </th>
             ))}
           </tr>
@@ -55,7 +57,7 @@ export default function EnergyKwhTable({
               <td className="gp-td px-0.5 md:px-0.5 w-6 text-xs text-stone-700 hidden md:table-cell">
                 <div className="flex justify-center">
                   <InfoTooltip
-                    label={isCs ? 'Vysvětlení' : 'Explanation'}
+                    label={t('energyKwhTable.explanation')}
                     content={isCs ? source.explanationCs : source.explanationEn}
                   />
                 </div>
@@ -76,7 +78,7 @@ export default function EnergyKwhTable({
                           onChange(idx, source.id, raw);
                         }}
                         className={`w-full p-1.5 md:p-2 h-[34px] md:h-[38px] border rounded-lg bg-stone-50 border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-200 transition-all placeholder:text-red-500 ${showUnits ? 'pr-10' : 'pr-2'}`}
-                        placeholder={isCs ? 'Vyplnit' : 'Enter'}
+                        placeholder={t('energyKwhTable.placeholder')}
                       />
                       {showUnits && (
                         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 text-[10px] font-medium pointer-events-none">
@@ -91,7 +93,7 @@ export default function EnergyKwhTable({
           ))}
           <tr className="font-bold bg-stone-100 text-stone-900">
             <td className="gp-td px-2 md:px-4 uppercase rounded-bl-xl">
-              {isCs ? 'Celkem' : 'Total'}
+              {t('energyKwhTable.total')}
             </td>
             <td className="gp-td px-0.5 md:px-0.5 w-6 hidden md:table-cell"></td>
             {totals.map((total, idx) => (

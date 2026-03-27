@@ -11,7 +11,7 @@ import WaterSummaryCard from '../components/WaterSummaryCard';
 import { ConsentRow, PrimaryButton } from '../components/ui';
 
 export default function Water() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('water');
 
   const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,25 +92,15 @@ export default function Water() {
   const missingProfile = !profile;
   const missingConsent = !consent;
   const waterDisabled = isSubmitting || hasInvalidOperatingDays || hasEmptyFields || missingConsent || missingProfile;
-  const waterTooltip = i18n.language === 'cs'
-    ? missingProfile
-      ? 'Vyberte profil ubytování.'
-      : hasInvalidOperatingDays
-        ? 'Rok má max 365 dnů.'
-        : hasEmptyFields
-          ? 'Vyplňte všechna pole v tabulkách: Provozní údaje a Zdroje vody.'
-          : missingConsent
-            ? 'Je nutné souhlasit se zpracováním údajů.'
-            : ''
-    : missingProfile
-      ? 'Please select an accommodation profile.'
-      : hasInvalidOperatingDays
-        ? 'The year has a maximum of 365 days.'
-        : hasEmptyFields
-          ? 'Please complete all fields in the tables: Operational Data and Water Sources.'
-          : missingConsent
-            ? 'You must agree to data processing.'
-            : '';
+  const waterTooltip = missingProfile
+    ? t('validation.missingProfile')
+    : hasInvalidOperatingDays
+      ? t('validation.invalidOperatingDays')
+      : hasEmptyFields
+        ? t('validation.missingFields')
+        : missingConsent
+          ? t('validation.missingConsent')
+          : '';
 
   const handleSubmit = () => {
     if (hasInvalidOperatingDays || hasEmptyFields || !consent || !profile) return;
@@ -123,7 +113,7 @@ export default function Water() {
     }
     setTimeout(() => {
       setIsSubmitting(false);
-      window.alert(i18n.language === 'cs' ? 'Data odeslána. PDF bude doplněno později.' : 'Data submitted. PDF generation will be added later.');
+      window.alert(t('alerts.submitted'));
     }, 300);
   };
 
@@ -142,8 +132,8 @@ export default function Water() {
   return (
     <div className="min-h-screen bg-blue-50/90 font-sans text-stone-900">
       <PageHeader 
-        title={i18n.language === 'cs' ? 'Voda' : 'Water'}
-        description={i18n.language === 'cs' ? 'Voda je vzácný zdroj. Naše metodika pomáhá ubytovacím zařízením identifikovat úniky a možnosti pro recyklaci šedé vody.' : 'Water is a precious resource. Our methodology helps accommodation facilities identify leaks and opportunities for greywater recycling.'}
+        title={t('page.title')}
+        description={t('page.description')}
         icon={<Droplets className="w-6 h-6 text-white" />}
         themeColor="blue"
       />
@@ -167,7 +157,6 @@ export default function Water() {
         </div>
 
         <WaterSummaryCard
-          isCs={i18n.language === 'cs'}
           totalWaterM3={totalWithdrawn}
           recycledShare={recycledShare}
           perRoomNightM3={perRoomNightM3}
@@ -187,9 +176,7 @@ export default function Water() {
           <ConsentRow
             checked={consent}
             onChange={setConsent}
-            label={i18n.language === 'cs'
-              ? 'Odesláním souhlasím se zpracováním vložených údajů.'
-              : 'By submitting I agree to the processing of the entered data.'}
+            label={t('consent.label')}
             themeColor="blue"
           />
           <span className="group relative inline-block">
@@ -198,7 +185,7 @@ export default function Water() {
               disabled={waterDisabled}
               themeColor="blue"
             >
-              {isSubmitting ? (i18n.language === 'cs' ? 'Generuji...' : 'Generating...') : (i18n.language === 'cs' ? 'Generovat PDF' : 'Generate PDF')}
+              {isSubmitting ? t('buttons.generating') : t('buttons.generatePdf')}
             </PrimaryButton>
             {waterDisabled && (
               <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -210,7 +197,7 @@ export default function Water() {
             to="/wateraudit"
             className="mt-6 px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-blue-600 hover:text-white hover:scale-105 transition-all"
           >
-            {i18n.language === 'cs' ? 'Přejít na Self-Audit vody' : 'Go to Water Self-Audit'}
+            {t('buttons.goToSelfAudit')}
           </Link>
         </div>
       </div>

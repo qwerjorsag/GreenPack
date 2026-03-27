@@ -22,7 +22,7 @@ import pdfLogoEn from '../assets/logos/hk_cr_logo_aj_black.png';
 import { apiUrl } from '../lib/api';
 
 export default function Electricity() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('electricity');
   const isCs = i18n.language === 'cs';
 
   const [profile, setProfile] = useState('');
@@ -46,25 +46,15 @@ export default function Electricity() {
   const missingProfile = !profile;
   const missingConsent = !consent;
   const electricityDisabled = pdfDownloaded || isSubmitting || hasInvalidOperatingDays || hasEmptyFields || missingConsent || missingProfile;
-  const electricityTooltip = isCs
-    ? missingProfile
-      ? 'Vyberte profil ubytování.'
-      : hasInvalidOperatingDays
-        ? 'Rok má max 365 dnů.'
-        : hasEmptyFields
-          ? 'Vyplňte všechna pole v tabulkách: Provozní údaje a ENERGIE (kWh).'
-          : missingConsent
-            ? 'Je nutné souhlasit se zpracováním údajů.'
-            : ''
-    : missingProfile
-      ? 'Please select an accommodation profile.'
-      : hasInvalidOperatingDays
-        ? 'The year has a maximum of 365 days.'
-        : hasEmptyFields
-          ? 'Please complete all fields in the tables: Operational Data and ENERGY (kWh).'
-          : missingConsent
-            ? 'You must agree to data processing.'
-            : '';
+  const electricityTooltip = missingProfile
+    ? t('validation.missingProfile')
+    : hasInvalidOperatingDays
+      ? t('validation.invalidOperatingDays')
+      : hasEmptyFields
+        ? t('validation.missingFields')
+        : missingConsent
+          ? t('validation.missingConsent')
+          : '';
 
   const {
     perPeriodTotals,
@@ -133,7 +123,7 @@ export default function Electricity() {
       await res.json().catch(() => ({}));
       setShowPdfModal(true);
     } catch (err) {
-      window.alert(isCs ? 'Odeslání se nezdařilo. Zkuste to znovu.' : 'Submission failed. Please try again.');
+      window.alert(t('errors.submitFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +131,7 @@ export default function Electricity() {
 
   const handleGeneratePdf = async () => {
     const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
-    const accommodationProfileLabel = selectedProfile ? (isCs ? selectedProfile.titleCs : selectedProfile.titleEn) : '';
+    const accommodationProfileLabel = selectedProfile ? t(`profiles.items.${selectedProfile.id}.title`) : '';
     const pdfData = await buildElectricityPdfData({
       isCs,
       profile,
@@ -156,7 +146,7 @@ export default function Electricity() {
 
     await generateElectricityVectorPdf({
       language: isCs ? 'cs' : 'en',
-      coverTitle: isCs ? 'Elektřina' : 'Electricity',
+      coverTitle: t('page.title'),
       coverColor: [250, 204, 21],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
       coverLogoType: 'PNG',
@@ -169,10 +159,8 @@ export default function Electricity() {
   return (
     <div className="min-h-screen bg-yellow-400/10 font-sans text-stone-900">
       <PageHeader 
-        title={isCs ? 'Elektřina' : 'Electricity'}
-        description={isCs
-          ? 'Energie je jedním z největších nákladů i dopadů na životní prostředí v ubytovacím sektoru. Zjistěte si Vaši hospodárnost.'
-          : 'Energy is one of the largest costs and environmental impacts in the accommodation sector.'}
+        title={t('page.title')}
+        description={t('page.description')}
         icon={<Zap className="w-6 h-6" />}
         themeColor="yellow"
         titleClassName="!text-black"
@@ -205,7 +193,6 @@ export default function Electricity() {
           </div>
 
           <ElectricitySummaryCard
-            isCs={isCs}
             totalEnergyKwh={totalEnergyKwh}
             renewableShare={renewableShare}
             perRoomNightKwh={perRoomNightKwh}
@@ -243,11 +230,7 @@ export default function Electricity() {
                   floorAreaM2={perPeriodIndicators[idx]?.floorAreaM2 ?? null}
                   roomNights={perPeriodIndicators[idx]?.roomNights ?? null}
                   profileId={profile}
-                  periodTitle={
-                    isCs
-                      ? `Období – ${period.period || '-'}`
-                      : `Period – ${period.period || '-'}`
-                  }
+                  periodTitle={t('energyManagement.periodTitle', { period: period.period || '-' })}
                 />
               </div>
             ))}
@@ -259,9 +242,7 @@ export default function Electricity() {
             <ConsentRow
               checked={consent}
               onChange={setConsent}
-              label={isCs
-                ? 'Odesláním souhlasím se zpracováním vložených údajů.'
-                : 'By submitting, I agree to the processing of the provided data.'}
+              label={t('consent.label')}
               themeColor="yellow"
             />
             <span className="group relative inline-block">
@@ -270,10 +251,10 @@ export default function Electricity() {
                 disabled={electricityDisabled}
               >
                 {pdfDownloaded
-                  ? (isCs ? 'PDF staženo' : 'PDF downloaded')
+                  ? t('buttons.pdfDownloaded')
                   : isSubmitting
-                    ? (isCs ? 'Generuji...' : 'Generating...')
-                    : (isCs ? 'Generovat PDF' : 'Generate PDF')}
+                    ? t('buttons.generating')
+                    : t('buttons.generatePdf')}
               </PrimaryButton>
               {electricityDisabled && !pdfDownloaded && (
                 <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-72 -translate-x-1/2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -285,7 +266,7 @@ export default function Electricity() {
               to="/electricityaudit"
               className="mt-6 px-6 py-3 rounded-2xl border border-stone-300 text-stone-900 font-bold uppercase tracking-widest text-sm hover:bg-yellow-400 hover:scale-105 transition-all"
             >
-              {isCs ? 'Přejít na Self-Audit elektřiny' : 'Go to Electricity Self-Audit'}
+              {t('buttons.goToSelfAudit')}
             </Link>
           </div>
         </div>
@@ -294,12 +275,10 @@ export default function Electricity() {
           open={showPdfModal}
           onClose={() => setShowPdfModal(false)}
           onDownload={handleGeneratePdf}
-          title={isCs ? 'Stáhnout PDF' : 'Download PDF'}
-          description={isCs
-            ? 'Data byla úspěšně odeslána. Nyní si můžete stáhnout PDF report.'
-            : 'Your data has been submitted. You can now download the PDF report.'}
-          downloadLabel={isCs ? 'Stáhnout PDF' : 'Download PDF'}
-          closeLabel={isCs ? 'Zavřít' : 'Close'}
+          title={t('modal.title')}
+          description={t('modal.description')}
+          downloadLabel={t('modal.download')}
+          closeLabel={t('modal.close')}
         />
       </main>
       

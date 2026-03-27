@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
-  isCs: boolean;
   totalWasteKg: number;
   recycledKg: number;
   recyclingRate: number;
@@ -11,24 +11,26 @@ const formatWithSpaces = (value: number) => {
   return value.toLocaleString('cs-CZ').replace(/\u00A0/g, ' ');
 };
 
-export default function WasteSummaryCard({ isCs, totalWasteKg, recycledKg, recyclingRate }: Props) {
+export default function WasteSummaryCard({ totalWasteKg, recycledKg, recyclingRate }: Props) {
+  const { t } = useTranslation('waste');
+
   return (
     <div className="gp-card-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
-          <h3>{isCs ? 'Co měříme?' : 'What we measure?'}</h3>
+          <h3>{t('summary.title')}</h3>
           <ul className="space-y-4 mt-6">
             {[
               {
-                label: isCs ? 'Celkový odpad (kg)' : 'Total waste (kg)',
+                label: t('summary.items.totalWaste'),
                 value: `${formatWithSpaces(totalWasteKg)} kg`,
               },
               {
-                label: isCs ? 'Recyklovaný odpad (kg)' : 'Recycled waste (kg)',
+                label: t('summary.items.recycledWaste'),
                 value: `${formatWithSpaces(recycledKg)} kg`,
               },
               {
-                label: isCs ? 'Míra recyklace' : 'Recycling rate',
+                label: t('summary.items.recyclingRate'),
                 value: `${recyclingRate.toFixed(1).replace('.', ',')} %`,
               },
             ].map((item, i) => (
@@ -42,15 +44,13 @@ export default function WasteSummaryCard({ isCs, totalWasteKg, recycledKg, recyc
           </ul>
         </div>
         <div>
-          <h3>{isCs ? 'Proč je to důležité?' : 'Why it matters?'}</h3>
+          <h3>{t('summary.whyTitle')}</h3>
           <p className="text-stone-500 leading-relaxed mb-6 mt-6">
-            {isCs
-              ? 'Průměrný hotel vyprodukuje 1 kg odpadu na hosta a noc. Správným tříděním lze recyklovat až 80 % tohoto objemu.'
-              : 'The average hotel produces 1 kg of waste per guest per night. With proper sorting, up to 80% of this volume can be recycled.'}
+            {t('summary.whyText')}
           </p>
           <div className="p-6 bg-stone-100 rounded-3xl border border-stone-200">
             <p className="text-stone-700 text-sm font-medium italic">
-              "There is no such thing as 'away'. When we throw anything away, it must go somewhere." — Annie Leonard
+              {t('summary.quote')}
             </p>
           </div>
         </div>

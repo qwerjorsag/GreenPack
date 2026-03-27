@@ -1,0 +1,111 @@
+{
+  "page": {
+    "title": "Electricity",
+    "description": "Energy is one of the largest costs and environmental impacts in the accommodation sector."
+  },
+  "validation": {
+    "missingProfile": "Please select an accommodation profile.",
+    "invalidOperatingDays": "The year has a maximum of 365 days.",
+    "missingFields": "Please complete all fields in the tables: Operational Data and ENERGY (kWh).",
+    "missingConsent": "You must agree to data processing."
+  },
+  "errors": {
+    "submitFailed": "Submission failed. Please try again."
+  },
+  "buttons": {
+    "pdfDownloaded": "PDF downloaded",
+    "generating": "Generating...",
+    "generatePdf": "Generate PDF",
+    "goToSelfAudit": "Go to Electricity Self-Audit"
+  },
+  "consent": {
+    "label": "By submitting, I agree to the processing of the provided data."
+  },
+  "modal": {
+    "title": "Download PDF",
+    "description": "Your data has been submitted. You can now download the PDF report.",
+    "download": "Download PDF",
+    "close": "Close"
+  },
+  "profiles": {
+    "title": "Accommodation Profile",
+    "items": {
+      "1": {
+        "title": "Guesthouse / Pension - only accommodation, no gastronomy",
+        "tooltip": "Typically smaller facilities focused on lodging without dining services; lower energy use from kitchens."
+      },
+      "2": {
+        "title": "Hotel / Pension - only continental breakfast, reception, basic services",
+        "tooltip": "Basic services with limited food preparation; moderate energy use from breakfast and reception operations."
+      },
+      "3": {
+        "title": "Self-catering accommodation, small accommodation",
+        "tooltip": "Guests cook on-site; energy use depends on room occupancy and appliance efficiency."
+      },
+      "4": {
+        "title": "Hotel with restaurant - full gastronomy",
+        "tooltip": "Full restaurant operations increase energy use (kitchen, refrigeration, ventilation)."
+      },
+      "5": {
+        "title": "Hotel with wellness / pool / conferences - high consumption",
+        "tooltip": "Wellness, pools, and conferences significantly raise heating, water, and HVAC demand."
+      }
+    }
+  },
+  "periodData": {
+    "title": "Operational Data",
+    "period": "Period",
+    "autoText": "This value is calculated automatically",
+    "occupancyRate": "Occupancy rate (%)",
+    "operatingDays": "Operating days",
+    "operatingDaysError": "Year has max 365 days",
+    "rooms": "Number of rooms",
+    "floorArea": "Floor area (m²)",
+    "roomNights": "Room night"
+  },
+  "energyByPeriod": {
+    "kwhTitle": "ENERGY (kWh)",
+    "emissionsTitle": "EMISSIONS (t CO₂e)",
+    "gjTitle": "ENERGY (GJ)",
+    "showUnits": "Show units"
+  },
+  "energyKwhTable": {
+    "energySource": "Energy source",
+    "periodFallback": "Period {{index}}",
+    "explanation": "Explanation",
+    "placeholder": "Enter",
+    "total": "Total"
+  },
+  "energyEmissionsInput": {
+    "title": "ENERGY & EMISSIONS",
+    "deprecated": "Original version to be removed",
+    "energySource": "Energy source",
+    "total": "Total",
+    "totalTooltip": "Total energy consumption.",
+    "explanation": "Explanation",
+    "emissions": "Emissions (t CO₂e)"
+  },
+  "summary": {
+    "title": "What we measure?",
+    "items": {
+      "totalEnergy": "Total energy consumption (kWh)",
+      "renewableShare": "Share of renewable electricity (%)",
+      "perRoomNight": "Consumption per room-night (kWh)"
+    },
+    "whyTitle": "Why it matters?",
+    "whyText": "Energy intensity directly affects operating costs and carbon footprint. Tracking consumption helps reveal savings quickly.",
+    "quote": "\"Energy efficiency is the fastest, cheapest and cleanest way to reduce emissions.\" — International Energy Agency"
+  },
+  "benchmarks": {
+    "title": "BENCHMARKS & THRESHOLDS",
+    "indicator": "Indicator",
+    "scoreForYear": "Score for year X",
+    "weight": "Weight",
+    "weightedScore": "Weighted score",
+    "totalWeightedScore": "Total weighted score",
+    "year": "Year"
+  },
+  "energyManagement": {
+    "periodTitle": "Period – {{period}}"
+  }
+}

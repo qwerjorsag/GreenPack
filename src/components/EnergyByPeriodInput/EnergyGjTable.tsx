@@ -1,10 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ENERGY_SOURCES } from '../EnergyEmissionsInput';
 
 type EnergyByPeriod = Record<string, number | ''>;
 
 type Props = {
-  isCs: boolean;
   periods: { period: string }[];
   values: EnergyByPeriod[];
   showUnits: boolean;
@@ -13,27 +13,29 @@ type Props = {
 };
 
 export default function EnergyGjTable({
-  isCs,
   periods,
   values,
   showUnits,
   totals,
   formatGj,
 }: Props) {
+  const { i18n, t } = useTranslation('electricity');
+  const isCs = i18n.language === 'cs';
+
   return (
     <div className="gp-table-wrap overflow-y-visible pb-4">
       <table className="gp-table tabular-nums table-fixed">
         <thead className="gp-table-head">
           <tr>
             <th className="gp-th gp-th-left whitespace-normal break-words max-w-[140px] md:max-w-none w-1/3">
-              {isCs ? 'Zdroj energie' : 'Energy source'}
+              {t('energyKwhTable.energySource')}
             </th>
             {periods.map((p, idx) => (
               <th
                 key={`gj-period-${idx}`}
                 className={`gp-th gp-th-center whitespace-normal break-words w-1/3 ${idx === 2 ? 'gp-th-right' : ''}`}
               >
-                {p.period || (isCs ? `Období ${idx + 1}` : `Period ${idx + 1}`)}
+                {p.period || t('energyKwhTable.periodFallback', { index: idx + 1 })}
               </th>
             ))}
           </tr>
@@ -63,7 +65,7 @@ export default function EnergyGjTable({
           ))}
           <tr className="font-bold bg-stone-100 text-stone-900">
             <td className="gp-td uppercase rounded-bl-xl">
-              {isCs ? 'Celkem' : 'Total'}
+              {t('energyKwhTable.total')}
             </td>
             {totals.map((total, idx) => (
               <td

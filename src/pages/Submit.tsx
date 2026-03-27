@@ -2,18 +2,17 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { 
+import {
   ChevronLeft, 
   Send,
   Building2,
   Mail,
   User
 } from 'lucide-react';
-import '../i18n';
 import AccommodationTypeSelect from '../components/AccommodationTypeSelect';
 
 export default function Submit() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation('submit');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [accommodationType, setAccommodationType] = useState('hotel');
@@ -40,18 +39,16 @@ export default function Submit() {
             <Send className="w-10 h-10 text-emerald-600" />
           </div>
           <h1 className="text-3xl font-bold text-stone-900 mb-4">
-            {i18n.language === 'cs' ? 'Děkujeme!' : 'Thank You!'}
+            {t('thankYouTitle')}
           </h1>
           <p className="text-stone-500 mb-8 leading-relaxed">
-            {i18n.language === 'cs' 
-              ? 'Vaše data byla úspěšně odeslána. Budeme vás brzy kontaktovat.' 
-              : 'Your data has been successfully submitted. We will contact you soon.'}
+            {t('thankYouDescription')}
           </p>
           <Link 
             to="/"
             className="inline-block w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/10"
           >
-            {i18n.language === 'cs' ? 'Zpět na úvod' : 'Back to Home'}
+            {t('backHome')}
           </Link>
         </motion.div>
       </div>
@@ -64,7 +61,7 @@ export default function Submit() {
         <div className="bg-white rounded-[2.5rem] shadow-sm border border-emerald-100 p-12">
           <h1 className="text-4xl font-black uppercase tracking-tighter mb-2">GreenPack</h1>
           <p className="text-stone-400 font-medium uppercase tracking-widest text-xs mb-12">
-            {i18n.language === 'cs' ? 'Registrační formulář' : 'Registration Form'}
+            {t('title')}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -76,20 +73,20 @@ export default function Submit() {
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3 flex items-center gap-2">
                 <Building2 className="w-3 h-3" />
-                {i18n.language === 'cs' ? 'Název ubytování' : 'Accommodation Name'}
+                {t('fields.accommodationName')}
               </label>
               <input 
                 required
                 type="text" 
                 className="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                placeholder={i18n.language === 'cs' ? 'Např. Hotel Green' : 'e.g. Green Hotel'}
+                placeholder={t('fields.accommodationNamePlaceholder')}
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3 flex items-center gap-2">
                 <User className="w-3 h-3" />
-                {i18n.language === 'cs' ? 'Kontaktní osoba' : 'Contact Person'}
+                {t('fields.contactPerson')}
               </label>
               <input 
                 required
@@ -101,7 +98,7 @@ export default function Submit() {
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3 flex items-center gap-2">
                 <Mail className="w-3 h-3" />
-                Email
+                {t('fields.email')}
               </label>
               <input 
                 required
@@ -117,8 +114,8 @@ export default function Submit() {
                 className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-900/20 disabled:opacity-50 flex items-center justify-center gap-3"
               >
                 {isSubmitting 
-                  ? (i18n.language === 'cs' ? 'Odesílám...' : 'Sending...') 
-                  : (i18n.language === 'cs' ? 'Odeslat registraci' : 'Submit Registration')}
+                  ? t('buttons.submitting')
+                  : t('buttons.submit')}
                 {!isSubmitting && <Send className="w-4 h-4" />}
               </button>
             </div>

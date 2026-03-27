@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SUPPORTED_LANGS } from '../i18n/config';
 
 export const AccommodationTypeSchema = z.enum(['hotel', 'hostel', 'apartment', 'campsite']);
 
@@ -28,7 +29,7 @@ export const WasteSchema = z.object({
 
 export const SubmissionSchema = z.object({
   sourceToken: z.string(),
-  language: z.enum(['en', 'cs']),
+  language: z.enum(SUPPORTED_LANGS),
   type: AccommodationTypeSchema,
   details: BaseDetailsSchema,
   energy: EnergySchema,

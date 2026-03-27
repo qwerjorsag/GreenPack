@@ -4,7 +4,7 @@ import logoCz from '../../assets/logos/komora-logo-CZ.svg';
 import logoEn from '../../assets/logos/hk_cr_logo_aj_colour.png';
 
 export default function Footer() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation('common');
   const logoSrc = i18n.language === 'cs' ? logoCz : logoEn;
 
   return (
@@ -15,18 +15,18 @@ export default function Footer() {
             <a href="https://www.komora.cz/" className="flex items-center hover:opacity-80 transition-opacity">
               <img
                 src={logoSrc}
-                alt="Hospodářská komora"
+                alt={t('footer.alt')}
                 className="h-10 w-auto object-contain"
               />
             </a>
             <div className="text-stone-400 text-xs font-bold uppercase tracking-widest">
-              © 2026 Projekt Hospodářské komory
+              {t('footer.copyright')}
             </div>
           </div>
           <div className="flex gap-8">
-            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">Privacy</a>
-            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">Methodology</a>
-            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">Contact</a>
+            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">{t('footer.privacy')}</a>
+            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">{t('footer.methodology')}</a>
+            <a href="#" className="text-stone-400 hover:text-emerald-600 text-xs font-bold uppercase tracking-widest transition-colors">{t('footer.contact')}</a>
           </div>
         </div>
       </div>
