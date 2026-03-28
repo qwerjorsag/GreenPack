@@ -13,8 +13,7 @@ const formatWithSpaces = (value: number) => {
 };
 
 export default function EnergyRenewablesSummary({ years, values }: Props) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
 
   const rows = useMemo(() => {
     return years.map((year, idx) => {
@@ -39,7 +38,7 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3>
-          {isCs ? 'Obnovitelné zdroje' : 'Renewable sources'}
+          {t('renewables.title')}
         </h3>
       </div>
 
@@ -47,12 +46,12 @@ export default function EnergyRenewablesSummary({ years, values }: Props) {
         <table className="gp-table table-fixed min-w-0">
           <thead className="gp-table-head">
             <tr>
-              <th className="gp-th gp-th-left w-10 px-2 md:px-4">{isCs ? 'Rok' : 'Year'}</th>
+              <th className="gp-th gp-th-left w-10 px-2 md:px-4">{t('renewables.year')}</th>
               <th className="gp-th gp-th-center w-[45%] px-2 md:px-4">
-                {isCs ? 'Obnovitelné (kWh)' : 'Renewable (kWh)'}
+                {t('renewables.renewable')}
               </th>
               <th className="gp-th gp-th-center gp-th-right w-[45%] px-2 md:px-4">
-                {isCs ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)'}
+                {t('renewables.nonRenewable')}
               </th>
             </tr>
           </thead>

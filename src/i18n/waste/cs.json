@@ -30,5 +30,46 @@
     "whyTitle": "Proč je to důležité?",
     "whyText": "Průměrný hotel vyprodukuje 1 kg odpadu na hosta a noc. Správným tříděním lze recyklovat až 80 % tohoto objemu.",
     "quote": "\"There is no such thing as 'away'. When we throw anything away, it must go somewhere.\" — Annie Leonard"
+  },
+  "wasteStreams": {
+    "title": "Toky odpadu",
+    "headerStream": "Tok odpadu",
+    "quantity": "Množství (kg/rok)",
+    "destination": "Cíl / zpracování",
+    "recycled": "Recyklováno (kg)",
+    "recovered": "Energeticky využito vč. kompostu/AD (kg)",
+    "share": "Podíl z celku (%)",
+    "total": "Celkem (kg)",
+    "placeholder": "Vyplnit",
+    "rows": {
+      "mixed": {
+        "label": "Směsný komunální odpad",
+        "notes": "Zbytkový odpad ukládaný do směsného odpadu (skládka/spalovna)."
+      },
+      "paper": {
+        "label": "Papír a lepenka",
+        "notes": "Kancelářský a obalový papír/lepenka."
+      },
+      "plastics": {
+        "label": "Plasty",
+        "notes": "Obalové materiály a lahve."
+      },
+      "glass": {
+        "label": "Sklo",
+        "notes": "Lahve a sklenice."
+      },
+      "metal": {
+        "label": "Kov",
+        "notes": "Hliník, ocelové plechovky apod."
+      },
+      "organic": {
+        "label": "Organický / potravinový odpad",
+        "notes": "Kuchyňský a restaurační odpad; vhodné pro kompost/AD."
+      },
+      "other": {
+        "label": "Ostatní (e-odpad, nebezpečný)",
+        "notes": "Baterie, žárovky, chemikálie – specializované zpracování."
+      }
+    }
   }
 }

@@ -24,10 +24,6 @@ export default function Waste() {
   const [wasteStreams, setWasteStreams] = useState([
     {
       id: 'mixed',
-      labelCs: 'Směsný komunální odpad',
-      labelEn: 'Mixed municipal waste',
-      notesCs: 'Zbytkový odpad ukládaný do směsného odpadu (skládka/spalovna).',
-      notesEn: 'Residual waste sent to general disposal (landfill/incineration).',
       quantity: '',
       destination: '',
       recycled: '',
@@ -35,10 +31,6 @@ export default function Waste() {
     },
     {
       id: 'paper',
-      labelCs: 'Papír a lepenka',
-      labelEn: 'Paper and cardboard',
-      notesCs: 'Kancelářský a obalový papír/lepenka.',
-      notesEn: 'Office and packaging paper/cardboard.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -46,10 +38,6 @@ export default function Waste() {
     },
     {
       id: 'plastics',
-      labelCs: 'Plasty',
-      labelEn: 'Plastics',
-      notesCs: 'Obalové materiály a lahve.',
-      notesEn: 'Packaging materials and bottles.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -57,10 +45,6 @@ export default function Waste() {
     },
     {
       id: 'glass',
-      labelCs: 'Sklo',
-      labelEn: 'Glass',
-      notesCs: 'Lahve a sklenice.',
-      notesEn: 'Bottles and jars.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -68,10 +52,6 @@ export default function Waste() {
     },
     {
       id: 'metal',
-      labelCs: 'Kov',
-      labelEn: 'Metal',
-      notesCs: 'Hliník, ocelové plechovky apod.',
-      notesEn: 'Aluminium, steel cans, etc.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -79,10 +59,6 @@ export default function Waste() {
     },
     {
       id: 'organic',
-      labelCs: 'Organický / potravinový odpad',
-      labelEn: 'Organic / Food waste',
-      notesCs: 'Kuchyňský a restaurační odpad; vhodné pro kompost/AD.',
-      notesEn: 'Kitchen and restaurant waste; suitable for composting/AD.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -90,10 +66,6 @@ export default function Waste() {
     },
     {
       id: 'other',
-      labelCs: 'Ostatní (e-odpad, nebezpečný)',
-      labelEn: 'Other (e-waste, hazardous)',
-      notesCs: 'Baterie, žárovky, chemikálie – specializované zpracování.',
-      notesEn: 'Batteries, bulbs, chemicals – specialised treatment.',
       quantity: '',
       destination: '',
       recycled: '',
@@ -186,7 +158,6 @@ export default function Waste() {
 
         <div className="gp-card">
           <WasteStreamTable
-            isCs={i18n.language === 'cs'}
             rows={wasteStreams}
             onChange={setWasteStreams}
           />

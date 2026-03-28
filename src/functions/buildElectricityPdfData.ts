@@ -2,13 +2,14 @@ import type { PeriodData } from '../components/PeriodDataInput';
 import { ENERGY_SOURCES } from '../components/EnergyEmissionsInput';
 import { BENCHMARK_INDICATORS, type IndicatorKey } from '../components/BenchmarksThresholdsTable';
 import { energyBenchmarks, type MetricKey } from '../data/energyBenchmarks';
+import i18n from '../i18n';
 import { evaluateStatus, getRecommendation, getStatusText } from './electricityStatus';
 import { scoreForIndicator } from './electricityScoring';
 
 type EnergyByPeriod = Record<string, number | ''>[];
 
 type PdfDataInput = {
-  isCs: boolean;
+  lang: 'cs' | 'en' | 'de';
   profile: string;
   periods: PeriodData[];
   energyByPeriod: EnergyByPeriod;
@@ -20,7 +21,7 @@ type PdfDataInput = {
 };
 
 export const buildElectricityPdfData = async ({
-  isCs,
+  lang,
   profile,
   periods,
   energyByPeriod,
@@ -48,7 +49,7 @@ export const buildElectricityPdfData = async ({
   );
   const energySourceOrder = ENERGY_SOURCES.map((s) => s.id);
   const energySourceLabels = ENERGY_SOURCES.reduce<Record<string, string>>((acc, s) => {
-    acc[s.id] = isCs ? s.nameCs : s.nameEn;
+    acc[s.id] = i18n.t(`energySources.${s.id}.name`, { ns: 'electricity', lng: lang });
     return acc;
   }, {});
 
@@ -85,16 +86,16 @@ export const buildElectricityPdfData = async ({
   });
 
   const indicatorLabelMap = BENCHMARK_INDICATORS.reduce<Record<string, string>>((acc, row) => {
-    acc[row.key] = isCs ? row.labelCs : row.labelEn;
+    acc[row.key] = lang === 'cs' ? row.labelCs : lang === 'de' ? row.labelDe : row.labelEn;
     return acc;
   }, {});
   const benchmarksRows = benchmarkValues as Record<string, Array<number | null>>;
   const benchmarkHeaders = [
-    isCs ? 'Ukazatel' : 'Indicator',
+    i18n.t('benchmarks.indicator', { ns: 'electricity', lng: lang }),
     ...years,
-    isCs ? 'Skóre pro rok X' : 'Score for year X',
-    isCs ? 'Váha' : 'Weight',
-    isCs ? 'Vážené skóre' : 'Weighted score',
+    i18n.t('benchmarks.scoreForYear', { ns: 'electricity', lng: lang }),
+    i18n.t('benchmarks.weight', { ns: 'electricity', lng: lang }),
+    i18n.t('benchmarks.weightedScore', { ns: 'electricity', lng: lang }),
   ];
 
   const benchmarksDataRows = Object.keys(benchmarksRows).map((key) => {
@@ -128,9 +129,12 @@ export const buildElectricityPdfData = async ({
     return hasAny ? sum.toFixed(2).replace('.', ',') : '—';
   });
 
-  const ratingMatrix = isCs
-    ? (await import('../data/ratingMatrixElectricity/ratingMatrix.cs.json')).default.ratingMatrix
-    : (await import('../data/ratingMatrixElectricity/ratingMatrix.en.json')).default.ratingMatrix;
+  const ratingMatrix =
+    lang === 'cs'
+      ? (await import('../data/ratingMatrixElectricity/ratingMatrix.cs.json')).default.ratingMatrix
+      : lang === 'de'
+        ? (await import('../data/ratingMatrixElectricity/ratingMatrix.de.json')).default.ratingMatrix
+        : (await import('../data/ratingMatrixElectricity/ratingMatrix.en.json')).default.ratingMatrix;
 
   const getBand = (score: string) => {
     const num = parseFloat(score.replace(',', '.'));
@@ -156,7 +160,7 @@ export const buildElectricityPdfData = async ({
 
   const categoryIndex = Math.max(
     0,
-    Math.min(energyBenchmarks.categoriesEn.length - 1, Number.parseInt(profile, 10) - 1 || 0)
+    Math.min(energyBenchmarks.categories.length - 1, Number.parseInt(profile, 10) - 1 || 0)
   );
 
   const formatValue = (value: number | null) => {
@@ -185,9 +189,9 @@ export const buildElectricityPdfData = async ({
       const range = metric.ranges[categoryIndex];
       const value = valuesByKey[metric.key];
       const status = evaluateStatus(value, range, metric.key);
-      const statusText = getStatusText(status, metric.key, isCs);
-      const recommendation = getRecommendation(metric.key, range, value, isCs);
-      const metricLabel = isCs ? metric.labelCs : metric.labelEn;
+      const statusText = getStatusText(status, metric.key, lang);
+      const recommendation = getRecommendation(metric.key, range, value, lang);
+      const metricLabel = i18n.t(`energyManagement.metrics.${metric.key}`, { ns: 'electricity', lng: lang });
       const expectedLabel = range ? range.label : '—';
       const resultLabel = `${formatValue(value)} — ${statusText}`;
       return {
@@ -201,7 +205,7 @@ export const buildElectricityPdfData = async ({
     });
 
     return {
-      title: isCs ? `Období – ${period.period || '-'}` : `Period – ${period.period || '-'}`,
+      title: i18n.t('energyManagement.periodTitle', { ns: 'electricity', lng: lang, period: period.period || '-' }),
       rows,
     };
   });
@@ -236,7 +240,7 @@ export const buildElectricityPdfData = async ({
     totalConsumption,
     accommodationProfileLabel,
     benchmarks: {
-      title: isCs ? 'BENCHMARKY A PRAHY' : 'BENCHMARKS & THRESHOLDS',
+      title: i18n.t('benchmarks.title', { ns: 'electricity', lng: lang }),
       headers: benchmarkHeaders,
       ratingHeaders: {
         rating: ratingMatrix.headers.rating,
@@ -245,7 +249,7 @@ export const buildElectricityPdfData = async ({
         recommendedNextSteps: ratingMatrix.headers.recommendedNextSteps,
       },
       rows: benchmarksDataRows,
-      totals: [isCs ? 'Celkové vážené skóre' : 'Total weighted score', ...totalWeightedPerYear],
+      totals: [i18n.t('benchmarks.totalWeightedScore', { ns: 'electricity', lng: lang }), ...totalWeightedPerYear],
       bands: [ratingMatrix.headers.rating, ...bands],
       yearSummaries,
     },

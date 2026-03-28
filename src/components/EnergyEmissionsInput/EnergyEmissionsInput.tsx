@@ -5,77 +5,41 @@ import DataTable from '../DataTable';
 
 interface EnergySource {
   id: string;
-  nameEn: string;
-  nameCs: string;
   ef: number;
-  explanationEn: string;
-  explanationCs: string;
 }
 
 export const ENERGY_SOURCES: EnergySource[] = [
   {
     id: 'electricity_grid',
-    nameEn: 'Electricity – grid',
-    nameCs: 'Elektřina – síť',
     ef: 0.432,
-    explanationEn: 'Electricity purchased from the national grid (without renewable certificates).',
-    explanationCs: 'Elektřina nakoupená z národní sítě (bez certifikátů původu).',
   },
   {
     id: 'electricity_renewable',
-    nameEn: 'Electricity – renewable',
-    nameCs: 'Elektřina – obnovitelná',
     ef: 0,
-    explanationEn: 'Electricity supplied with Guarantees of Origin or Renewable Energy Certificates – may be reported as zero-emission (market-based).',
-    explanationCs: 'Elektřina dodávaná se zárukami původu – může být vykazována jako bezemisní.',
   },
   {
     id: 'natural_gas',
-    nameEn: 'Natural gas',
-    nameCs: 'Zemní plyn',
     ef: 0.202,
-    explanationEn: 'Fuel gas used for heating or water heating.',
-    explanationCs: 'Plyn používaný k vytápění nebo ohřevu vody.',
   },
   {
     id: 'heating_oil',
-    nameEn: 'Heating oil',
-    nameCs: 'Topný olej',
     ef: 0.267,
-    explanationEn: 'Diesel or light fuel oil used in boilers.',
-    explanationCs: 'Nafta nebo lehký topný olej používaný v kotlích.',
   },
   {
     id: 'lpg',
-    nameEn: 'LPG',
-    nameCs: 'LPG',
     ef: 0.227,
-    explanationEn: 'Liquefied petroleum gas used for heating or cooking.',
-    explanationCs: 'Zkapalněný ropný plyn používaný k vytápění nebo vaření.',
   },
   {
     id: 'biomass',
-    nameEn: 'Biomass (biogenic)',
-    nameCs: 'Biomasa (biogenní)',
     ef: 0.02,
-    explanationEn: 'Wood pellets, chips, or similar – only biogenic fraction counted.',
-    explanationCs: 'Dřevní pelety, štěpka apod. – započítává se pouze biogenní frakce.',
   },
   {
     id: 'district_heating',
-    nameEn: 'District heating',
-    nameCs: 'Dálkové vytápění',
     ef: 0.18,
-    explanationEn: 'Purchased heat from a district system; factor depends on local mix.',
-    explanationCs: 'Teplo nakoupené ze systému dálkového vytápění; faktor závisí na lokálním mixu.',
   },
   {
     id: 'other',
-    nameEn: 'Other',
-    nameCs: 'Jiné',
     ef: 0.2,
-    explanationEn: 'Any other energy source not listed above.',
-    explanationCs: 'Jakýkoli jiný zdroj energie neuvedený výše.',
   }
 ];
 
@@ -86,8 +50,7 @@ interface Props {
 }
 
 export default function EnergyEmissionsInput({ values, onValuesChange, themeColor = 'yellow' }: Props) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
 
   const handleValueChange = (id: string, val: string) => {
     if (val === '') {
@@ -129,16 +92,16 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
   const columns = [
     {
       id: 'energy',
-      header: isCs ? 'Zdroj energie' : 'Energy source',
+      header: t('energyEmissionsInput.energySource'),
       headerClassName: 'pl-4 pr-1 py-3 rounded-tl-xl whitespace-normal break-words max-w-[120px] md:max-w-none',
       cellClassName: 'pl-4 pr-1 py-3',
       render: (row: typeof rows[number]) => {
         if (row.type === 'total') {
-          return <span className="font-bold uppercase text-stone-900">{isCs ? 'Celkem' : 'Total'}</span>;
+          return <span className="font-bold uppercase text-stone-900">{t('energyEmissionsInput.total')}</span>;
         }
         return (
           <span className="text-sm font-medium text-stone-800">
-            {isCs ? row.source.nameCs : row.source.nameEn}
+            {t(`energySources.${row.source.id}.name`)}
           </span>
         );
       },
@@ -153,16 +116,16 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
           return (
             <div className="flex justify-center">
               <InfoTooltip
-                label={isCs ? 'Celkem' : 'Total'}
-                content={isCs ? 'Celková spotřeba energie.' : 'Total energy consumption.'}
+                label={t('energyEmissionsInput.total')}
+                content={t('energyEmissionsInput.totalTooltip')}
               />
             </div>
           );
         }
-        const explanation = isCs ? row.source.explanationCs : row.source.explanationEn;
+        const explanation = t(`energySources.${row.source.id}.explanation`);
         return (
           <div className="flex justify-center">
-            <InfoTooltip label={isCs ? 'Vysvětlení' : 'Explanation'} content={explanation} />
+            <InfoTooltip label={t('energyEmissionsInput.explanation')} content={explanation} />
           </div>
         );
       },
@@ -208,7 +171,7 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
     },
     {
       id: 'emissions',
-      header: isCs ? 'Emise (t CO₂e)' : 'Emissions (t CO₂e)',
+      header: t('energyEmissionsInput.emissions'),
       headerClassName: 'px-4 py-3 text-center whitespace-normal break-words max-w-[120px] md:max-w-none',
       cellClassName: 'px-4 py-3 text-right',
       render: (row: typeof rows[number]) => {
@@ -234,10 +197,10 @@ export default function EnergyEmissionsInput({ values, onValuesChange, themeColo
       <div className="flex justify-between items-center">
         <div>
           <h3>
-            {isCs ? 'ENERGIE A EMISE' : 'ENERGY & EMISSIONS'}
+            {t('energyEmissionsInput.title')}
           </h3>
           <div className="text-xs text-stone-500">
-            {isCs ? 'Původní verze k odstranění' : 'Original version to be removed'}
+            {t('energyEmissionsInput.deprecated')}
           </div>
         </div>
       </div>

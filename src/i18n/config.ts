@@ -13,6 +13,8 @@ export const NAMESPACES = [
   'self-audit-electricity',
   'self-audit-water',
   'self-audit-waste',
+  'methodology',
+  'contact',
   'pdf',
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];

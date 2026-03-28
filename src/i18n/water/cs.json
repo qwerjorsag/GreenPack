@@ -30,5 +30,36 @@
     "whyTitle": "Proč je to důležité?",
     "whyText": "Snížení spotřeby vody o 20 % může ušetřit tisíce eur ročně na poplatcích za vodné a stočné.",
     "quote": "\"Water is the driving force of all nature.\" — Leonardo da Vinci"
+  },
+  "waterSources": {
+    "title": "Zdroje vody",
+    "headerSource": "Zdroj vody",
+    "withdrawn": "Odebráno (m³/rok)",
+    "returned": "Vráceno do stejného zdroje (m³/rok)",
+    "consumed": "Spotřebováno (m³/rok)",
+    "share": "Podíl z celkového odběru (%)",
+    "total": "Celkem (m³)",
+    "rows": {
+      "municipal": {
+        "label": "Městský vodovod",
+        "tooltip": "Pitná voda z městské sítě."
+      },
+      "groundwater": {
+        "label": "Podzemní voda (vlastní vrt)",
+        "tooltip": "Vlastní čerstvá voda; pouze povolený odběr."
+      },
+      "rainwater": {
+        "label": "Zachytávání dešťové vody",
+        "tooltip": "Zachycená dešťová voda použitá v areálu (obvykle nepitná)."
+      },
+      "greywater": {
+        "label": "Recyklace / šedá voda",
+        "tooltip": "Voda znovu použitá pro toalety, závlahu, prádelnu, chlazení apod."
+      },
+      "other": {
+        "label": "Jiné",
+        "tooltip": "Cisterny nebo jiné zdroje neuvedené výše."
+      }
+    }
   }
 }

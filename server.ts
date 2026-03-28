@@ -19,6 +19,7 @@ import { WaterSelfAuditModel } from "./server/models/WaterSelfAudit";
 import { WasteSelfAuditModel } from "./server/models/WasteSelfAudit";
 
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { getServerT } from "./src/i18n/server";
 
 const generatePDF = async (data: any) => {
   const filename = `report_${data.submissionId}.pdf`;
@@ -35,39 +36,10 @@ const generatePDF = async (data: any) => {
   const { width, height } = page.getSize();
   const fontSize = 12;
 
-  const lang = data.language === "cs" ? "cs" : "en";
-  const labels = {
-    en: {
-      title: "GreenPack Sustainability Report",
-      id: "Submission ID",
-      date: "Date",
-      version: "Methodology Version",
-      acc: "Accommodation",
-      type: "Type",
-      kpis: "Computed KPIs",
-      rating: "Overall Rating",
-      energy: "Energy per Guest",
-      water: "Water per Guest",
-      waste: "Waste Recycling Rate",
-      recs: "Recommendations",
-    },
-    cs: {
-      title: "GreenPack Zpráva o udržitelnosti",
-      id: "ID podání",
-      date: "Datum",
-      version: "Verze metodiky",
-      acc: "Ubytování",
-      type: "Typ",
-      kpis: "Vypočtené KPI",
-      rating: "Celkové hodnocení",
-      energy: "Energie na hosta",
-      water: "Voda na hosta",
-      waste: "Míra recyklace odpadu",
-      recs: "Doporučení",
-    },
-  }[lang];
+  const lang = data.language === "de" ? "de" : data.language === "cs" ? "cs" : "en";
+  const t = getServerT(lang, "pdf");
 
-  page.drawText(labels.title, {
+  page.drawText(t("serverReport.title"), {
     x: 50,
     y: height - 50,
     size: 20,
@@ -76,19 +48,19 @@ const generatePDF = async (data: any) => {
   });
 
   const lines = [
-    `${labels.id}: ${data.submissionId}`,
-    `${labels.date}: ${new Date().toLocaleString(lang === "cs" ? "cs-CZ" : "en-US")}`,
-    `${labels.version}: ${METHODOLOGY_VERSION}`,
-    `${labels.acc}: ${data.details.name}`,
-    `${labels.type}: ${data.type}`,
+    `${t("serverReport.id")}: ${data.submissionId}`,
+    `${t("serverReport.date")}: ${new Date().toLocaleString(lang === "cs" ? "cs-CZ" : lang === "de" ? "de-DE" : "en-US")}`,
+    `${t("serverReport.version")}: ${METHODOLOGY_VERSION}`,
+    `${t("serverReport.acc")}: ${data.details.name}`,
+    `${t("serverReport.type")}: ${data.type}`,
     "",
-    `${labels.kpis}:`,
-    `- ${labels.rating}: ${data.computed.overallRating}`,
-    `- ${labels.energy}: ${data.computed.energyPerGuest} kWh`,
-    `- ${labels.water}: ${data.computed.waterPerGuest} m3`,
-    `- ${labels.waste}: ${data.computed.wasteRecyclingRate}%`,
+    `${t("serverReport.kpis")}:`,
+    `- ${t("serverReport.rating")}: ${data.computed.overallRating}`,
+    `- ${t("serverReport.energy")}: ${data.computed.energyPerGuest} kWh`,
+    `- ${t("serverReport.water")}: ${data.computed.waterPerGuest} m3`,
+    `- ${t("serverReport.waste")}: ${data.computed.wasteRecyclingRate}%`,
     "",
-    `${labels.recs}:`,
+    `${t("serverReport.recs")}:`,
     ...data.computed.recommendations.map((rec: string) => `- ${rec}`),
   ];
 

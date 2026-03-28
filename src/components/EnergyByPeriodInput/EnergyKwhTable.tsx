@@ -22,8 +22,7 @@ export default function EnergyKwhTable({
   onChange,
   formatWithSpaces,
 }: Props) {
-  const { i18n, t } = useTranslation('electricity');
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
 
   return (
     <div className="gp-table-wrap overflow-y-visible pb-4">
@@ -51,14 +50,14 @@ export default function EnergyKwhTable({
             <tr key={source.id} className="gp-row">
               <td className="gp-td px-2 md:px-4">
                 <span className="text-sm font-medium text-stone-800">
-                  {isCs ? source.nameCs : source.nameEn}
+                  {t(`energySources.${source.id}.name`)}
                 </span>
               </td>
               <td className="gp-td px-0.5 md:px-0.5 w-6 text-xs text-stone-700 hidden md:table-cell">
                 <div className="flex justify-center">
                   <InfoTooltip
                     label={t('energyKwhTable.explanation')}
-                    content={isCs ? source.explanationCs : source.explanationEn}
+                    content={t(`energySources.${source.id}.explanation`)}
                   />
                 </div>
               </td>

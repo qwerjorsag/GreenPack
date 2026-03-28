@@ -1,6 +1,7 @@
-﻿import jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import autoTable, { UserOptions } from 'jspdf-autotable';
 import notoSansUrl from '../assets/Fonts/NotoSans-VariableFont_wdth,wght.ttf?url';
+import i18n from '../i18n';
 
 type PeriodData = {
   period: string;
@@ -13,7 +14,7 @@ type PeriodData = {
 type EnergyByPeriod = Record<string, number>;
 
 interface PdfData {
-  language: 'cs' | 'en';
+  language: 'cs' | 'en' | 'de';
   coverTitle?: string;
   coverColor?: [number, number, number];
   accommodationProfileLabel?: string;
@@ -45,8 +46,8 @@ interface PdfData {
   };
 }
 
-const fmtInt = (v: number | null) => (v === null ? '—' : Math.round(v).toLocaleString('cs-CZ').replace(/\\u00A0/g, ' '));
-const fmt2 = (v: number | null) => (v === null ? '—' : v.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\\u00A0/g, ' '));
+const fmtInt = (v: number | null) => (v === null ? '—' : Math.round(v).toLocaleString('cs-CZ').replace(/\u00A0/g, ' '));
+const fmt2 = (v: number | null) => (v === null ? '—' : v.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\u00A0/g, ' '));
 
 let fontBase64Promise: Promise<string> | null = null;
 const loadNotoSansBase64 = async () => {
@@ -79,6 +80,7 @@ const toBase64 = async (url: string) => {
 export async function generateElectricityVectorPdf(data: PdfData) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const lang = data.language;
+  const tPdf = (key: string) => i18n.t(key, { ns: 'pdf', lng: lang });
   const marginX = 14;
   let cursorY = 14;
 
@@ -121,12 +123,10 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     if (pct === null || Number.isNaN(pct)) return '—';
     const abs = Math.abs(pct);
     if (abs >= 10) {
-      return pct > 0
-        ? (lang === 'cs' ? 'Výrazný nárůst' : 'Significant increase')
-        : (lang === 'cs' ? 'Výrazné zlepšení' : 'Significant decrease');
+      return pct > 0 ? tPdf('evaluation.significantIncrease') : tPdf('evaluation.significantDecrease');
     }
-    if (abs >= 5) return lang === 'cs' ? 'Střední změna' : 'Moderate change';
-    return lang === 'cs' ? 'Malá změna' : 'Minor change';
+    if (abs >= 5) return tPdf('evaluation.moderateChange');
+    return tPdf('evaluation.minorChange');
   };
 
   const reportCategory = (pct: number | null) => {
@@ -141,25 +141,15 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   const reportText = (pct: number | null, category: 'normal' | 'notable' | 'significant' | 'key' | 'none') => {
     if (pct === null || Number.isNaN(pct)) return '—';
     const isDecrease = pct < 0;
-    if (category === 'normal') {
-      return lang === 'cs'
-        ? 'Stabilní trend – udržujte současné postupy a motivujte personál.'
-        : 'Stable trend – maintain current practices and keep staff motivated.';
-    }
+    if (category === 'normal') return tPdf('report.stable');
     if (category === 'notable') {
-      return isDecrease
-        ? (lang === 'cs' ? 'Mírné zlepšení – sledujte, zda trend pokračuje.' : 'Slight improvement observed – monitor if the trend continues.')
-        : (lang === 'cs' ? 'Mírný nárůst spotřeby – prověřte možné důvody.' : 'Slight increase in consumption – analyze possible reasons.');
+      return isDecrease ? tPdf('report.slightImprovement') : tPdf('report.slightIncrease');
     }
     if (category === 'significant') {
-      return isDecrease
-        ? (lang === 'cs' ? 'Skvělé! Výrazné zlepšení – zahrňte do ESG reportu a inspirujte ostatní.' : 'Great! Significant improvement – include in ESG report and inspire others.')
-        : (lang === 'cs' ? 'Výrazný nárůst – doporučena detailní analýza a akční plán.' : 'Significant increase – detailed analysis and action plan recommended.');
+      return isDecrease ? tPdf('report.significantImprovement') : tPdf('report.significantIncrease');
     }
     if (category === 'key') {
-      return isDecrease
-        ? (lang === 'cs' ? 'Výrazné zlepšení – analyzujte, co fungovalo, a standardizujte postup.' : 'Major improvement – analyze what worked and standardize the approach.')
-        : (lang === 'cs' ? 'Výrazné zhoršení – nutná okamžitá akce a optimalizace.' : 'Major deterioration – immediate action and optimization needed.');
+      return isDecrease ? tPdf('report.majorImprovement') : tPdf('report.majorDeterioration');
     }
     return '—';
   };
@@ -186,9 +176,7 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     doc.setFontSize(48);
     doc.setFont('NotoSans', 'bold');
     const brand = 'GREENPACK';
-    const subtitle = lang === 'cs'
-      ? 'ANALÝZA UDRŽITELNOSTI UBYTOVACÍHO ZAŘÍZENÍ'
-      : 'ACCOMMODATION SUSTAINABILITY ANALYSIS';
+    const subtitle = tPdf('cover.subtitle');
     const brandWidth = doc.getTextWidth(brand);
     const brandY = 74;
     doc.text(brand, (210 - brandWidth) / 2, brandY);
@@ -214,24 +202,24 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   }
 
   // Operational Data
-  addTitle(lang === 'cs' ? 'Provozní údaje' : 'Operational Data');
+  addTitle(tPdf('operationalData.title'));
   addTable({
-    head: [[lang === 'cs' ? 'Ukazatel' : 'Metric', ...data.years]],
+    head: [[tPdf('operationalData.metric'), ...data.years]],
     body: [
-      [lang === 'cs' ? 'Období' : 'Period', ...data.operationalData.map((p) => p.period || '—')],
-      [lang === 'cs' ? 'Obsazenost (%)' : 'Occupancy rate (%)', ...data.operationalData.map((p) => fmt2(p.occupancyRate))],
-      [lang === 'cs' ? 'Provozní dny' : 'Operating days', ...data.operationalData.map((p) => fmtInt(p.operatingDays))],
-      [lang === 'cs' ? 'Počet pokojů' : 'Number of rooms', ...data.operationalData.map((p) => fmtInt(p.rooms))],
-      [lang === 'cs' ? 'Podlahová plocha (m²)' : 'Floor area (m²)', ...data.operationalData.map((p) => fmtInt(p.floorArea))],
-      [lang === 'cs' ? 'Pokojonoci' : 'Room nights', ...data.perPeriodIndicators.map((p) => fmtInt(p.roomNights))],
+      [tPdf('operationalData.period'), ...data.operationalData.map((p) => p.period || '—')],
+      [tPdf('operationalData.occupancyRate'), ...data.operationalData.map((p) => fmt2(p.occupancyRate))],
+      [tPdf('operationalData.operatingDays'), ...data.operationalData.map((p) => fmtInt(p.operatingDays))],
+      [tPdf('operationalData.rooms'), ...data.operationalData.map((p) => fmtInt(p.rooms))],
+      [tPdf('operationalData.floorArea'), ...data.operationalData.map((p) => fmtInt(p.floorArea))],
+      [tPdf('operationalData.roomNights'), ...data.perPeriodIndicators.map((p) => fmtInt(p.roomNights))],
     ],
   });
 
   // Energy (kWh)
-  addTitle(lang === 'cs' ? 'ENERGIE (kWh)' : 'ENERGY (kWh)');
+  addTitle(tPdf('energy.kwhTitle'));
   const energySources = data.energySourceOrder.length ? data.energySourceOrder : Object.keys(data.energyKwh[0] || {});
   addTable({
-    head: [[lang === 'cs' ? 'Zdroj energie' : 'Energy source', ...data.years]],
+    head: [[tPdf('energy.energySource'), ...data.years]],
     body: [
       ...energySources.map((key) => [
         data.energySourceLabels[key] ?? key,
@@ -241,9 +229,9 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   });
 
   // Energy GJ
-  addTitle(lang === 'cs' ? 'ENERGIE (GJ)' : 'ENERGY (GJ)');
+  addTitle(tPdf('energy.gjTitle'));
   addTable({
-    head: [[lang === 'cs' ? 'Zdroj energie' : 'Energy source', ...data.years]],
+    head: [[tPdf('energy.energySource'), ...data.years]],
     body: [
       ...energySources.map((key) => [
         data.energySourceLabels[key] ?? key,
@@ -256,9 +244,9 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   cursorY = 14;
 
   // Emissions
-  addTitle(lang === 'cs' ? 'EMISE (t CO₂e)' : 'EMISSIONS (t CO₂e)');
+  addTitle(tPdf('energy.emissionsTitle'));
   addTable({
-    head: [[lang === 'cs' ? 'Zdroj energie' : 'Energy source', ...data.years]],
+    head: [[tPdf('energy.energySource'), ...data.years]],
     body: [
       ...energySources.map((key) => [
         data.energySourceLabels[key] ?? key,
@@ -268,9 +256,9 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   });
 
   // Renewables summary
-  addTitle(lang === 'cs' ? 'Obnovitelné zdroje' : 'Renewable sources');
+  addTitle(tPdf('renewables.title'));
   addTable({
-    head: [[lang === 'cs' ? 'Rok' : 'Year', lang === 'cs' ? 'Obnovitelné (kWh)' : 'Renewable (kWh)', lang === 'cs' ? 'Neobnovitelné (kWh)' : 'Non-renewable (kWh)']],
+    head: [[tPdf('renewables.year'), tPdf('renewables.renewable'), tPdf('renewables.nonRenewable')]],
     body: data.renewablesSummary.map((r) => [
       r.year,
       `${fmtInt(r.renewableKwh)} (${r.renewablePct.toFixed(1).replace('.', ',')}%)`,
@@ -287,15 +275,15 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   const rawValues = totalConsumption.map((v) => v.raw);
   const pctValues = rawValues.map((v, idx) => (idx === 0 ? null : percentChange(v, rawValues[idx - 1] ?? null)));
 
-  addTitle(lang === 'cs' ? 'Celková spotřeba na pokojonoc (PN)' : 'Total energy consumption per room-night (RN)');
+  addTitle(tPdf('consumption.titleRn'));
   addTable({
-    head: [[lang === 'cs' ? 'Rok' : 'Year', ...years]],
+    head: [[tPdf('consumption.year'), ...years]],
     body: [
-      [lang === 'cs' ? 'Spotřeba (kWh)' : 'Consumption (kWh)', ...rawValues.map((v) => fmtInt(v))],
-      [lang === 'cs' ? 'Spotřeba (GJ)' : 'Consumption (GJ)', ...totalConsumption.map((v) => fmt2(v.converted))],
-      [lang === 'cs' ? 'Normalizace (GJ/PN)' : 'Normalized (GJ/RN)', ...totalConsumption.map((v) => fmt2(v.normRN))],
-      [lang === 'cs' ? '% změna' : '% change', ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
-      [lang === 'cs' ? 'Evaluace' : 'Evaluation', ...pctValues.map((v) => evalLabel(v))],
+      [tPdf('consumption.consumptionKwh'), ...rawValues.map((v) => fmtInt(v))],
+      [tPdf('consumption.consumptionGj'), ...totalConsumption.map((v) => fmt2(v.converted))],
+      [tPdf('consumption.normalizedRn'), ...totalConsumption.map((v) => fmt2(v.normRN))],
+      [tPdf('consumption.percentChange'), ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
+      [tPdf('consumption.evaluation'), ...pctValues.map((v) => evalLabel(v))],
     ],
   });
 
@@ -311,7 +299,7 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   if (rnReportLines.length) {
     doc.setFontSize(11);
     doc.setTextColor(68, 64, 60);
-    doc.text(lang === 'cs' ? 'Report Celková spotřeba na pokojonoc (PN)' : 'Report Total energy consumption per room-night (RN)', marginX, cursorY);
+    doc.text(tPdf('consumption.reportTitleRn'), marginX, cursorY);
     cursorY += 6;
     doc.setFontSize(10);
     rnReportLines.forEach((line) => {
@@ -322,15 +310,15 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     cursorY += 6;
   }
 
-  addTitle(lang === 'cs' ? 'Celková spotřeba na m² za rok' : 'Total energy consumption per m² per year');
+  addTitle(tPdf('consumption.titleM2'));
   addTable({
-    head: [[lang === 'cs' ? 'Rok' : 'Year', ...years]],
+    head: [[tPdf('consumption.year'), ...years]],
     body: [
-      [lang === 'cs' ? 'Spotřeba (kWh)' : 'Consumption (kWh)', ...rawValues.map((v) => fmtInt(v))],
-      [lang === 'cs' ? 'Spotřeba (GJ)' : 'Consumption (GJ)', ...totalConsumption.map((v) => fmt2(v.converted))],
-      [lang === 'cs' ? 'Normalizace (GJ/m²/rok)' : 'Normalized (GJ/m²/year)', ...totalConsumption.map((v) => fmt2(v.normM2))],
-      [lang === 'cs' ? '% změna' : '% change', ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
-      [lang === 'cs' ? 'Evaluace' : 'Evaluation', ...pctValues.map((v) => evalLabel(v))],
+      [tPdf('consumption.consumptionKwh'), ...rawValues.map((v) => fmtInt(v))],
+      [tPdf('consumption.consumptionGj'), ...totalConsumption.map((v) => fmt2(v.converted))],
+      [tPdf('consumption.normalizedM2'), ...totalConsumption.map((v) => fmt2(v.normM2))],
+      [tPdf('consumption.percentChange'), ...pctValues.map((v) => (v === null ? '—' : `${fmt2(v)}%`))],
+      [tPdf('consumption.evaluation'), ...pctValues.map((v) => evalLabel(v))],
     ],
   });
 
@@ -346,7 +334,7 @@ export async function generateElectricityVectorPdf(data: PdfData) {
   if (m2ReportLines.length) {
     doc.setFontSize(11);
     doc.setTextColor(68, 64, 60);
-    doc.text(lang === 'cs' ? 'Report Celková spotřeba na m² za rok' : 'Report Total energy consumption per m² per year', marginX, cursorY);
+    doc.text(tPdf('consumption.reportTitleM2'), marginX, cursorY);
     cursorY += 6;
     doc.setFontSize(10);
     m2ReportLines.forEach((line) => {
@@ -367,17 +355,16 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     body: data.benchmarks.rows,
   });
   addTable({
-    head: [[lang === 'cs' ? 'Celkové vážené skóre' : 'Total weighted score', ...data.years]],
+    head: [[tPdf('benchmarks.totalWeightedScore'), ...data.years]],
     body: [data.benchmarks.totals],
   });
   addTable({
-    head: [[lang === 'cs' ? 'Hodnocení' : 'Rating', ...data.years]],
+    head: [[tPdf('benchmarks.rating'), ...data.years]],
     body: [data.benchmarks.bands],
   });
 
   data.benchmarks.yearSummaries.forEach((y) => {
-    const label = lang === 'cs' ? 'Rok' : 'Year';
-    addTitle(`${label} ${y.year} (${y.rating})`, 14, 10);
+    addTitle(`${tPdf('benchmarks.year')} ${y.year} (${y.rating})`, 14, 10);
     const meaningHeader = data.benchmarks.ratingHeaders.meaning;
     const typicalHeader = data.benchmarks.ratingHeaders.typicalProfile;
     const nextHeader = data.benchmarks.ratingHeaders.recommendedNextSteps;
@@ -407,10 +394,10 @@ export async function generateElectricityVectorPdf(data: PdfData) {
       }
 
       const headers = [
-        lang === 'cs' ? 'Metrika' : 'Metric',
-        lang === 'cs' ? 'Očekávaná hodnota' : 'Expected value',
-        lang === 'cs' ? 'Výsledek' : 'Results',
-        lang === 'cs' ? 'Doporučení' : 'Recommendation',
+        tPdf('energyManagement.metric'),
+        tPdf('energyManagement.expected'),
+        tPdf('energyManagement.results'),
+        tPdf('energyManagement.recommendation'),
       ];
 
       addTable({
@@ -433,5 +420,3 @@ export async function generateElectricityVectorPdf(data: PdfData) {
 
   doc.save('greenpack-report.pdf');
 }
-
-

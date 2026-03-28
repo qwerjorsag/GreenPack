@@ -23,7 +23,8 @@ import { apiUrl } from '../lib/api';
 
 export default function Electricity() {
   const { i18n, t } = useTranslation('electricity');
-  const isCs = i18n.language === 'cs';
+  const lang = (i18n.language.split('-')[0] as 'cs' | 'en' | 'de') || 'cs';
+  const isCs = lang === 'cs';
 
   const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,10 +131,11 @@ export default function Electricity() {
   };
 
   const handleGeneratePdf = async () => {
+    await i18n.loadNamespaces('pdf');
     const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
     const accommodationProfileLabel = selectedProfile ? t(`profiles.items.${selectedProfile.id}.title`) : '';
     const pdfData = await buildElectricityPdfData({
-      isCs,
+      lang,
       profile,
       periods,
       energyByPeriod,
@@ -145,7 +147,7 @@ export default function Electricity() {
     });
 
     await generateElectricityVectorPdf({
-      language: isCs ? 'cs' : 'en',
+      language: lang,
       coverTitle: t('page.title'),
       coverColor: [250, 204, 21],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,

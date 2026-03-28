@@ -41,10 +41,17 @@ import { apiUrl } from '../lib/api';
 type AuditCard = {
   id: string;
   weight?: number;
-  title: { cs: string; en: string };
-  description: { cs: string; en: string };
-  question?: { cs: string; en: string };
+  title: LocalizedText;
+  description: LocalizedText;
+  question?: LocalizedText;
   icon: React.ReactNode;
+};
+
+type LocalizedText = {
+  cs?: string;
+  en?: string;
+  de?: string;
+  [key: string]: string | undefined;
 };
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -84,7 +91,8 @@ const CARDS: AuditCard[] = selfAuditData.cards.map((card) => ({
 export default function SelfAuditElectricity() {
   const { i18n, t } = useTranslation('self-audit-electricity');
   const { t: tElectricity } = useTranslation('electricity');
-  const isCs = i18n.language === 'cs';
+  const lang = (i18n.language.split('-')[0] as 'cs' | 'en' | 'de') || 'cs';
+  const isCs = lang === 'cs';
   const [inputs, setInputs] = useState<Record<string, number>>({});
   const [profile, setProfile] = useState('');
   const [consent, setConsent] = useState(false);
@@ -95,6 +103,8 @@ export default function SelfAuditElectricity() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }, []);
+
+  const getText = (value?: LocalizedText) => value?.[lang] ?? value?.en ?? value?.cs ?? '';
 
   const scores = useMemo(() => {
     return CARDS.reduce<Record<string, number>>((acc, card) => {
@@ -117,7 +127,7 @@ export default function SelfAuditElectricity() {
     return Math.round(sum / weightSum);
   }, [scores]);
 
-  const ratingLabel = getSelfAuditRatingLabel(totalScore, isCs ? 'cs' : 'en');
+  const ratingLabel = getSelfAuditRatingLabel(totalScore, lang);
 
 
   const handleChange = (id: string, value: number) => {
@@ -142,7 +152,7 @@ export default function SelfAuditElectricity() {
         profile,
         answers,
         totalScore,
-        language: isCs ? 'cs' : 'en',
+        language: lang,
       }),
     })
       .then(async (res) => {
@@ -162,6 +172,7 @@ export default function SelfAuditElectricity() {
   };
 
   const handleGeneratePdf = async () => {
+    await i18n.loadNamespaces('pdf');
     const selectedProfile = ACCOMMODATION_PROFILES.find((p) => p.id === profile);
     const accommodationProfileLabel = selectedProfile ? tElectricity(`profiles.items.${selectedProfile.id}.title`) : undefined;
     const gaugeImage = await captureGaugePng({
@@ -170,7 +181,7 @@ export default function SelfAuditElectricity() {
       ratingLabel,
     }).catch(() => undefined);
     await generateElectricitySelfAuditPdf({
-      language: isCs ? 'cs' : 'en',
+      language: lang,
       coverColor: [250, 204, 21],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
       coverLogoType: 'PNG',
@@ -178,11 +189,11 @@ export default function SelfAuditElectricity() {
       accommodationProfileLabel,
       gaugeImage,
       cards: CARDS.map((card) => ({
-        title: isCs ? card.title.cs : card.title.en,
-        question: card.question ? (isCs ? card.question.cs : card.question.en) : undefined,
-        description: isCs ? card.description.cs : card.description.en,
+        title: getText(card.title),
+        question: card.question ? getText(card.question) : undefined,
+        description: getText(card.description),
         score: scores[card.id] ?? 0,
-        ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en'),
+        ratingLabel: getSelfAuditRatingLabel(scores[card.id] ?? null, lang),
       })),
       totalScore,
       totalRatingLabel: ratingLabel,
@@ -209,12 +220,12 @@ export default function SelfAuditElectricity() {
           {CARDS.map((card) => (
             <SelfAuditCard
               key={card.id}
-              title={isCs ? card.title.cs : card.title.en}
-              question={card.question ? (isCs ? card.question.cs : card.question.en) : undefined}
-              description={isCs ? card.description.cs : card.description.en}
+              title={getText(card.title)}
+              question={card.question ? getText(card.question) : undefined}
+              description={getText(card.description)}
               value={scores[card.id] ?? 0}
               onChange={(value) => handleChange(card.id, value)}
-              ratingLabel={showEvaluation ? getSelfAuditRatingLabel(scores[card.id] ?? null, isCs ? 'cs' : 'en') : ''}
+              ratingLabel={showEvaluation ? getSelfAuditRatingLabel(scores[card.id] ?? null, lang) : ''}
               ratingColorClass={getSelfAuditRatingColorClass(scores[card.id] ?? null)}
               showRatingValueColor={showEvaluation}
               showRating={showEvaluation}

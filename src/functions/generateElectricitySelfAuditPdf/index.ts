@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable, { UserOptions } from 'jspdf-autotable';
 import notoSansUrl from '../../assets/Fonts/NotoSans-VariableFont_wdth,wght.ttf?url';
+import i18n from '../../i18n';
 
 type CardData = {
   title: string;
@@ -11,7 +12,7 @@ type CardData = {
 };
 
 interface PdfData {
-  language: 'cs' | 'en';
+  language: 'cs' | 'en' | 'de';
   coverColor?: [number, number, number];
   coverLogoUrl?: string;
   coverLogoType?: 'PNG' | 'JPG' | 'JPEG';
@@ -55,6 +56,7 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const marginX = 14;
   let cursorY = 14;
+  const tPdf = (key: string) => i18n.t(key, { ns: 'pdf', lng: data.language });
 
   const fontBase64 = await loadNotoSansBase64();
   doc.addFileToVFS('NotoSans.ttf', fontBase64);
@@ -115,9 +117,7 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   doc.setFont('NotoSans', 'normal');
 
   doc.setFontSize(12);
-  const subtitle = data.language === 'cs'
-    ? 'ANALÝZA UDRŽITELNOSTI UBYTOVACÍHO ZAŘÍZENÍ'
-    : 'ACCOMMODATION SUSTAINABILITY ANALYSIS';
+  const subtitle = tPdf('cover.subtitle');
   const subtitleWidth = doc.getTextWidth(subtitle);
   doc.text(subtitle, (210 - subtitleWidth) / 2, 84);
 
@@ -137,7 +137,7 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   doc.setTextColor(0, 0, 0);
   cursorY = 14;
 
-  addTitle(data.language === 'cs' ? 'Self-Audit výsledky' : 'Self-Audit Results', 14, 10);
+  addTitle(tPdf('selfAudit.resultsTitle'), 14, 10);
 
   const pageWidth = 210;
   const contentWidth = pageWidth - marginX * 2;
@@ -244,7 +244,7 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   doc.setFont('NotoSans', 'bold');
   doc.setFontSize(22);
   doc.setTextColor(28, 25, 23);
-  const overallTitle = data.language === 'cs' ? 'Souhrnné skóre' : 'Overall score';
+  const overallTitle = tPdf('selfAudit.overallScore');
   const overallWidth = doc.getTextWidth(overallTitle);
   doc.text(overallTitle, (210 - overallWidth) / 2, cursorY);
   doc.setFont('NotoSans', 'normal');

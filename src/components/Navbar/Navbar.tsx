@@ -7,6 +7,7 @@ import logoCzWhite from '../../assets/logos/hk_cr_logo_cz-logo_bile.png';
 import logoEnBlack from '../../assets/logos/hk_cr_logo_aj_black.png';
 import logoEnWhite from '../../assets/logos/hk_cr_logo_aj-logo_white.png';
 import LanguageSwitch from '../ui/LanguageSwitch';
+import LanguageSwitchAlt from '../ui/LanguageSwitchAlt';
 
 export default function Navbar() {
   const { i18n, t } = useTranslation('common');
@@ -40,10 +41,10 @@ export default function Navbar() {
     : (useBlackLogo ? logoEnBlack : logoEnWhite);
 
   const navLinks = [
-    { path: '/', icon: <Home className="w-4 h-4" />, label: t('nav.home') },
-    { path: '/electricity', icon: <Zap className="w-4 h-4" />, label: t('nav.electricity') },
-    { path: '/water', icon: <Droplets className="w-4 h-4" />, label: t('nav.water') },
-    { path: '/waste', icon: <Trash2 className="w-4 h-4" />, label: t('nav.waste') },
+    { path: '/', icon: <Home className="w-[18px] h-[18px] md:w-5 md:h-5" />, label: t('nav.home') },
+    { path: '/electricity', icon: <Zap className="w-[18px] h-[18px] md:w-5 md:h-5" />, label: t('nav.electricity') },
+    { path: '/water', icon: <Droplets className="w-[18px] h-[18px] md:w-5 md:h-5" />, label: t('nav.water') },
+    { path: '/waste', icon: <Trash2 className="w-[18px] h-[18px] md:w-5 md:h-5" />, label: t('nav.waste') },
   ];
 
   useEffect(() => {
@@ -88,7 +89,7 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-1 sm:gap-2 px-1.5 py-2 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 sm:gap-2 px-1.5 py-2 md:px-3 md:py-2 rounded-lg text-base font-medium transition-colors ${
                   location.pathname === link.path 
                     ? theme.active
                     : `${theme.inactive} ${theme.hover}`
@@ -101,14 +102,25 @@ export default function Navbar() {
           </div>
         </div>
 
-        <LanguageSwitch
-          textClassName={theme.text}
-          borderClassName={theme.border}
-          hoverClassName={theme.hover}
-        />
+        <div className="flex items-center gap-2">
+          <div className="md:hidden">
+            <LanguageSwitch
+              textClassName={theme.text}
+              borderClassName={theme.border}
+              hoverClassName={theme.hover}
+            />
+          </div>
+          <div className="hidden md:inline-flex">
+            <LanguageSwitchAlt
+              textClassName={theme.text}
+              borderClassName={theme.border}
+              hoverClassName={theme.hover}
+              activeClassName={theme.active}
+            />
+          </div>
+        </div>
       </div>
       <div className={`absolute inset-x-0 bottom-0 h-px ${borderBg}`} />
     </nav>
   );
 }
-

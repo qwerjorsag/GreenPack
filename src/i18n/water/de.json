@@ -30,5 +30,36 @@
     "whyTitle": "Warum ist das wichtig?",
     "whyText": "Eine Reduktion des Wasserverbrauchs um 20 % kann jährlich Tausende Euro sparen.",
     "quote": "\"Water is the driving force of all nature.\" — Leonardo da Vinci"
+  },
+  "waterSources": {
+    "title": "Wasserquellen",
+    "headerSource": "Wasserquelle",
+    "withdrawn": "Entnommen (m³/Jahr)",
+    "returned": "In gleiche Quelle zurückgeführt (m³/Jahr)",
+    "consumed": "Verbraucht (m³/Jahr)",
+    "share": "Anteil am Gesamtentzug (%)",
+    "total": "Summe (m³)",
+    "rows": {
+      "municipal": {
+        "label": "Städtische Wasserversorgung",
+        "tooltip": "Trinkwasser aus dem städtischen Netz."
+      },
+      "groundwater": {
+        "label": "Grundwasser (eigener Brunnen)",
+        "tooltip": "Eigenes Frischwasser; nur genehmigte Entnahme."
+      },
+      "rainwater": {
+        "label": "Regenwassernutzung",
+        "tooltip": "Gesammeltes Regenwasser zur Nutzung vor Ort (meist nicht trinkbar)."
+      },
+      "greywater": {
+        "label": "Recycling / Grauwasser",
+        "tooltip": "Wiederverwendung für Toiletten, Bewässerung, Wäscherei, Kühlung usw."
+      },
+      "other": {
+        "label": "Sonstiges",
+        "tooltip": "Tankwagen oder andere Quellen, die oben nicht aufgeführt sind."
+      }
+    }
   }
 }

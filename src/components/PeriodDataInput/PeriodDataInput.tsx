@@ -83,7 +83,7 @@ function HoverTooltip({ content, children }: { content: string; children: React.
 }
 
 export default function PeriodDataInput({ data, onChange, themeColor = 'emerald' }: Props) {
-  const { t } = useTranslation('electricity');
+  const { t } = useTranslation('common');
 
   // Ensure exactly 3 rows exist
   useEffect(() => {

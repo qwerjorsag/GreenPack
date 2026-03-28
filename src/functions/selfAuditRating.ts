@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 export type SelfAuditRatingKey =
   | 'excellent'
   | 'very_good'
@@ -15,18 +17,17 @@ export function getSelfAuditRating(score: number | null) {
   return 'insufficient';
 }
 
-export function getSelfAuditRatingLabel(score: number | null, lang: 'cs' | 'en') {
+export function getSelfAuditRatingLabel(score: number | null, lang: 'cs' | 'en' | 'de') {
   const key = getSelfAuditRating(score);
   if (key === 'empty') return '';
-  const labels: Record<SelfAuditRatingKey, { cs: string; en: string }> = {
-    excellent: { cs: 'Výborné', en: 'Excellent' },
-    very_good: { cs: 'Velmi dobré', en: 'Very good' },
-    sufficient: { cs: 'Dostatečné', en: 'Sufficient' },
-    weak: { cs: 'Slabé', en: 'Weak' },
-    insufficient: { cs: 'Nedostatečné', en: 'Insufficient' },
-    empty: { cs: '', en: '' },
+  const map: Record<Exclude<SelfAuditRatingKey, 'empty'>, string> = {
+    excellent: 'selfAuditRating.excellent',
+    very_good: 'selfAuditRating.veryGood',
+    sufficient: 'selfAuditRating.sufficient',
+    weak: 'selfAuditRating.weak',
+    insufficient: 'selfAuditRating.insufficient',
   };
-  return labels[key][lang];
+  return i18n.t(map[key as Exclude<SelfAuditRatingKey, 'empty'>], { ns: 'common', lng: lang });
 }
 
 export function getSelfAuditRatingColorClass(score: number | null) {

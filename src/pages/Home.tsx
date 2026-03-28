@@ -39,7 +39,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-[3.5rem] md:text-6xl font-black tracking-tighter uppercase mb-4 text-stone-200"
               >
-                GreenPack
+                GreenPact
               </motion.h1>
               <motion.p 
                 initial={{ opacity: 0, y: 20 }}

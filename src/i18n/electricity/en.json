@@ -85,6 +85,40 @@
     "explanation": "Explanation",
     "emissions": "Emissions (t CO₂e)"
   },
+  "energySources": {
+    "electricity_grid": {
+      "name": "Electricity – grid",
+      "explanation": "Electricity purchased from the national grid (without renewable certificates)."
+    },
+    "electricity_renewable": {
+      "name": "Electricity – renewable",
+      "explanation": "Electricity supplied with Guarantees of Origin or Renewable Energy Certificates – may be reported as zero-emission (market-based)."
+    },
+    "natural_gas": {
+      "name": "Natural gas",
+      "explanation": "Fuel gas used for heating or water heating."
+    },
+    "heating_oil": {
+      "name": "Heating oil",
+      "explanation": "Diesel or light fuel oil used in boilers."
+    },
+    "lpg": {
+      "name": "LPG",
+      "explanation": "Liquefied petroleum gas used for heating or cooking."
+    },
+    "biomass": {
+      "name": "Biomass (biogenic)",
+      "explanation": "Wood pellets, chips, or similar – only biogenic fraction counted."
+    },
+    "district_heating": {
+      "name": "District heating",
+      "explanation": "Purchased heat from a district system; factor depends on local mix."
+    },
+    "other": {
+      "name": "Other",
+      "explanation": "Any other energy source not listed above."
+    }
+  },
   "summary": {
     "title": "What we measure?",
     "items": {
@@ -105,7 +139,89 @@
     "totalWeightedScore": "Total weighted score",
     "year": "Year"
   },
+  "renewables": {
+    "title": "Renewable sources",
+    "year": "Year",
+    "renewable": "Renewable (kWh)",
+    "nonRenewable": "Non-renewable (kWh)"
+  },
+  "energyConsumption": {
+    "year": "Year",
+    "indicator": "Indicator",
+    "raw": "Consumption",
+    "converted": "Consumption (GJ)",
+    "normalized": "Normalized",
+    "percentChange": "% change",
+    "evaluation": "Evaluation",
+    "totalEnergy": "Total energy consumption per room-night (RN)",
+    "totalEnergyAlt": "Total energy consumption per m² per year",
+    "evaluationLabels": {
+      "significantIncrease": "Significant increase",
+      "significantDecrease": "Significant decrease",
+      "moderateChange": "Moderate change",
+      "minorChange": "Minor change"
+    },
+    "units": {
+      "perRoomNight": "GJ/RN",
+      "perM2Year": "GJ/m²/year"
+    },
+    "report": {
+      "stable": "Stable trend – maintain current practices and keep staff motivated.",
+      "slightImprovement": "Slight improvement observed – monitor if the trend continues.",
+      "slightIncrease": "Slight increase in consumption – analyze possible reasons.",
+      "significantImprovement": "Great! Significant improvement – include in ESG report and inspire others.",
+      "significantIncrease": "Significant increase – detailed analysis and action plan recommended.",
+      "majorImprovement": "Major improvement – analyze what worked and standardize the approach.",
+      "majorDeterioration": "Major deterioration – immediate action and optimization needed.",
+      "reportPrefix": "Report"
+    }
+  },
   "energyManagement": {
-    "periodTitle": "Period – {{period}}"
+    "periodTitle": "Period – {{period}}",
+    "headers": {
+      "metric": "Metric",
+      "expected": "Expected value",
+      "results": "Results",
+      "recommendation": "Recommendation"
+    },
+    "metrics": {
+      "energyPerM2": "Energy intensity (kWh/m²)",
+      "energyPerRoomNight": "Energy intensity (kWh/room-night)",
+      "emissionsPerM2": "Emissions intensity (kg CO₂e/m²)",
+      "emissionsPerRoomNight": "Emissions intensity (kg CO₂e/room-night)"
+    },
+    "status": {
+      "within": "Within typical range",
+      "slightly": "Slightly above average",
+      "lowEmissions": "Low emissions",
+      "aboveAverage": "Above average",
+      "high_energyPerM2": "High energy consumption",
+      "high_energyPerRoomNight": "High energy use per room-night",
+      "high_emissionsPerM2": "High emissions",
+      "high_emissionsPerRoomNight": "High emissions per room-night",
+      "high_generic": "High consumption"
+    },
+    "recommendations": {
+      "energyPerM2": {
+        "within": "Maintain the current efficiency level.",
+        "slightly": "Consider small operational energy-saving measures.",
+        "high": "Conduct an energy audit and implement efficiency improvements."
+      },
+      "energyPerRoomNight": {
+        "within": "Energy use is optimal.",
+        "slightly": "Optimize heating, lighting, and equipment operation.",
+        "high": "Review room-level energy consumption and improve controls."
+      },
+      "emissionsPerM2": {
+        "within": "Emissions are within expected limits.",
+        "slightly": "Consider partial transition to renewable sources.",
+        "high": "Reduce fossil fuel use and upgrade to low-carbon technologies."
+      },
+      "emissionsPerRoomNight": {
+        "within": "Emissions are well controlled.",
+        "slightly": "Consider renewable electricity or carbon offsetting.",
+        "high": "Develop a carbon-reduction plan and improve energy efficiency."
+      }
+    }
   }
 }

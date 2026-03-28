@@ -24,36 +24,26 @@ export default function Water() {
   const [waterSources, setWaterSources] = useState([
     {
       id: 'municipal',
-      labelCs: 'Městský vodovod',
-      labelEn: 'Municipal water supply',
       withdrawn: '',
       returned: '',
     },
     {
       id: 'groundwater',
-      labelCs: 'Podzemní voda (vlastní vrt)',
-      labelEn: 'Groundwater (own borehole)',
       withdrawn: '',
       returned: '',
     },
     {
       id: 'rainwater',
-      labelCs: 'Zachytávání dešťové vody',
-      labelEn: 'Rainwater harvesting',
       withdrawn: '',
       returned: '',
     },
     {
       id: 'greywater',
-      labelCs: 'Recyklace / šedá voda',
-      labelEn: 'Recycled / greywater use',
       withdrawn: '',
       returned: '',
     },
     {
       id: 'other',
-      labelCs: 'Jiné',
-      labelEn: 'Other',
       withdrawn: '',
       returned: '',
     },
@@ -150,7 +140,6 @@ export default function Water() {
 
         <div className="gp-card">
           <WaterSourceTable
-            isCs={i18n.language === 'cs'}
             rows={waterSources}
             onChange={setWaterSources}
           />

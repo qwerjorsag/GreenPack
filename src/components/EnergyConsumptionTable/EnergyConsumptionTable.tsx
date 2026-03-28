@@ -3,18 +3,12 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type NormalizationTarget = {
-  id: string;
-  label: string;
+  id: 'perRoomNight' | 'perM2Year';
   divisorKey: 'roomNights' | 'floorAreaM2';
-  unitLabel: string;
 };
 
 type IndicatorRow = {
-  id: string;
-  indicatorName: string;
-  description: string;
-  dataSource: string;
-  baseUnit: string;
+  id: 'total-energy' | 'total-energy-alt';
   conversionFactorToGJ: number;
   normalizationTargets: NormalizationTarget[];
 };
@@ -25,57 +19,23 @@ type ValuesByRow = Record<string, Record<number, number | null>>;
 const templateRows: IndicatorRow[] = [
   {
     id: 'total-energy',
-    indicatorName: 'Total energy consumption per year',
-    description:
-      'Total amount of energy consumed by the accommodation facility for the selected period – electricity, gas, heating, etc.',
-    dataSource: 'Energy invoices / internal metering systems',
-    baseUnit: 'kWh',
     conversionFactorToGJ: 0.0036,
     normalizationTargets: [
-      { id: 'perRoomNight', label: 'GJ/RN', divisorKey: 'roomNights', unitLabel: 'GJ/RN' },
-      { id: 'perM2Year', label: 'GJ/m²/year', divisorKey: 'floorAreaM2', unitLabel: 'GJ/m²/year' },
+      { id: 'perRoomNight', divisorKey: 'roomNights' },
+      { id: 'perM2Year', divisorKey: 'floorAreaM2' },
     ],
   },
   {
     id: 'total-energy-alt',
-    indicatorName: 'Total energy consumption per year (alt view)',
-    description: 'Same indicator, shown with alternative normalization.',
-    dataSource: 'Energy invoices / internal metering systems',
-    baseUnit: 'kWh',
     conversionFactorToGJ: 0.0036,
     normalizationTargets: [
-      { id: 'perM2Year', label: 'GJ/m²/year', divisorKey: 'floorAreaM2', unitLabel: 'GJ/m²/year' },
-      { id: 'perRoomNight', label: 'GJ/RN', divisorKey: 'roomNights', unitLabel: 'GJ/RN' },
+      { id: 'perM2Year', divisorKey: 'floorAreaM2' },
+      { id: 'perRoomNight', divisorKey: 'roomNights' },
     ],
   },
 ];
 
 const defaultYears = [2027, 2028, 2029];
-
-const labels = {
-  en: {
-    year: 'Year',
-    indicator: 'Indicator',
-    raw: 'Consumption',
-    converted: 'Consumption (GJ)',
-    normalized: 'Normalized',
-    percentChange: '% change',
-    evaluation: 'Evaluation',
-    totalEnergy: 'Total energy consumption per room-night (RN)',
-    totalEnergyAlt: 'Total energy consumption per m² per year',
-  },
-  cs: {
-    year: 'Rok',
-    indicator: 'Ukazatel',
-    raw: 'Spotřeba',
-    converted: 'Spotřeba (GJ)',
-    normalized: 'Normalizace',
-    percentChange: '% změna',
-    evaluation: 'Evaluace',
-    totalEnergy: 'Celková spotřeba na pokojonoc (PN)',
-    totalEnergyAlt: 'Celková spotřeba na m² za rok',
-  },
-} as const;
 
 const formatNumber = (value: number | null, decimals = 2) => {
   if (value === null || Number.isNaN(value)) return '—';
@@ -87,17 +47,17 @@ const percentChange = (current: number | null, previous: number | null) => {
   return ((current - previous) / previous) * 100;
 };
 
-const evaluateDisplay = (pct: number | null, isCs: boolean) => {
+const evaluateDisplay = (pct: number | null, t: (key: string) => string) => {
   if (pct === null || Number.isNaN(pct)) return { label: '—', color: 'neutral' as const };
   const abs = Math.abs(pct);
   if (abs >= 10) {
     return {
-      label: pct > 0 ? (isCs ? 'Výrazný nárůst' : 'Significant increase') : (isCs ? 'Výrazné zlepšení' : 'Significant decrease'),
+      label: pct > 0 ? t('energyConsumption.evaluationLabels.significantIncrease') : t('energyConsumption.evaluationLabels.significantDecrease'),
       color: pct > 0 ? 'red' : 'green',
     };
   }
-  if (abs >= 5) return { label: isCs ? 'Střední změna' : 'Moderate change', color: 'orange' as const };
-  return { label: isCs ? 'Malá změna' : 'Minor change', color: 'neutral' as const };
+  if (abs >= 5) return { label: t('energyConsumption.evaluationLabels.moderateChange'), color: 'orange' as const };
+  return { label: t('energyConsumption.evaluationLabels.minorChange'), color: 'neutral' as const };
 };
 
 const reportCategory = (pct: number | null) => {
@@ -112,29 +72,19 @@ const reportCategory = (pct: number | null) => {
 const reportText = (
   pct: number | null,
   category: 'normal' | 'notable' | 'significant' | 'key' | 'none',
-  isCs: boolean
+  t: (key: string) => string
 ) => {
   if (pct === null || Number.isNaN(pct)) return '—';
   const isDecrease = pct < 0;
-  if (category === 'normal') {
-    return isCs
-      ? 'Stabilní trend – udržujte současné postupy a motivujte personál.'
-      : 'Stable trend – maintain current practices and keep staff motivated.';
-  }
+  if (category === 'normal') return t('energyConsumption.report.stable');
   if (category === 'notable') {
-    return isDecrease
-      ? (isCs ? 'Mírné zlepšení – sledujte, zda trend pokračuje.' : 'Slight improvement observed – monitor if the trend continues.')
-      : (isCs ? 'Mírný nárůst spotřeby – prověřte možné důvody.' : 'Slight increase in consumption – analyze possible reasons.');
+    return isDecrease ? t('energyConsumption.report.slightImprovement') : t('energyConsumption.report.slightIncrease');
   }
   if (category === 'significant') {
-    return isDecrease
-      ? (isCs ? 'Skvělé! Výrazné zlepšení – zahrňte do ESG reportu a inspirujte ostatní.' : 'Great! Significant improvement – include in ESG report and inspire others.')
-      : (isCs ? 'Výrazný nárůst – doporučena detailní analýza a akční plán.' : 'Significant increase – detailed analysis and action plan recommended.');
+    return isDecrease ? t('energyConsumption.report.significantImprovement') : t('energyConsumption.report.significantIncrease');
   }
   if (category === 'key') {
-    return isDecrease
-      ? (isCs ? 'Výrazné zlepšení – analyzujte, co fungovalo, a standardizujte postup.' : 'Major improvement – analyze what worked and standardize the approach.')
-      : (isCs ? 'Výrazné zhoršení – nutná okamžitá akce a optimalizace.' : 'Major deterioration – immediate action and optimization needed.');
+    return isDecrease ? t('energyConsumption.report.majorImprovement') : t('energyConsumption.report.majorDeterioration');
   }
   return '—';
 };
@@ -150,9 +100,7 @@ export default function EnergyConsumptionTable({
   denominators: denominatorsProp,
   values: valuesProp,
 }: EnergyConsumptionTableProps) {
-  const { i18n } = useTranslation();
-  const isCs = i18n.language === 'cs';
-  const t = isCs ? labels.cs : labels.en;
+  const { t } = useTranslation('electricity');
 
   const years = yearsProp && yearsProp.length ? yearsProp : defaultYears;
   const rows = templateRows;
@@ -173,10 +121,7 @@ export default function EnergyConsumptionTable({
     });
   }, [rows, years, values, denominators]);
 
-  const unitLabel = (unit: string) => {
-    if (!isCs) return unit;
-    return unit.replace('RN', 'PN').replace('/year', '/rok');
-  };
+  const unitLabel = (unitId: NormalizationTarget['id']) => t(`energyConsumption.units.${unitId}`);
 
   const evalClass = (color: string) => {
     if (color === 'red') return 'bg-red-100 text-red-700';
@@ -185,18 +130,19 @@ export default function EnergyConsumptionTable({
     return 'bg-stone-100 text-stone-600';
   };
 
+  const rowTitle = (rowId: IndicatorRow['id']) =>
+    rowId === 'total-energy' ? t('energyConsumption.totalEnergy') : t('energyConsumption.totalEnergyAlt');
+
   return (
     <div className="space-y-6">
       {computed.map(({ row, byYear }) => (
         <div key={row.id}>
-          <h3 className="mb-3">
-            {row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName}
-          </h3>
+          <h3 className="mb-3">{rowTitle(row.id)}</h3>
           <div className="gp-table-wrap">
             <table className="gp-table">
               <thead className="gp-table-head">
                 <tr>
-                  <th className="gp-th gp-th-left px-1 md:px-4">{t.year}</th>
+                  <th className="gp-th gp-th-left px-1 md:px-4">{t('energyConsumption.year')}</th>
                   {years.map((year, idx) => (
                     <th
                       key={year}
@@ -209,12 +155,16 @@ export default function EnergyConsumptionTable({
               </thead>
               <tbody>
                 {[
-                  { key: 'raw', label: `${t.raw} (${row.baseUnit})`, values: byYear.map((c) => formatNumber(c.raw, 0)) },
-                  { key: 'converted', label: t.converted, values: byYear.map((c) => formatNumber(c.converted, 2)) },
-                  { key: 'normalized', label: `${t.normalized} (${unitLabel(row.normalizationTargets[0].unitLabel)})`, values: byYear.map((c) => formatNumber(c.normalized, 3)) },
+                  { key: 'raw', label: `${t('energyConsumption.raw')} (kWh)`, values: byYear.map((c) => formatNumber(c.raw, 0)) },
+                  { key: 'converted', label: t('energyConsumption.converted'), values: byYear.map((c) => formatNumber(c.converted, 2)) },
+                  {
+                    key: 'normalized',
+                    label: `${t('energyConsumption.normalized')} (${unitLabel(row.normalizationTargets[0].id)})`,
+                    values: byYear.map((c) => formatNumber(c.normalized, 3)),
+                  },
                   {
                     key: 'percent',
-                    label: t.percentChange,
+                    label: t('energyConsumption.percentChange'),
                     values: byYear.map((cell, idx) => {
                       const previous = idx > 0 ? byYear[idx - 1] : null;
                       const pct = percentChange(cell.raw, previous?.raw ?? null);
@@ -223,11 +173,11 @@ export default function EnergyConsumptionTable({
                   },
                   {
                     key: 'evaluation',
-                    label: t.evaluation,
+                    label: t('energyConsumption.evaluation'),
                     values: byYear.map((cell, idx) => {
                       const previous = idx > 0 ? byYear[idx - 1] : null;
                       const pct = percentChange(cell.raw, previous?.raw ?? null);
-                      return evaluateDisplay(pct, isCs);
+                      return evaluateDisplay(pct, t);
                     }),
                   },
                 ].map((rowItem) => (
@@ -251,8 +201,7 @@ export default function EnergyConsumptionTable({
           </div>
           <div className="mt-6 mb-6 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
             <div className="gp-subtitle mb-2">
-              {(isCs ? 'Report ' : 'Report ') +
-                (row.id === 'total-energy' ? t.totalEnergy : row.id === 'total-energy-alt' ? t.totalEnergyAlt : row.indicatorName)}
+              {t('energyConsumption.report.reportPrefix')} {rowTitle(row.id)}
             </div>
             <div className="grid gap-2 text-sm text-stone-600">
               {byYear.map((cell, idx) => {
@@ -260,7 +209,7 @@ export default function EnergyConsumptionTable({
                 const previous = byYear[idx - 1];
                 const pct = percentChange(cell.raw, previous?.raw ?? null);
                 const category = reportCategory(pct);
-                const text = reportText(pct, category, isCs);
+                const text = reportText(pct, category, t);
                 return (
                   <div key={`${row.id}-report-${cell.year}`}>
                     <span className="font-semibold text-stone-900">{previous.year} → {cell.year}:</span> {text}

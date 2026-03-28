@@ -2,10 +2,13 @@
 import { useTranslation } from 'react-i18next';
 import ratingMatrixElectricityEn from '../../data/ratingMatrixElectricity/ratingMatrix.en.json';
 import ratingMatrixElectricityCs from '../../data/ratingMatrixElectricity/ratingMatrix.cs.json';
+import ratingMatrixElectricityDe from '../../data/ratingMatrixElectricity/ratingMatrix.de.json';
 import ratingMatrixWaterSourceEn from '../../data/ratingMatrixWaterSource/ratingMatrix.en.json';
 import ratingMatrixWaterSourceCs from '../../data/ratingMatrixWaterSource/ratingMatrix.cs.json';
+import ratingMatrixWaterSourceDe from '../../data/ratingMatrixWaterSource/ratingMatrix.de.json';
 import ratingMatrixWasteEn from '../../data/ratingMatrixWaste/ratingMatrix.en.json';
 import ratingMatrixWasteCs from '../../data/ratingMatrixWaste/ratingMatrix.cs.json';
+import ratingMatrixWasteDe from '../../data/ratingMatrixWaste/ratingMatrix.de.json';
 
 type Thresholds = {
   goodMax: number;
@@ -26,6 +29,7 @@ export type IndicatorRow = {
   key: IndicatorKey;
   labelEn: string;
   labelCs: string;
+  labelDe: string;
   unit: string;
   thresholds: Thresholds;
   weight: number;
@@ -45,6 +49,7 @@ export const BENCHMARK_INDICATORS: IndicatorRow[] = [
     key: 'energyIntensityM2',
     labelEn: 'Energy intensity (kWh/m²)',
     labelCs: 'Intenzita energie (kWh/m²)',
+    labelDe: 'Energieintensität (kWh/m²)',
     unit: 'kWh/m²',
     thresholds: { goodMax: 90, acceptableMax: 120, upperRef: 200 },
     weight: 0.25,
@@ -54,6 +59,7 @@ export const BENCHMARK_INDICATORS: IndicatorRow[] = [
     key: 'energyIntensityRoomNight',
     labelEn: 'Energy intensity (kWh/RN)',
     labelCs: 'Intenzita energie (kWh/pokojonoc)',
+    labelDe: 'Energieintensität (kWh/Zimmernacht)',
     unit: 'kWh/RN',
     thresholds: { goodMax: 35, acceptableMax: 45, upperRef: 60 },
     weight: 0.0,
@@ -63,6 +69,7 @@ export const BENCHMARK_INDICATORS: IndicatorRow[] = [
     key: 'emissionsIntensityM2',
     labelEn: 'Emissions intensity (kg CO₂e/m²)',
     labelCs: 'Intenzita emisí (kg CO₂e/m²)',
+    labelDe: 'Emissionsintensität (kg CO₂e/m²)',
     unit: 'kg CO₂e/m²',
     thresholds: { goodMax: 15, acceptableMax: 25, upperRef: 50 },
     weight: 0.25,
@@ -72,6 +79,7 @@ export const BENCHMARK_INDICATORS: IndicatorRow[] = [
     key: 'emissionsIntensityRoomNight',
     labelEn: 'Emissions intensity (kg CO₂e/RN)',
     labelCs: 'Intenzita emisí (kg CO₂e/pokojonoc)',
+    labelDe: 'Emissionsintensität (kg CO₂e/Zimmernacht)',
     unit: 'kg CO₂e/RN',
     thresholds: { goodMax: 5, acceptableMax: 12, upperRef: 20 },
     weight: 0.0,
@@ -81,6 +89,7 @@ export const BENCHMARK_INDICATORS: IndicatorRow[] = [
     key: 'renewableShare',
     labelEn: 'Renewable electricity share',
     labelCs: 'Podíl obnovitelné elektřiny',
+    labelDe: 'Anteil erneuerbarer Elektrizität',
     unit: '%',
     thresholds: { goodMax: 80, acceptableMax: 60, upperRef: 10 },
     weight: 0.15,
@@ -147,19 +156,26 @@ const fmt = (value: number | null, digits = 2) => {
 
 export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingMatrixSource = 'electricity' }: Props) {
   const { i18n, t } = useTranslation('electricity');
-  const isCs = i18n.language === 'cs';
+  const lang = i18n.language.split('-')[0];
   const title = t('benchmarks.title');
-  const ratingMatrix = isCs
-    ? (ratingMatrixSource === 'water'
-        ? ratingMatrixWaterSourceCs.ratingMatrix
-        : ratingMatrixSource === 'waste'
-          ? ratingMatrixWasteCs.ratingMatrix
-          : ratingMatrixElectricityCs.ratingMatrix)
-    : (ratingMatrixSource === 'water'
-        ? ratingMatrixWaterSourceEn.ratingMatrix
-        : ratingMatrixSource === 'waste'
-          ? ratingMatrixWasteEn.ratingMatrix
-          : ratingMatrixElectricityEn.ratingMatrix);
+  const ratingMatrix =
+    lang === 'cs'
+      ? (ratingMatrixSource === 'water'
+          ? ratingMatrixWaterSourceCs.ratingMatrix
+          : ratingMatrixSource === 'waste'
+            ? ratingMatrixWasteCs.ratingMatrix
+            : ratingMatrixElectricityCs.ratingMatrix)
+      : lang === 'de'
+        ? (ratingMatrixSource === 'water'
+            ? ratingMatrixWaterSourceDe.ratingMatrix
+            : ratingMatrixSource === 'waste'
+              ? ratingMatrixWasteDe.ratingMatrix
+              : ratingMatrixElectricityDe.ratingMatrix)
+        : (ratingMatrixSource === 'water'
+            ? ratingMatrixWaterSourceEn.ratingMatrix
+            : ratingMatrixSource === 'waste'
+              ? ratingMatrixWasteEn.ratingMatrix
+              : ratingMatrixElectricityEn.ratingMatrix);
 
   const getBand = (score: number | null) => {
     if (score === null || Number.isNaN(score)) return null;
@@ -216,9 +232,11 @@ export default function BenchmarksThresholdsTable({ years, valuesByYear, ratingM
             {BENCHMARK_INDICATORS.map((row) => {
               const scoreX = scoreForYear(valuesByYear[row.key]?.[0] ?? null, row);
               const wScoreX = weightedScore(scoreX, row.weight);
+              const label =
+                lang === 'cs' ? row.labelCs : lang === 'de' ? row.labelDe : row.labelEn;
               return (
                 <tr key={row.key} className="gp-row">
-                  <td className="gp-td px-1 md:px-4 font-medium">{isCs ? row.labelCs : row.labelEn}</td>
+                  <td className="gp-td px-1 md:px-4 font-medium">{label}</td>
                   {years.map((_, idx) => (
                     <td key={`${row.key}-${idx}`} className="gp-td gp-td-center px-1 md:px-4">
                       {fmt(valuesByYear[row.key]?.[idx] ?? null, 2)}

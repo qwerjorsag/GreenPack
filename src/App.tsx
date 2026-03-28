@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar/index';
 import Footer from './components/Footer/index';
 import Home from './pages/Home';
@@ -10,11 +10,24 @@ import SelfAuditWater from './pages/SelfAuditWater';
 import SelfAuditWaste from './pages/SelfAuditWaste';
 import Water from './pages/Water';
 import Waste from './pages/Waste';
+import Methodology from './pages/Methodology';
+import Contact from './pages/Contact';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  return null;
+}
 
 export default function App() {
   const baseUrl = import.meta.env.BASE_URL;
   return (
     <Router basename={baseUrl}>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -25,6 +38,8 @@ export default function App() {
         <Route path="/wasteaudit" element={<SelfAuditWaste />} />
         <Route path="/water" element={<Water />} />
         <Route path="/waste" element={<Waste />} />
+        <Route path="/methodology" element={<Methodology />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
     </Router>

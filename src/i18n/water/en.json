@@ -30,5 +30,36 @@
     "whyTitle": "Why it matters?",
     "whyText": "Reducing water consumption by 20% can save thousands of euros per year in water and sewage fees.",
     "quote": "\"Water is the driving force of all nature.\" — Leonardo da Vinci"
+  },
+  "waterSources": {
+    "title": "Water sources",
+    "headerSource": "Water source",
+    "withdrawn": "Withdrawn (m³/year)",
+    "returned": "Returned to same source (m³/year)",
+    "consumed": "Consumed (m³/year)",
+    "share": "Share of total withdrawn (%)",
+    "total": "Total (m³)",
+    "rows": {
+      "municipal": {
+        "label": "Municipal water supply",
+        "tooltip": "Potable water from municipal network."
+      },
+      "groundwater": {
+        "label": "Groundwater (own borehole)",
+        "tooltip": "Self-supplied fresh water; include only permitted extraction."
+      },
+      "rainwater": {
+        "label": "Rainwater harvesting",
+        "tooltip": "Collected rainwater used on site (typically non-potable)."
+      },
+      "greywater": {
+        "label": "Recycled / greywater use",
+        "tooltip": "Water reused for toilets, irrigation, laundry, cooling, etc."
+      },
+      "other": {
+        "label": "Other",
+        "tooltip": "Tankers or other sources not listed above."
+      }
+    }
   }
 }

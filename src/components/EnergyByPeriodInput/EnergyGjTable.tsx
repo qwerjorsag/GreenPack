@@ -19,8 +19,7 @@ export default function EnergyGjTable({
   totals,
   formatGj,
 }: Props) {
-  const { i18n, t } = useTranslation('electricity');
-  const isCs = i18n.language === 'cs';
+  const { t } = useTranslation('electricity');
 
   return (
     <div className="gp-table-wrap overflow-y-visible pb-4">
@@ -45,7 +44,7 @@ export default function EnergyGjTable({
             <tr key={`${source.id}-gj`} className="gp-row">
               <td className="gp-td">
                 <span className="text-sm font-medium text-stone-800">
-                  {isCs ? source.nameCs : source.nameEn}
+                  {t(`energySources.${source.id}.name`)}
                 </span>
               </td>
               {periods.map((_, idx) => {

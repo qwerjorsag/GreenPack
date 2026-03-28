@@ -5,25 +5,10 @@
   | 'emissionsPerRoomNight';
 
 export const energyBenchmarks = {
-  categoriesEn: [
-    'Guesthouse / Pension - only accommodation, no gastronomy',
-    'Hotel / Pension - only continental breakfast, reception, basic services',
-    'Self-catering accommodation, small accommodation',
-    'Hotel with restaurant – full gastronomy',
-    'Hotel with wellness / pool / conferences – high consumption',
-  ],
-  categoriesCs: [
-    'Penzion / ubytování bez gastronomie',
-    'Hotel / penzion s kontinentální snídaní, recepce, základní služby',
-    'Samoobslužné ubytování, malé ubytování',
-    'Hotel s restaurací – plná gastronomie',
-    'Hotel s wellness / bazénem / konferencemi – vysoká spotřeba',
-  ],
+  categories: [1, 2, 3, 4, 5],
   metrics: [
     {
       key: 'energyPerM2',
-      labelEn: 'Energy intensity (kWh/m²)',
-      labelCs: 'Intenzita energie (kWh/m²)',
       ranges: [
         { min: 50, max: 90, label: '50-90' },
         { min: 80, max: 120, label: '80-120' },
@@ -34,8 +19,6 @@ export const energyBenchmarks = {
     },
     {
       key: 'energyPerRoomNight',
-      labelEn: 'Energy intensity (kWh/room-night)',
-      labelCs: 'Intenzita energie (kWh/pokojonoc)',
       ranges: [
         { min: 20, max: 35, label: '20-35' },
         { min: 25, max: 40, label: '25-40' },
@@ -46,8 +29,6 @@ export const energyBenchmarks = {
     },
     {
       key: 'emissionsPerM2',
-      labelEn: 'Emissions intensity (kg CO₂e/m²)',
-      labelCs: 'Intenzita emisí (kg CO₂e/m²)',
       ranges: [
         { min: 0, max: 15, label: '≤ 15' },
         { min: 15, max: 25, label: '15-25' },
@@ -58,8 +39,6 @@ export const energyBenchmarks = {
     },
     {
       key: 'emissionsPerRoomNight',
-      labelEn: 'Emissions intensity (kg CO₂e/room-night)',
-      labelCs: 'Intenzita emisí (kg CO₂e/pokojonoc)',
       ranges: [
         { min: 0, max: 5, label: '≤ 5' },
         { min: 6, max: 9, label: '6-9' },
@@ -69,12 +48,6 @@ export const energyBenchmarks = {
       ],
     },
   ],
-  recommendations: {
-    energyPerM2: 'Consider small operational energy-saving measures.',
-    energyPerRoomNight: 'Optimize heating, lighting, and equipment operation.',
-    emissionsPerM2: 'Reduce fossil fuel use and upgrade to low-carbon technologies.',
-    emissionsPerRoomNight: 'Develop a carbon-reduction plan and improve energy efficiency.',
-  },
 } as const;
 
 

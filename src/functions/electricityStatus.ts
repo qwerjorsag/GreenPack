@@ -1,5 +1,5 @@
 import type { MetricKey } from '../data/energyBenchmarks';
-import { energyBenchmarks } from '../data/energyBenchmarks';
+import i18n from '../i18n';
 
 export const evaluateStatus = (
   value: number | null,
@@ -19,17 +19,15 @@ export const evaluateStatus = (
   return 'high';
 };
 
-export const getStatusText = (status: string, key: MetricKey, isCs: boolean) => {
-  if (status === 'within') return isCs ? 'V typickém rozmezí' : 'Within typical range';
-  if (status === 'slightly') return isCs ? 'Mírně nadprůměrné' : 'Slightly above average';
-  if (status === 'lowEmissions') return isCs ? 'Nízké emise' : 'Low emissions';
-  if (status === 'aboveAverage') return isCs ? 'Nadprůměrné' : 'Above average';
+export const getStatusText = (status: string, key: MetricKey, lang: 'cs' | 'en' | 'de') => {
+  if (status === 'within') return i18n.t('energyManagement.status.within', { ns: 'electricity', lng: lang });
+  if (status === 'slightly') return i18n.t('energyManagement.status.slightly', { ns: 'electricity', lng: lang });
+  if (status === 'lowEmissions') return i18n.t('energyManagement.status.lowEmissions', { ns: 'electricity', lng: lang });
+  if (status === 'aboveAverage') return i18n.t('energyManagement.status.aboveAverage', { ns: 'electricity', lng: lang });
   if (status === 'high') {
-    if (key === 'energyPerM2') return isCs ? 'Vysoká spotřeba energie' : 'High energy consumption';
-    if (key === 'energyPerRoomNight') return isCs ? 'Vysoká spotřeba na pokojonoc' : 'High energy use per room-night';
-    if (key === 'emissionsPerM2') return isCs ? 'Vysoké emise' : 'High emissions';
-    if (key === 'emissionsPerRoomNight') return isCs ? 'Vysoké emise na pokojonoc' : 'High emissions per room-night';
-    return isCs ? 'Vysoká spotřeba' : 'High consumption';
+    const specific = `energyManagement.status.high_${key}`;
+    const fallback = i18n.t('energyManagement.status.high_generic', { ns: 'electricity', lng: lang });
+    return i18n.t(specific, { ns: 'electricity', lng: lang, defaultValue: fallback });
   }
   return '-';
 };
@@ -38,30 +36,13 @@ export const getRecommendation = (
   key: MetricKey,
   range: { min: number; max: number | null },
   value: number | null,
-  isCs: boolean
+  lang: 'cs' | 'en' | 'de'
 ) => {
   if (value === null || Number.isNaN(value)) return '-';
   const upperTypical = range.max ?? range.min;
   const limit = upperTypical * 1.25;
-  if (key === 'energyPerM2') {
-    if (value <= upperTypical) return isCs ? 'Udržujte současnou úroveň efektivity.' : 'Maintain the current efficiency level.';
-    if (value <= limit) return isCs ? 'Zvažte menší provozní úsporná opatření.' : 'Consider small operational energy-saving measures.';
-    return isCs ? 'Proveďte energetický audit a zaveďte úsporná opatření.' : 'Conduct an energy audit and implement efficiency improvements.';
-  }
-  if (key === 'energyPerRoomNight') {
-    if (value <= upperTypical) return isCs ? 'Spotřeba je optimální.' : 'Energy use is optimal.';
-    if (value <= limit) return isCs ? 'Optimalizujte vytápění, osvětlení a provoz zařízení.' : 'Optimize heating, lighting, and equipment operation.';
-    return isCs ? 'Projděte spotřebu na úrovni pokojů a zlepšete regulaci.' : 'Review room-level energy consumption and improve controls.';
-  }
-  if (key === 'emissionsPerM2') {
-    if (value <= upperTypical) return isCs ? 'Emise jsou v očekávaných limitech.' : 'Emissions are within expected limits.';
-    if (value <= limit) return isCs ? 'Zvažte částečný přechod na obnovitelné zdroje.' : 'Consider partial transition to renewable sources.';
-    return isCs ? 'Snižte využití fosilních paliv a přejděte na nízkouhlíkové technologie.' : 'Reduce fossil fuel use and upgrade to low-carbon technologies.';
-  }
-  if (key === 'emissionsPerRoomNight') {
-    if (value <= upperTypical) return isCs ? 'Emise jsou dobře kontrolované.' : 'Emissions are well controlled.';
-    if (value <= limit) return isCs ? 'Zvažte obnovitelnou elektřinu nebo kompenzace.' : 'Consider renewable electricity or carbon offsetting.';
-    return isCs ? 'Vytvořte plán snižování emisí a zlepšete energetickou efektivitu.' : 'Develop a carbon-reduction plan and improve energy efficiency.';
-  }
-  return energyBenchmarks.recommendations[key];
+  const baseKey = `energyManagement.recommendations.${key}`;
+  if (value <= upperTypical) return i18n.t(`${baseKey}.within`, { ns: 'electricity', lng: lang });
+  if (value <= limit) return i18n.t(`${baseKey}.slightly`, { ns: 'electricity', lng: lang });
+  return i18n.t(`${baseKey}.high`, { ns: 'electricity', lng: lang });
 };
