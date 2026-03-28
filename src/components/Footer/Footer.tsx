@@ -9,6 +9,9 @@ import PartnerLogos from './PartnerLogos';
 export default function Footer() {
   const { i18n, t } = useTranslation('common');
   const logoSrc = i18n.language === 'cs' ? logoCz : logoEn;
+  const footerProject = t('footer.project');
+  const footerCopyright = t('footer.copyright', { year: new Date().getFullYear() });
+  const showProjectLine = footerProject && footerProject !== footerCopyright;
 
   return (
     <footer className="w-full border-t border-stone-200">
@@ -39,8 +42,8 @@ export default function Footer() {
             />
           </a>
           <div className="text-stone-400 text-xs font-bold uppercase tracking-widest">
-            <div>{t('footer.project')}</div>
-            <div>{t('footer.copyright')}</div>
+            {showProjectLine && <div>{footerProject}</div>}
+            <div>{footerCopyright}</div>
           </div>
         </div>
       </div>

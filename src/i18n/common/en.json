@@ -7,7 +7,7 @@
   },
   "footer": {
     "project": "Chamber of Commerce project",
-    "copyright": "© 2026",
+    "copyright": "? {{year}}",
     "privacy": "Privacy",
     "methodology": "Methodology",
     "contact": "Contact",

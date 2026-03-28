@@ -6,11 +6,12 @@
     "waste": "Abfall"
   },
   "footer": {
-    "copyright": "© 2026 Projekt der Handelskammer",
+    "copyright": "© {{year}}",
     "privacy": "Datenschutz",
     "methodology": "Methodik",
     "contact": "Kontakt",
-    "alt": "Handelskammer"
+    "alt": "Handelskammer",
+    "project": "Projekt der Handelskammer"
   },
   "partners": {
     "title": "Partner",

@@ -25,7 +25,7 @@ export default function LanguageSwitchAlt({
   return (
     <div
       className={clsx(
-        'inline-flex items-center gap-1 rounded-full border px-1 py-1 text-[11px] font-bold uppercase tracking-widest',
+        'inline-flex items-center gap-1 rounded-full border px-1 py-1 text-[12px] font-bold uppercase tracking-widest',
         textClassName,
         borderClassName,
         className
@@ -42,7 +42,7 @@ export default function LanguageSwitchAlt({
             onClick={() => i18n.changeLanguage(lng)}
             aria-pressed={isActive}
             className={clsx(
-              'px-2.5 py-1 rounded-full transition-colors',
+              'px-2.5 py-1 rounded-full transition-colors text-[12px]',
               hoverClassName,
               isActive && (activeClassName ?? 'bg-white/20')
             )}
