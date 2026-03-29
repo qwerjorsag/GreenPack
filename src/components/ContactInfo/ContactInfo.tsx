@@ -6,9 +6,10 @@ type Props = {
   className?: string;
   compact?: boolean;
   centerOnLarge?: boolean;
+  titleClassName?: string;
 };
 
-export default function ContactInfo({ className, compact, centerOnLarge }: Props) {
+export default function ContactInfo({ className, compact, centerOnLarge, titleClassName }: Props) {
   const { t } = useTranslation('common');
   const addressLinesRaw = t('contactInfo.addressLines', { returnObjects: true });
   const addressLines = Array.isArray(addressLinesRaw) ? addressLinesRaw : [String(addressLinesRaw)];
@@ -21,7 +22,7 @@ export default function ContactInfo({ className, compact, centerOnLarge }: Props
 
   return (
     <div className={className}>
-      <div className={`text-center font-bold uppercase tracking-widest text-stone-500 ${titleClass}`}>
+      <div className={`text-center font-bold uppercase tracking-widest text-stone-500 ${titleClass} ${titleClassName ?? ''}`}>
         {t('contactInfo.title')}
       </div>
       <div className={`mt-4 grid gap-6 text-stone-700 ${textClass} lg:grid-cols-2`}>

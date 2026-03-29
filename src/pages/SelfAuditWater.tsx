@@ -178,7 +178,7 @@ export default function SelfAuditWater() {
       <main className="max-w-5xl mx-auto px-6 py-16 bg-transparent">
         <div className="mb-10">
           <div className="mb-6">
-            <label className="block text-sm font-bold uppercase tracking-widest text-stone-700">
+            <label className="block text-lg font-bold">
               {t('facilityName.label')}
             </label>
             <input

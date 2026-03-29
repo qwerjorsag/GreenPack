@@ -175,7 +175,7 @@ export default function Electricity() {
           <div className="gp-card">
             <div className="mb-12">
               <div className="mb-6">
-                <label className="block text-sm font-bold uppercase tracking-widest text-stone-700">
+                <label className="block text-lg font-bold">
                   {t('facilityName.label')}
                 </label>
                 <input
