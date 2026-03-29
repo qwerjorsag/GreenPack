@@ -21,17 +21,17 @@
       "cta": "Analyse ausfüllen"
     },
     "self-audit-electricity": {
-      "title": "Strom Self-Audit",
+      "title": "Strom Self\u2011Audit",
       "description": "Schnelle Bewertung von Einsparungen und Maßnahmen."
     },
     "self-audit-water": {
-      "title": "Wasser Self-Audit",
+      "title": "Wasser Self\u2011Audit",
       "description": "Schnelle Bewertung von Wasserverbrauch und Einsparungen."
     },
     "self-audit-waste": {
-      "title": "Abfall Self-Audit",
+      "title": "Abfall Self\u2011Audit",
       "description": "Schnelle Bewertung von Trennung und Abfallvermeidung."
     }
   },
-  "ctaDefault": "Self-Audit starten"
+  "ctaDefault": "Self\u2011Audit starten"
 }
