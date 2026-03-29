@@ -1,17 +1,29 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import czuLogo from '../../assets/logos/CZU_PEF_barva_RGB.png';
-import euLogo from '../../assets/logos/EN_FundedbytheEU_RGB_Monochrome.png';
+import type { CSSProperties } from 'react';
+import czuLogo from '../../assets/partners/CZU_PEF_barva_RGB.png';
+import euLogo from '../../assets/partners/EN_FundedbytheEU_RGB_Monochrome.png';
 import komoraLogo from '../../assets/logos/komora-logo-CZ.svg';
 
 type Props = {
   className?: string;
 };
 
-const partnerItems = [
+type PartnerItem = {
+  src: string;
+  href: string;
+  imgStyle?: CSSProperties;
+  imgClassName?: string;
+};
+
+const partnerItems: PartnerItem[] = [
   { src: komoraLogo, href: 'https://www.komora.cz/' },
   { src: euLogo, href: 'https://www.interreg-central.eu/projects/greenpact/' },
-  { src: czuLogo, href: 'https://pef.czu.cz/' },
+  {
+    src: czuLogo,
+    href: 'https://pef.czu.cz/',
+    imgClassName: 'h-12',
+  },
 ];
 
 export default function PartnerLogos({ className }: Props) {
@@ -34,7 +46,8 @@ export default function PartnerLogos({ className }: Props) {
             <img
               src={item?.src ?? komoraLogo}
               alt={t('partners.logoAlt', { index: index + 1 })}
-              className="max-h-10 w-auto object-contain grayscale opacity-70 transition-all duration-200 hover:grayscale-0 hover:opacity-100 hover:scale-105"
+              style={item?.imgStyle}
+              className={`h-12 w-auto object-contain grayscale opacity-70 transition-all duration-200 hover:grayscale-0 hover:opacity-100 hover:scale-105 ${item?.imgClassName ?? ''}`}
             />
           </a>
         ))}
