@@ -22,7 +22,7 @@ const partnerItems: PartnerItem[] = [
   {
     src: czuLogo,
     href: 'https://pef.czu.cz/',
-    imgClassName: 'h-12',
+    imgClassName: 'h-12 scale-[0.8] hover:scale-[0.84]',
   },
 ];
 
