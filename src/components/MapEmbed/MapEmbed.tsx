@@ -28,7 +28,7 @@ export default function MapEmbed({ className }: Props) {
       <div className="mt-4 flex justify-center">
         <a
           href={openInMapsUrl}
-          className="inline-flex items-center justify-center rounded-full border border-emerald-700 px-5 py-2 text-xs font-bold uppercase tracking-widest text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white"
+          className="inline-flex items-center justify-center rounded-full border border-emerald-700 px-5 py-2 text-xs font-bold uppercase tracking-widest text-emerald-700 transition-all hover:bg-emerald-700 hover:text-white hover:scale-105"
           target="_blank"
           rel="noreferrer"
         >
