@@ -20,7 +20,7 @@ export default function Footer() {
           <PartnerLogos className="text-center" />
         </div>
         <div className="mt-10 flex justify-center">
-          <ContactInfo compact className="text-center" />
+          <ContactInfo compact centerOnLarge className="text-center" />
         </div>
         <div className="mt-10 flex flex-col items-center gap-5 text-center">
           <div className="flex flex-wrap justify-center gap-8">
