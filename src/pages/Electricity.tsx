@@ -26,6 +26,7 @@ export default function Electricity() {
   const lang = (i18n.language.split('-')[0] as 'cs' | 'en' | 'de') || 'cs';
   const isCs = lang === 'cs';
 
+  const [facilityName, setFacilityName] = useState('');
   const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pdfDownloaded, setPdfDownloaded] = useState(false);
@@ -152,6 +153,7 @@ export default function Electricity() {
       coverColor: [250, 204, 21],
       coverLogoUrl: isCs ? pdfLogoCz : pdfLogoEn,
       coverLogoType: 'PNG',
+      facilityName: facilityName.trim() || undefined,
       ...pdfData,
     });
     setPdfDownloaded(true);
@@ -172,6 +174,18 @@ export default function Electricity() {
         <div id="pdf-tables">
           <div className="gp-card">
             <div className="mb-12">
+              <div className="mb-6">
+                <label className="block text-sm font-bold uppercase tracking-widest text-stone-700">
+                  {t('facilityName.label')}
+                </label>
+                <input
+                  type="text"
+                  value={facilityName}
+                  onChange={(event) => setFacilityName(event.target.value)}
+                  placeholder={t('facilityName.placeholder')}
+                  className="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm transition focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                />
+              </div>
               <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
             </div>
               <PeriodDataInput data={periods} onChange={setPeriods} themeColor="yellow" />

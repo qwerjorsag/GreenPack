@@ -26,5 +26,9 @@
   },
   "pdf": {
     "title": "Self-Audit elektřiny"
+  },
+  "facilityName": {
+    "label": "Název zařízení (volitelné)",
+    "placeholder": "Např. Hotel Flora"
   }
 }

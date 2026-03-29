@@ -71,5 +71,9 @@
         "notes": "Batteries, bulbs, chemicals – specialised treatment."
       }
     }
+  },
+  "facilityName": {
+    "label": "Facility name (optional)",
+    "placeholder": "e.g. Hotel Flora"
   }
 }

@@ -223,5 +223,9 @@
         "high": "Develop a carbon-reduction plan and improve energy efficiency."
       }
     }
+  },
+  "facilityName": {
+    "label": "Facility name (optional)",
+    "placeholder": "e.g. Hotel Flora"
   }
 }

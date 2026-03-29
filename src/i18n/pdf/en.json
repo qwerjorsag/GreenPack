@@ -1,6 +1,7 @@
 {
   "cover": {
-    "subtitle": "ACCOMMODATION SUSTAINABILITY ANALYSIS"
+    "subtitle": "ACCOMMODATION SUSTAINABILITY ANALYSIS",
+    "facilityName": "Facility name"
   },
   "operationalData": {
     "title": "Operational Data",
@@ -65,7 +66,8 @@
   },
   "selfAudit": {
     "resultsTitle": "Self-Audit Results",
-    "overallScore": "Overall score"
+    "overallScore": "Overall score",
+    "facilityName": "Facility name"
   },
   "serverReport": {
     "title": "GreenPact Sustainability Report",

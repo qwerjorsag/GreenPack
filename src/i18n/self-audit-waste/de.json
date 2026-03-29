@@ -26,5 +26,9 @@
   },
   "pdf": {
     "title": "Abfall Self-Audit"
+  },
+  "facilityName": {
+    "label": "Name der Einrichtung (optional)",
+    "placeholder": "z. B. Hotel Flora"
   }
 }

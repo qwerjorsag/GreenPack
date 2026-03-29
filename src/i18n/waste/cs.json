@@ -71,5 +71,9 @@
         "notes": "Baterie, žárovky, chemikálie – specializované zpracování."
       }
     }
+  },
+  "facilityName": {
+    "label": "Název zařízení (volitelné)",
+    "placeholder": "Např. Hotel Flora"
   }
 }

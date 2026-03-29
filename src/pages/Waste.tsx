@@ -13,6 +13,7 @@ import { ConsentRow, PrimaryButton } from '../components/ui';
 export default function Waste() {
   const { i18n, t } = useTranslation('waste');
 
+  const [facilityName, setFacilityName] = useState('');
   const [profile, setProfile] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consent, setConsent] = useState(false);
@@ -149,6 +150,18 @@ export default function Waste() {
       <main className="max-w-5xl mx-auto px-3 md:px-6 py-16 bg-transparent">
         <div className="gp-card">
           <div className="mb-12">
+            <div className="mb-6">
+              <label className="block text-sm font-bold uppercase tracking-widest text-stone-700">
+                {t('facilityName.label')}
+              </label>
+              <input
+                type="text"
+                value={facilityName}
+                onChange={(event) => setFacilityName(event.target.value)}
+                placeholder={t('facilityName.placeholder')}
+                className="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm transition focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
+              />
+            </div>
             <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="stone" />
           </div>
           <div>

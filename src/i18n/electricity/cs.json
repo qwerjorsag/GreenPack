@@ -223,5 +223,9 @@
         "high": "Vytvořte plán snižování emisí a zlepšete energetickou efektivitu."
       }
     }
+  },
+  "facilityName": {
+    "label": "Název zařízení (volitelné)",
+    "placeholder": "Např. Hotel Flora"
   }
 }

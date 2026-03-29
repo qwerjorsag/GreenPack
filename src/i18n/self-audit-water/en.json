@@ -26,5 +26,9 @@
   },
   "pdf": {
     "title": "Water Self-Audit"
+  },
+  "facilityName": {
+    "label": "Facility name (optional)",
+    "placeholder": "e.g. Hotel Flora"
   }
 }

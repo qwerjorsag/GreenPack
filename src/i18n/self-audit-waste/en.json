@@ -26,5 +26,9 @@
   },
   "pdf": {
     "title": "Waste Self-Audit"
+  },
+  "facilityName": {
+    "label": "Facility name (optional)",
+    "placeholder": "e.g. Hotel Flora"
   }
 }

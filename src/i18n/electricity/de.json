@@ -223,5 +223,9 @@
         "high": "CO₂‑Reduktionsplan erstellen und Effizienz verbessern."
       }
     }
+  },
+  "facilityName": {
+    "label": "Name der Einrichtung (optional)",
+    "placeholder": "z. B. Hotel Flora"
   }
 }

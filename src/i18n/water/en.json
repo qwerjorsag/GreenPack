@@ -61,5 +61,9 @@
         "tooltip": "Tankers or other sources not listed above."
       }
     }
+  },
+  "facilityName": {
+    "label": "Facility name (optional)",
+    "placeholder": "e.g. Hotel Flora"
   }
 }

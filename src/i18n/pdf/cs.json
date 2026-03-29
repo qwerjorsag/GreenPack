@@ -1,6 +1,7 @@
 {
   "cover": {
-    "subtitle": "ANALÝZA UDRŽITELNOSTI UBYTOVACÍHO ZAŘÍZENÍ"
+    "subtitle": "ANALÝZA UDRŽITELNOSTI UBYTOVACÍHO ZAŘÍZENÍ",
+    "facilityName": "N?zev za??zen?"
   },
   "operationalData": {
     "title": "Provozní údaje",
@@ -65,7 +66,8 @@
   },
   "selfAudit": {
     "resultsTitle": "Self-Audit výsledky",
-    "overallScore": "Souhrnné skóre"
+    "overallScore": "Souhrnné skóre",
+    "facilityName": "N?zev za??zen?"
   },
   "serverReport": {
     "title": "GreenPact Zpráva o udržitelnosti",

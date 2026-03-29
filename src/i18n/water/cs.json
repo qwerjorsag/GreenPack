@@ -61,5 +61,9 @@
         "tooltip": "Cisterny nebo jiné zdroje neuvedené výše."
       }
     }
+  },
+  "facilityName": {
+    "label": "Název zařízení (volitelné)",
+    "placeholder": "Např. Hotel Flora"
   }
 }

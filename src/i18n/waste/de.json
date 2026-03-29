@@ -71,5 +71,9 @@
         "notes": "Batterien, Lampen, Chemikalien – Spezialbehandlung."
       }
     }
+  },
+  "facilityName": {
+    "label": "Name der Einrichtung (optional)",
+    "placeholder": "z. B. Hotel Flora"
   }
 }

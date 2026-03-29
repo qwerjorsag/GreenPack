@@ -61,5 +61,9 @@
         "tooltip": "Tankwagen oder andere Quellen, die oben nicht aufgeführt sind."
       }
     }
+  },
+  "facilityName": {
+    "label": "Name der Einrichtung (optional)",
+    "placeholder": "z. B. Hotel Flora"
   }
 }

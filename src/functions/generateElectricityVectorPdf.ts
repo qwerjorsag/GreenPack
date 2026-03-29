@@ -18,6 +18,7 @@ interface PdfData {
   coverTitle?: string;
   coverColor?: [number, number, number];
   accommodationProfileLabel?: string;
+  facilityName?: string;
   coverLogoUrl?: string;
   coverLogoType?: 'PNG' | 'JPG' | 'JPEG';
   years: string[];
@@ -190,6 +191,13 @@ export async function generateElectricityVectorPdf(data: PdfData) {
     doc.setFont('NotoSans', 'bold');
     const titleWidth = doc.getTextWidth(data.coverTitle);
     const titleY = 223;
+    if (data.facilityName) {
+      const facilityLines = doc.splitTextToSize(data.facilityName, 180);
+      const lineHeight = 8;
+      const blockHeight = facilityLines.length * lineHeight;
+      const facilityY = titleY - blockHeight - 4;
+      doc.text(facilityLines, 105, facilityY, { align: 'center' });
+    }
     doc.text(data.coverTitle, (210 - titleWidth) / 2, titleY);
     doc.setFont('NotoSans', 'normal');
     if (data.accommodationProfileLabel) {

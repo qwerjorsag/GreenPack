@@ -18,6 +18,7 @@ interface PdfData {
   coverLogoType?: 'PNG' | 'JPG' | 'JPEG';
   title: string;
   accommodationProfileLabel?: string;
+  facilityName?: string;
   gaugeImage?: string;
   cards: CardData[];
   totalScore: number;
@@ -125,6 +126,13 @@ export async function generateElectricitySelfAuditPdf(data: PdfData) {
   doc.setFont('NotoSans', 'bold');
   const titleWidth = doc.getTextWidth(data.title);
   const titleY = 223;
+  if (data.facilityName) {
+    const facilityLines = doc.splitTextToSize(data.facilityName, 180);
+    const lineHeight = 8;
+    const blockHeight = facilityLines.length * lineHeight;
+    const facilityY = titleY - blockHeight - 4;
+    doc.text(facilityLines, 105, facilityY, { align: 'center' });
+  }
   doc.text(data.title, (210 - titleWidth) / 2, titleY);
   doc.setFont('NotoSans', 'normal');
   if (data.accommodationProfileLabel) {

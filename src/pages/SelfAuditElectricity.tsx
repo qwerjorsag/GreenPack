@@ -94,6 +94,7 @@ export default function SelfAuditElectricity() {
   const lang = (i18n.language.split('-')[0] as 'cs' | 'en' | 'de') || 'cs';
   const isCs = lang === 'cs';
   const [inputs, setInputs] = useState<Record<string, number>>({});
+  const [facilityName, setFacilityName] = useState('');
   const [profile, setProfile] = useState('');
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -187,6 +188,7 @@ export default function SelfAuditElectricity() {
       coverLogoType: 'PNG',
       title: t('pdf.title'),
       accommodationProfileLabel,
+      facilityName: facilityName.trim() || undefined,
       gaugeImage,
       cards: CARDS.map((card) => ({
         title: getText(card.title),
@@ -213,6 +215,18 @@ export default function SelfAuditElectricity() {
 
       <main className="max-w-5xl mx-auto px-6 py-16 bg-transparent">
         <div className="mb-10">
+          <div className="mb-6">
+            <label className="block text-sm font-bold uppercase tracking-widest text-stone-700">
+              {t('facilityName.label')}
+            </label>
+            <input
+              type="text"
+              value={facilityName}
+              onChange={(event) => setFacilityName(event.target.value)}
+              placeholder={t('facilityName.placeholder')}
+              className="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm transition focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+            />
+          </div>
           <AccommodationProfileInput value={profile} onChange={setProfile} themeColor="yellow" />
         </div>
 

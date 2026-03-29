@@ -1,6 +1,7 @@
 {
   "cover": {
-    "subtitle": "NACHHALTIGKEITSANALYSE DER UNTERKUNFT"
+    "subtitle": "NACHHALTIGKEITSANALYSE DER UNTERKUNFT",
+    "facilityName": "Name der Einrichtung"
   },
   "operationalData": {
     "title": "Betriebsdaten",
@@ -65,7 +66,8 @@
   },
   "selfAudit": {
     "resultsTitle": "Self-Audit Ergebnisse",
-    "overallScore": "Gesamtscore"
+    "overallScore": "Gesamtscore",
+    "facilityName": "Name der Einrichtung"
   },
   "serverReport": {
     "title": "GreenPact Nachhaltigkeitsbericht",
