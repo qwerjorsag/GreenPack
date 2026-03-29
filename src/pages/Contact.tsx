@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ContactInfo from '../components/ContactInfo/ContactInfo';
+import MapEmbed from '../components/MapEmbed';
 
 export default function Contact() {
   const { t } = useTranslation('contact');
@@ -15,13 +16,11 @@ export default function Contact() {
       </header>
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-stone-700">
-            {t('intro')}
-          </div>
           <div className="rounded-3xl border border-emerald-100 bg-white p-8">
             <ContactInfo />
           </div>
         </div>
+        <MapEmbed className="mt-10" />
       </main>
     </div>
   );
